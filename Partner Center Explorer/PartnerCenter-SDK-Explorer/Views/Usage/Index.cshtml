@@ -1,0 +1,62 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="usage-table" style="margin-top: 25px;"></div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $('#usage-table').jtable({
+                title: 'Monthly Usage Records',
+                paging: false,
+                sorting: false,
+                edit: false,
+                create: false,
+                actions: {
+                    listAction: '@Url.Action("GetUsage")?subscriptionId=@ViewBag.SubscriptionId&tenantId=@ViewBag.TenantId'
+                },
+                fields: {
+                    LastModifiedDate: {
+                        displayFormat: 'mm/dd/yy',
+                        title: 'Last Modified Date',
+                        type: 'date',
+                        width: '15%'
+                    },
+                    Category: {
+                        title: 'Category',
+                        width: '15%'
+                    },
+                    Subcategory: {
+                        title: 'Subcategory',
+                        width: '15%'
+                    },
+                    ResourceName: {
+                        title: 'ResourceName',
+                        width: '15%'
+                    },
+                    ResourceId: {
+                        title: 'ResourceId',
+                        width: '15%'
+                    },
+                    QuantityUsed: {
+                        title: 'Quantity Used',
+                        width: '15%'
+                    },
+                    TotalCost: {
+                        title: 'Total Cost',
+                        width: '15%'
+                    },
+                    Unit: {
+                        title: 'Unit',
+                        width: '15%'
+                    }
+                }
+            });
+
+            $('#usage-table').jtable('load');
+        });
+    </script>
+}
