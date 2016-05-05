@@ -3,36 +3,41 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{500F12BD-C9FA-42DD-B0F2-BDAE40703D44}"
-	ProjectSection(SolutionItems) = preProject
-		Documentation\Configure.md = Documentation\Configure.md
-		Documentation\Preconsnet.md = Documentation\Preconsnet.md
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{599AAED5-C671-4D59-860E-924AD3CD32D2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureAD-Graph-API", "AzureAD-Graph-API\AzureAD-Graph-API.csproj", "{DCEAC03D-92FE-4DEE-AE09-4B00B7CE3768}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{9C6AD4C6-52A2-4CB7-986B-C704C375C4AD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartnerCenter-SDK-Explorer", "PartnerCenter-SDK-Explorer\PartnerCenter-SDK-Explorer.csproj", "{36430809-1810-4045-8761-4582CDAF708F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{55691BE8-0D86-474A-86D9-8EC4C757E62B}"
 	ProjectSection(SolutionItems) = preProject
-		Documentation\Images\AzureAD01.png = Documentation\Images\AzureAD01.png
-		Documentation\Images\AzureAD02.png = Documentation\Images\AzureAD02.png
-		Documentation\Images\AzureAD03.png = Documentation\Images\AzureAD03.png
-		Documentation\Images\AzureAD04.png = Documentation\Images\AzureAD04.png
-		Documentation\Images\AzureAD05.png = Documentation\Images\AzureAD05.png
-		Documentation\Images\AzureAD06.png = Documentation\Images\AzureAD06.png
-		Documentation\Images\AzureAD07.png = Documentation\Images\AzureAD07.png
-		Documentation\Images\AzureAD08.png = Documentation\Images\AzureAD08.png
-		Documentation\Images\AzureAD09.png = Documentation\Images\AzureAD09.png
-		Documentation\Images\AzureAD10.png = Documentation\Images\AzureAD10.png
-		Documentation\Images\AzureAD11.png = Documentation\Images\AzureAD11.png
-		Documentation\Images\AzureAD12.png = Documentation\Images\AzureAD12.png
-		Documentation\Images\AzureAD13.png = Documentation\Images\AzureAD13.png
-		Documentation\Images\AzureAD14.png = Documentation\Images\AzureAD14.png
-		Documentation\Images\PartnerCenter01.png = Documentation\Images\PartnerCenter01.png
+		..\LICENSE = ..\LICENSE
+		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartnerCenter-SDK-Explorer", "PartnerCenter-SDK-Explorer\PartnerCenter-SDK-Explorer.csproj", "{36430809-1810-4045-8761-4582CDAF708F}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{A8ABDA40-2DC6-4F94-9655-5D723C359DE4}"
+	ProjectSection(SolutionItems) = preProject
+		..\docs\Preconsnet.md = ..\docs\Preconsnet.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{C7BA28C7-8C4F-49FC-BCBF-9E00A4DC1D92}"
+	ProjectSection(SolutionItems) = preProject
+		..\docs\Images\AzureAD01.png = ..\docs\Images\AzureAD01.png
+		..\docs\Images\AzureAD02.png = ..\docs\Images\AzureAD02.png
+		..\docs\Images\AzureAD03.png = ..\docs\Images\AzureAD03.png
+		..\docs\Images\AzureAD04.png = ..\docs\Images\AzureAD04.png
+		..\docs\Images\AzureAD05.png = ..\docs\Images\AzureAD05.png
+		..\docs\Images\AzureAD06.png = ..\docs\Images\AzureAD06.png
+		..\docs\Images\AzureAD07.png = ..\docs\Images\AzureAD07.png
+		..\docs\Images\AzureAD08.png = ..\docs\Images\AzureAD08.png
+		..\docs\Images\AzureAD09.png = ..\docs\Images\AzureAD09.png
+		..\docs\Images\AzureAD10.png = ..\docs\Images\AzureAD10.png
+		..\docs\Images\AzureAD11.png = ..\docs\Images\AzureAD11.png
+		..\docs\Images\AzureAD12.png = ..\docs\Images\AzureAD12.png
+		..\docs\Images\AzureAD13.png = ..\docs\Images\AzureAD13.png
+		..\docs\Images\AzureAD14.png = ..\docs\Images\AzureAD14.png
+		..\docs\Images\PartnerCenter01.png = ..\docs\Images\PartnerCenter01.png
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +62,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{9C6AD4C6-52A2-4CB7-986B-C704C375C4AD} = {500F12BD-C9FA-42DD-B0F2-BDAE40703D44}
+		{A8ABDA40-2DC6-4F94-9655-5D723C359DE4} = {55691BE8-0D86-474A-86D9-8EC4C757E62B}
+		{C7BA28C7-8C4F-49FC-BCBF-9E00A4DC1D92} = {A8ABDA40-2DC6-4F94-9655-5D723C359DE4}
 	EndGlobalSection
 EndGlobal
