@@ -74,7 +74,7 @@ with your reseller tenant
     
 ### Configure the Newly Created Applications for Pre-consent
 
-Both the native and web application need to be configured for pre-cosent. Follow the documentation available [here](docs/Preconsent) for each application. Note
+Both the native and web application need to be configured for pre-cosent. Follow the documentation available [here](docs/Preconsent.md) for each application. Note
 you will need to replace the appId variable content prior to executing the script. Please be sure to perform this task for both applications created in the
 above tasks.
 
