@@ -1,13 +1,13 @@
-Configuring the Parnter Center Explorer sample
+Configuring the Partner Center Explorer sample
 ====================
 
-The Parnter Center Explorer requires two Azure AD applications that have been configured for pre-consent. Perform the following 
+The Partner Center Explorer requires two Azure AD applications that have been configured for pre-consent. Perform the following 
 procedures in order to create and configure the required Azure AD applications.
 
 ### Creating Web Azure AD Application
 1. Login to https://manage.windowsazure.com using a global admin account associated
 with your reseller tenant
-2. Select the appropriate instance of Auzre AD
+2. Select the appropriate instance of Azure AD
 
     ![](docs/Images/AzureAD01.png)
     
@@ -40,7 +40,7 @@ with your reseller tenant
 ### Creating Native Azure AD Application
 1. Login to https://manage.windowsazure.com using a global admin account associated
 with your reseller tenant
-2. Select the appropriate instance of Auzre AD
+2. Select the appropriate instance of Azure AD
 
     ![](docs/Images/AzureAD01.png)
     
@@ -74,7 +74,7 @@ with your reseller tenant
     
 ### Configure the Newly Created Applications for Pre-consent
 
-Both the native and web application need to be configured for pre-cosent. Follow the documentation available [here](docs/Preconsent.md) for each application. Note
+Both the native and web application need to be configured for pre-consent. Follow the documentation available [here](docs/Preconsent.md) for each application. Note
 you will need to replace the appId variable content prior to executing the script. Please be sure to perform this task for both applications created in the
 above tasks.
 
