@@ -23,7 +23,7 @@ with your reseller tenant
     
     ![](docs/Images/AzureAD05.png)
     
-    *The value specified for the App ID URI must be a domain that associated with you reseller tenant. You can utilize the 
+    *The value specified for the App ID URI must be a domain that associated with your reseller tenant. You can utilize the 
     onmicrosoft.com domain.*
     
 5. Click the *Configure* tab and then configure the application as shown in the figures below
@@ -63,6 +63,8 @@ with your reseller tenant
     *The NativeApplicationId value in the web.config should be configured to the Client ID value for this application.*
     
     ![](docs/Images/AzureAD11.png)
+    
+    Search for the *Microsoft Parnter Center* application. Select *All Apps* in the show drop down and then search for fa3d9a0c-3fb0-42cc-9193-47c7ecd2edbd
     
     ![](docs/Images/AzureAD12.png)
     

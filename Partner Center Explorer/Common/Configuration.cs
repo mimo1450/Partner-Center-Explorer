@@ -52,6 +52,17 @@ namespace Microsoft.Store.PartnerCenter.Samples.Common
         }
 
         /// <summary>
+        /// Gets the Office 365 management API root.
+        /// </summary>
+        /// <value>
+        /// The Office 365 management API root.
+        /// </value>
+        public static string O365ManageAPIRoot
+        {
+            get { return ConfigurationManager.AppSettings["O365ManageAPIRoot"]; }
+        }
+
+        /// <summary>
         /// Gets the password used to connect to the Partner Center SDK.
         /// </summary>
         /// <value>

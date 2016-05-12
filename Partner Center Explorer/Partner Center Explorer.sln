@@ -39,6 +39,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{C7BA28
 		..\docs\Images\PartnerCenter01.png = ..\docs\Images\PartnerCenter01.png
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "O365-Management-APIs", "O365-Management-APIs\O365-Management-APIs.csproj", "{A6E7CBA9-ABFA-426A-9779-4CC01EA17305}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{36430809-1810-4045-8761-4582CDAF708F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{36430809-1810-4045-8761-4582CDAF708F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{36430809-1810-4045-8761-4582CDAF708F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6E7CBA9-ABFA-426A-9779-4CC01EA17305}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6E7CBA9-ABFA-426A-9779-4CC01EA17305}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6E7CBA9-ABFA-426A-9779-4CC01EA17305}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6E7CBA9-ABFA-426A-9779-4CC01EA17305}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

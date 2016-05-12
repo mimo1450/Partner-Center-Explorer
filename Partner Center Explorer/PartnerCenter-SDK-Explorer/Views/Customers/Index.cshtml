@@ -51,11 +51,11 @@
                         sorting: false,
                         listClass: 'child-opener-image-column',
                         display: function (data) {
-                            var $subLink = $('<a href="#" data-subscription-id="' + data.record.Id + '">Subscriptions</a>');
-                            $subLink.click(function () {
+                            var subLink = $('<a href="#" data-subscription-id="' + data.record.Id + '">Subscriptions</a>');
+                            subLink.click(function () {
                                 var tenantId = data.record.CompanyProfile.TenantId;
                                 $('#customer-table').jtable('openChildTable',
-                                    $subLink.closest('tr'),
+                                    subLink.closest('tr'),
                                     {
                                         title: data.record.CompanyProfile.CompanyName + ' - Subscriptions',
                                         paging: false,
@@ -88,9 +88,9 @@
                                                 title: '',
                                                 width: '20%',
                                                 display: function (data) {
-                                                    var $link = $('<a alt="" data-subscription-id="' + data.record.Id + '" href="#">Manage</a>');
+                                                    var link = $('<a alt="" data-subscription-id="' + data.record.Id + '" href="#">Manage</a>');
 
-                                                    $link.click(function () {
+                                                    link.click(function () {
                                                         if (data.record.OfferName.indexOf("Office") != -1) {
                                                             window.location = '@Url.Action("Office", "Manage")?tenantId=' + tenantId;
                                                         } else {
@@ -98,7 +98,22 @@
                                                         }
                                                     });
 
-                                                    return $link;
+                                                    return link;
+                                                }
+                                            },
+                                            StatusLink: {
+                                                title: '',
+                                                width: '20%',
+                                                display: function (data) {
+                                                    var link = $('<a href="#">Status</a>');
+
+                                                    link.click(function () {
+                                                        window.location = '@Url.Action("Office", "Status")?tenantId=' + tenantId;
+                                                    });
+
+                                                    if (data.record.OfferName.indexOf("Office") != -1) {
+                                                        return link;
+                                                    }
                                                 }
                                             },
                                             Usage: {
@@ -106,14 +121,14 @@
                                                 width: '20%',
                                                 sorting: false,
                                                 display: function (data) {
-                                                    var $link = $('<a alt="View usage information" data-subscription-id="' + data.record.Id + '" href="#">Usage</a>');
+                                                    var link = $('<a alt="View usage information" data-subscription-id="' + data.record.Id + '" href="#">Usage</a>');
 
-                                                    $link.click(function () {
+                                                    link.click(function () {
                                                         window.location = '@Url.Action("Index", "Usage")?subscriptionId=' + data.record.Id + '&tenantId=' + tenantId;
                                                     });
-                                                    
+
                                                     if (data.record.OfferName.indexOf("Office") == -1) {
-                                                        return $link;
+                                                        return link;
                                                     }
                                                 }
                                             }
@@ -122,7 +137,7 @@
                                         data.childTable.jtable('load');
                                     });
                             });
-                            return $subLink;
+                            return subLink;
                         }
                     }
                 }

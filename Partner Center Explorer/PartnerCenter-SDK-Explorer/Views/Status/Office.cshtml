@@ -1,0 +1,128 @@
+﻿@{
+    ViewBag.Title = "Office Status";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="status-table" style="margin-top: 25px;"> </div>
+
+@section scripts {
+    <script>
+        Number.prototype.padLeft = function (base, chr) {
+            var len = (String(base || 10).length - String(this).length) + 1;
+            return len > 0 ? new Array(len).join(chr || '0') + this : this;
+        }
+
+        $(document).ready(function () {
+            $('#status-table').jtable({
+                title: 'Status',
+                paging: false,
+                sorting: false,
+                edit: false,
+                create: false,
+                actions: {
+                    listAction: '@Url.Action("OfficeStatus")?tenantId=@Request.QueryString["tenantId"]'
+                },
+                fields: {
+                    StatusTime: {
+                        title: 'Status Time',
+                        width: '20%',
+                        display: function (data) {
+                            var date = new Date(parseInt(data.record.StatusTime.substr(6)));
+
+                            var dformat = [(date.getMonth() + 1).padLeft(),
+                                        date.getDate().padLeft(),
+                                        date.getFullYear()].join('/') +
+                                        ' ' +
+                                        [date.getHours().padLeft(),
+                                        date.getMinutes().padLeft(),
+                                        date.getSeconds().padLeft()].join(':');
+
+                            return dformat;
+                        }
+                    },
+                    WorkloadDisplayName: {
+                        title: 'Workload',
+                        width: '30%',
+                    },
+                    Status: {
+                        title: 'Status',
+                        width: '5%',
+                        display: function (data) {
+                            var img;
+
+                            if (data.record.Status == "RestoringService") {
+                                img = $('<span style="padding-left:25px"><img title="Restoring service" id="RestoringServiceImage" style="background: url(/Content/Images/servicestatus.png) -91px -33px;width:15px;height:14px;" alt="Restoring service" src="/Content/Images/transparent.gif" /></span>');
+                            } else if (data.record.Status == "ServiceDegradation") {
+                                img = $('<span style="padding-left:25px"><img title="Service degradation" id="ServiceDegradationImage" style="background: url(/Content/Images/servicestatus.png) -91px -1px;width:15px;height:14px;" alt="Service degradation" src="/Content/Images/transparent.gif" /></span>')
+                            } else if (data.record.Status == "ServiceInterruption") {
+                                img = $('<img title="Service interruption" id="ServiceInterruptionImage" style="background: url(/Content/Images/en-US/servicestatus.png) -74px -83px;width:15px;height:14px;" alt="Service interruption" src="/Content/Images/transparent.gif" /></span>')
+                            } else if (data.record.Status == "ServiceOperational") {
+                                img = $('<span style="padding-left:25px"><img title="Normal service" id="ServiceOperationalImage" style="background: url(/Content/Images/servicestatus.png) -14px -107px;width:8px;height:8px;" alt="Normal service" src="/Content/Images/transparent.gif" /></span>');
+                            }
+
+                            return img;
+                        }
+                    },
+                    Details: {
+                        title: '',
+                        width: '10%',
+                        sorting: false,
+                        listClass: 'child-opener-image-column',
+                        display: function (data) {
+                            var link = $('<a href="#">Details</a>');
+                            link.click(function () {
+                                $('#status-table').jtable('openChildTable',
+                                    link.closest('tr'),
+                                    {
+                                        title: 'Details',
+                                        paging: false,
+                                        sorting: false,
+                                        defaultSorting: 'id ASC',
+                                        edit: false,
+                                        create: false,
+                                        actions: {
+                                            listAction: '@Url.Action("GetMessages")?tenantId=@Request.QueryString["tenantId"]&messageIds=' + data.record.IncidentIds
+                                        },
+                                        fields: {
+                                            Feature: {
+                                                title: 'Feature',
+                                                width: '30%'
+                                            },
+                                            FeatureDisplayName: {
+                                                title: 'Display Name',
+                                                width: '30%'
+                                            },
+                                            MessageDetails: {
+                                                title: 'Message',
+                                                width: '30%',
+                                                display: function (data) {
+                                                    var table = $('<table border="1" cellpadding="2" cellspacing="2" style="width: 100%;">');
+
+                                                    $.each(data.record.Messages, function (index, value) {
+                                                        console.log(value);
+                                                        table.append('<tr><td width="50%">' + value.MessageText + '</td></tr>');
+                                                    });
+
+                                                    table.append('</table>');
+                                                    return table;
+                                                }
+                                            },
+                                            Status: {
+                                                title: 'Status',
+                                                width: '30%'
+                                            }
+                                        }
+                                    }, function (data) {
+                                        data.childTable.jtable('load');
+                                    });
+                            });
+                            return link;
+                        }
+                    }
+                }
+            });
+
+            $('#status-table').jtable('load');
+        });
+    </script>
+}

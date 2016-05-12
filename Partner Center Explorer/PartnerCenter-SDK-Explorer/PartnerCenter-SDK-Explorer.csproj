@@ -165,6 +165,7 @@
     <Compile Include="Controllers\InvoicesController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\ServiceRequestsController.cs" />
+    <Compile Include="Controllers\StatusController.cs" />
     <Compile Include="Controllers\UsageController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -177,6 +178,8 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\Images\CloudSolutionProvider.png" />
+    <Content Include="Content\Images\servicestatus.png" />
+    <Content Include="Content\Images\transparent.gif" />
     <Content Include="Content\themes\base\accordion.css" />
     <Content Include="Content\themes\base\all.css" />
     <Content Include="Content\themes\base\autocomplete.css" />
@@ -350,7 +353,9 @@
     <Content Include="Scripts\respond.matchmedia.addListener.min.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -389,6 +394,7 @@
     <Content Include="Views\Manage\Office.cshtml" />
     <Content Include="Views\ServiceRequests\Index.cshtml" />
     <Content Include="Views\Usage\Index.cshtml" />
+    <Content Include="Views\Status\Office.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -406,6 +412,10 @@
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{599aaed5-c671-4d59-860e-924ad3cd32d2}</Project>
       <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\O365-Management-APIs\O365-Management-APIs.csproj">
+      <Project>{a6e7cba9-abfa-426a-9779-4cc01ea17305}</Project>
+      <Name>O365-Management-APIs</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
