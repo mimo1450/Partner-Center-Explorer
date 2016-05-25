@@ -130,7 +130,7 @@ Currently the only role implemented with this sample is the *PartnerAdmin* role.
 
 1. Within the application in Azure AD click the *Users* tab, select the appropriate user, and then click assign
 
-    ![](docs/Images/AzureAD17.png)
+    ![](docs/Images/AzureAD18.png)
     
 2. Select the desired role and then click Ok
 
