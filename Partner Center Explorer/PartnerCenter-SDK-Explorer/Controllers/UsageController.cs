@@ -11,26 +11,16 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
     /// Controller for the Usage views. 
     /// </summary>
     /// <seealso cref="Controller" />
+    [Authorize(Roles = "PartnerAdmin")]
     public class UsageController : Controller
     {
-        IAggregatePartner _operations;
+        SdkContext _context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UsageController"/> class.
         /// </summary>
         public UsageController()
-        {
-            _operations = SdkContext.UserPartnerOperations;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UsageController"/> class.
-        /// </summary>
-        /// <param name="operations">An instance of <see cref="IAggregatePartner"/>.</param>
-        public UsageController(IAggregatePartner operations)
-        {
-            _operations = operations;
-        }
+        { }
 
         /// <summary>
         /// Handles the HTTP GET request for the Index view.
@@ -90,19 +80,19 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             try
             {
-                records = _operations.Customers.ById(tenantId).Subscriptions.ById(subscriptionId).UsageRecords.Resources.Get();
+                records = Context.PartnerOperations.Customers.ById(tenantId).Subscriptions.ById(subscriptionId).UsageRecords.Resources.Get();
 
                 // This is done to work around a circular reference error that occurs when attempting to 
                 // serialize the CurrencyLocale property. 
                 var dataSet = records.Items.Select(x => new
                 {
-                    Category = x.Category, 
+                    Category = x.Category,
                     LastModifiedDate = x.LastModifiedDate,
-                    QuantityUsed = x.QuantityUsed, 
+                    QuantityUsed = x.QuantityUsed,
                     ResourceId = x.ResourceId,
                     ResourceName = x.ResourceName,
                     Subcategory = x.Subcategory,
-                    TotalCost = x.TotalCost, 
+                    TotalCost = x.TotalCost,
                     Unit = x.Unit
                 });
 
@@ -112,6 +102,19 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             finally
             {
                 records = null;
+            }
+        }
+
+        private SdkContext Context
+        {
+            get
+            {
+                if (_context == null)
+                {
+                    _context = new SdkContext();
+                }
+
+                return _context;
             }
         }
     }

@@ -10,26 +10,16 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
     /// Controller for the Customers views. 
     /// </summary>
     /// <seealso cref="Controller" />
+    [Authorize(Roles = "PartnerAdmin")]
     public class CustomersController : Controller
     {
-        IAggregatePartner _operations;
+        SdkContext _context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CustomersController"/> class.
         /// </summary>
         public CustomersController()
-        {
-            _operations = SdkContext.UserPartnerOperations;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CustomersController"/> class.
-        /// </summary>
-        /// <param name="operations">An instance of <see cref="IAggregatePartner"/>.</param>
-        public CustomersController(IAggregatePartner operations)
-        {
-            _operations = operations;
-        }
+        { }
 
         /// <summary>
         /// Handles the HTTP GET for the Index view.
@@ -57,7 +47,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             try
             {
-                customers = _operations.Customers.Get();
+                customers = Context.PartnerOperations.Customers.Get();
                 return Json(new { Result = "OK", Records = customers.Items, TotalRecordCount = customers.TotalCount });
             }
             finally
@@ -90,12 +80,25 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             try
             {
-                subscriptions = _operations.Customers.ById(tenantId).Subscriptions.Get();
+                subscriptions = Context.PartnerOperations.Customers.ById(tenantId).Subscriptions.Get();
                 return Json(new { Result = "OK", Records = subscriptions.Items, TotalRecordCount = subscriptions.TotalCount });
             }
             finally
             {
                 subscriptions = null;
+            }
+        }
+
+        private SdkContext Context
+        {
+            get
+            {
+                if (_context == null)
+                {
+                    _context = new SdkContext();
+                }
+
+                return _context;
             }
         }
     }

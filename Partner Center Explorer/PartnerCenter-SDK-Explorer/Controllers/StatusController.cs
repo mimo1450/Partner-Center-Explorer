@@ -1,5 +1,6 @@
 ﻿using Microsoft.Samples.Office365.Management.API;
 using Microsoft.Samples.Office365.Management.API.Models;
+using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context;
 using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
@@ -14,6 +15,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         /// </summary>
         /// <param name="tenantId">The tenant identifier.</param>
         /// <returns></returns>
+        [Authorize(Roles = "PartnerAdmin")]
         public ActionResult Office(string tenantId)
         {
             if (string.IsNullOrEmpty(tenantId))
@@ -45,7 +47,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             try
             {
                 messages = new List<Message>();
-                service = new ServiceCommunications();
+                service = new ServiceCommunications(TokenContext.UserAssertionToken);
                 ids = messageIds.Split(',');
 
                 foreach (string id in ids)
@@ -83,7 +85,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             try
             {
-                service = new ServiceCommunications();
+                service = new ServiceCommunications(TokenContext.UserAssertionToken);
                 records = service.GetCurrentStatus(tenantId);
 
                 return Json(new { Result = "OK", Records = records, TotalRecordCount = records.Count });

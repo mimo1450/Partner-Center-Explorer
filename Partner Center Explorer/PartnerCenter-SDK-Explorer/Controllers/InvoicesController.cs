@@ -15,28 +15,16 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
     /// Controller class for the Invoices views.
     /// </summary>
     /// <seealso cref="Controller" />
+    [Authorize(Roles = "PartnerAdmin")]
     public class InvoicesController : Controller
     {
-        IAggregatePartner _operations;
-        ResourceContext _resource;
+        SdkContext _context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InvoicesController"/> class.
         /// </summary>
         public InvoicesController()
-        {
-            _operations = SdkContext.UserPartnerOperations;
-            _resource = new ResourceContext();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="InvoicesController"/> class.
-        /// </summary>
-        /// <param name="operations">An instance of <see cref="IAggregatePartner"/>.</param>
-        public InvoicesController(IAggregatePartner operations)
-        {
-            _operations = operations;
-        }
+        { }
 
         /// <summary>
         /// Handles the HTTP get request for the Details view.
@@ -239,7 +227,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             try
             {
-                invoices = _operations.Invoices.Get();
+                invoices = Context.PartnerOperations.Invoices.Get();
                 return Json(new { Result = "OK", Records = invoices.Items, TotalRecordCount = invoices.TotalCount });
             }
             finally
@@ -288,6 +276,19 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             finally
             {
                 items = null;
+            }
+        }
+
+        private SdkContext Context
+        {
+            get
+            {
+                if (_context == null)
+                {
+                    _context = new SdkContext();
+                }
+
+                return _context;
             }
         }
 
@@ -444,12 +445,12 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
                 if (lineItems == null)
                 {
-                    invoice = _operations.Invoices.ById(invoiceId).Get();
+                    invoice = Context.PartnerOperations.Invoices.ById(invoiceId).Get();
                     lineItems = new List<InvoiceLineItem>();
 
                     foreach (InvoiceDetail detail in invoice.InvoiceDetails)
                     {
-                        data = _operations.Invoices.ById(invoiceId).By(detail.BillingProvider, detail.InvoiceLineItemType).Get();
+                        data = Context.PartnerOperations.Invoices.ById(invoiceId).By(detail.BillingProvider, detail.InvoiceLineItemType).Get();
                         lineItems.AddRange(data.Items);
                     }
 

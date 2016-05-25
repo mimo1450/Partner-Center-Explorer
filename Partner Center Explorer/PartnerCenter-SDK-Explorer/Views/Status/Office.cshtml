@@ -25,7 +25,7 @@
                 fields: {
                     StatusTime: {
                         title: 'Status Time',
-                        width: '20%',
+                        width: '10%',
                         display: function (data) {
                             var date = new Date(parseInt(data.record.StatusTime.substr(6)));
 
@@ -55,9 +55,13 @@
                             } else if (data.record.Status == "ServiceDegradation") {
                                 img = $('<span style="padding-left:25px"><img title="Service degradation" id="ServiceDegradationImage" style="background: url(/Content/Images/servicestatus.png) -91px -1px;width:15px;height:14px;" alt="Service degradation" src="/Content/Images/transparent.gif" /></span>')
                             } else if (data.record.Status == "ServiceInterruption") {
-                                img = $('<img title="Service interruption" id="ServiceInterruptionImage" style="background: url(/Content/Images/en-US/servicestatus.png) -74px -83px;width:15px;height:14px;" alt="Service interruption" src="/Content/Images/transparent.gif" /></span>')
+                                img = $('<img title="Service interruption" id="ServiceInterruptionImage" style="background: url(/Content/Images/servicestatus.png) -74px -83px;width:15px;height:14px;" alt="Service interruption" src="/Content/Images/transparent.gif" /></span>')
                             } else if (data.record.Status == "ServiceOperational") {
                                 img = $('<span style="padding-left:25px"><img title="Normal service" id="ServiceOperationalImage" style="background: url(/Content/Images/servicestatus.png) -14px -107px;width:8px;height:8px;" alt="Normal service" src="/Content/Images/transparent.gif" /></span>');
+                            } else if (data.record.Status == "ServiceRestored") {
+                                img = $('<span style="padding-left:25px"><img title="Service restored" id="ServiceRestoredImage" style="background: url(/Content/Images/servicestatus.png) -91px -17px;width:15px;height:14px;" alt="Service restored" src="/Content/Images/transparent.gif" /></span>')
+                            } else {
+                                console.log(data.record.Status);
                             }
 
                             return img;
@@ -99,7 +103,6 @@
                                                     var table = $('<table border="1" cellpadding="2" cellspacing="2" style="width: 100%;">');
 
                                                     $.each(data.record.Messages, function (index, value) {
-                                                        console.log(value);
                                                         table.append('<tr><td width="50%">' + value.MessageText + '</td></tr>');
                                                     });
 

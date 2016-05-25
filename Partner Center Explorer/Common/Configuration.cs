@@ -19,6 +19,28 @@ namespace Microsoft.Store.PartnerCenter.Samples.Common
         }
 
         /// <summary>
+        /// Gets the web Azure AD application identifier.
+        /// </summary>
+        /// <value>
+        /// The web Azure AD application identifier used for authentication.
+        /// </value>
+        public static string ApplicationId
+        {
+            get { return ConfigurationManager.AppSettings["ApplicationId"]; }
+        }
+
+        /// <summary>
+        /// Gets the web Azure AD application secret.
+        /// </summary>
+        /// <value>
+        /// The web Azure AD application secret use for authentication.
+        /// </value>
+        public static string ApplicationSecret
+        {
+            get { return ConfigurationManager.AppSettings["ApplicationSecret"]; }
+        }
+
+        /// <summary>
         /// Gets the authority used for obtaining the application credential token.
         /// </summary>
         /// <value>
@@ -41,14 +63,14 @@ namespace Microsoft.Store.PartnerCenter.Samples.Common
         }
 
         /// <summary>
-        /// Gets the native Azure AD application identifier.
+        /// Gets the URI root for the Azure Management API. 
         /// </summary>
         /// <value>
-        /// The application identifier used for authentication purposes.
+        /// The URI root for the Azure Management API.
         /// </value>
-        public static string NativeApplicationId
+        public static string AzureManagementRoot
         {
-            get { return ConfigurationManager.AppSettings["NativeApplicationId"]; }
+            get { return ConfigurationManager.AppSettings["AzureManagementRoot"]; }
         }
 
         /// <summary>
@@ -60,50 +82,6 @@ namespace Microsoft.Store.PartnerCenter.Samples.Common
         public static string O365ManageAPIRoot
         {
             get { return ConfigurationManager.AppSettings["O365ManageAPIRoot"]; }
-        }
-
-        /// <summary>
-        /// Gets the password used to connect to the Partner Center SDK.
-        /// </summary>
-        /// <value>
-        /// The password used to connect to the Partner Center SDK.
-        /// </value>
-        public static string Password
-        {
-            get { return ConfigurationManager.AppSettings["Password"]; }
-        }
-
-        /// <summary>
-        /// Gets the username used to connect to the Partner Center SDK.
-        /// </summary>
-        /// <value>
-        /// The username use to connect to the Partner Center SDK.
-        /// </value>
-        public static string Username
-        {
-            get { return ConfigurationManager.AppSettings["Username"]; }
-        }
-
-        /// <summary>
-        /// Gets the web Azure AD application identifier.
-        /// </summary>
-        /// <value>
-        /// The web Azure AD application identifier used for authentication.
-        /// </value>
-        public static string WebApplicationId
-        {
-            get { return ConfigurationManager.AppSettings["WebApplicationId"]; }
-        }
-
-        /// <summary>
-        /// Gets the web Azure AD application secret.
-        /// </summary>
-        /// <value>
-        /// The web Azure AD application secret use for authentication.
-        /// </value>
-        public static string WebApplicationSecret
-        {
-            get { return ConfigurationManager.AppSettings["WebApplicationSecret"]; }
         }
     }
 }

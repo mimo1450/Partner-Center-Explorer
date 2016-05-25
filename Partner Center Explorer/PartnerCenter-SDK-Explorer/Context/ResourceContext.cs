@@ -21,6 +21,78 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context
         { }
 
         /// <summary>
+        /// Applies the specified ARM template.
+        /// </summary>
+        /// <param name="tenantId">The tenant identifier.</param>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <param name="resourceGroup">The resource group.</param>
+        /// <param name="templateUri">Uri of the ARM template.</param>
+        /// <param name="parametersUri">Uri of the parameters for the ARM template.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">
+        /// subscriptionId
+        /// or
+        /// tenantId
+        /// or
+        /// resourceGroup
+        /// or
+        /// templateUri
+        /// </exception>
+        public string ApplyARMTemplate(string tenantId, string subscriptionId, string resourceGroup, string templateUri, string parametersUri)
+        {
+            Deployment deployment;
+            ResourceManagementClient client;
+            DeploymentExtended result;
+            string deploymentName;
+
+            if (string.IsNullOrEmpty(subscriptionId))
+            {
+                throw new ArgumentNullException("subscriptionId");
+            }
+            else if (string.IsNullOrEmpty(tenantId))
+            {
+                throw new ArgumentNullException("tenantId");
+            }
+            else if (string.IsNullOrEmpty(resourceGroup))
+            {
+                throw new ArgumentNullException("resourceGroup");
+            }
+            else if (string.IsNullOrEmpty(templateUri))
+            {
+                throw new ArgumentNullException("templateUri");
+            }
+
+            try
+            {
+                client = GetClient(tenantId);
+                client.SubscriptionId = subscriptionId;
+
+                deployment = new Deployment();
+                deployment.Properties = new DeploymentProperties()
+                {
+                    Mode = DeploymentMode.Incremental,
+                    TemplateLink = new TemplateLink(templateUri)
+                };
+
+                if (!string.IsNullOrEmpty(parametersUri))
+                {
+                    deployment.Properties.ParametersLink = new ParametersLink(parametersUri);
+                }
+
+                deploymentName = Guid.NewGuid().ToString();
+
+                result = client.Deployments.CreateOrUpdate(resourceGroup, deploymentName, deployment);
+
+                return result.Properties.ProvisioningState;
+            }
+            finally
+            {
+                client = null;
+                deployment = null;
+            }
+        }
+
+        /// <summary>
         /// Gets a collection of resource groups belonging to the speicifed subscription and tenant.
         /// </summary>
         /// <param name="subscriptionId">The subscription identifier.</param>
@@ -96,33 +168,20 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context
 
         private ResourceManagementClient GetClient(string tenantId)
         {
-            AuthenticationContext authContext;
-            AuthenticationResult authResult;
-            TokenCredentials tokenCredentials;
+            AuthenticationResult token;
 
             try
             {
-                authContext = new AuthenticationContext(
-                    string.Format("{0}/{1}",
-                        Configuration.Authority,
-                        tenantId
-                    )
+                token = TokenContext.GetAADToken(
+                    string.Format("{0}/{1}", Configuration.Authority, tenantId),
+                    Configuration.AzureManagementRoot
                 );
 
-                authResult = authContext.AcquireToken("https://management.azure.com/",
-                    Configuration.NativeApplicationId,
-                    new UserCredential(Configuration.Username, Configuration.Password)
-                );
-
-                tokenCredentials = new TokenCredentials(authResult.AccessToken);
-
-                return new ResourceManagementClient(tokenCredentials);
+                return new ResourceManagementClient(new TokenCredentials(token.AccessToken));
             }
             finally
             {
-                authContext = null;
-                authResult = null;
-                tokenCredentials = null;
+                token = null;
             }
         }
     }

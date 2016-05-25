@@ -17,14 +17,22 @@ namespace Microsoft.Samples.AzureAD.Graph.API
     {
         private AuthorizationToken _aadToken;
         private Communication _comm;
-
+        private string _userAssertionToken;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphClient"/> class.
+        /// Initializes a new instance of the <see cref="GraphClient" /> class.
         /// </summary>
-        public GraphClient()
+        /// <param name="userAssertionToken">The user assertion token.</param>
+        /// <exception cref="ArgumentNullException">userAssertionToken</exception>
+        public GraphClient(string userAssertionToken)
         {
+            if (string.IsNullOrEmpty(userAssertionToken))
+            {
+                throw new ArgumentNullException("userAssertionToken");
+            }
+
             _comm = new Communication();
+            _userAssertionToken = userAssertionToken;
         }
 
         /// <summary>
@@ -34,7 +42,7 @@ namespace Microsoft.Samples.AzureAD.Graph.API
         /// <returns>
         /// A collection of users that belong to the specified tenant identifer.
         /// </returns>
-        /// <exception cref="System.ArgumentNullException">tenantId</exception>
+        /// <exception cref="ArgumentNullException">tenantId</exception>
         public List<User> GetUsers(string tenantId)
         {
             if (string.IsNullOrEmpty(tenantId))
@@ -80,7 +88,7 @@ namespace Microsoft.Samples.AzureAD.Graph.API
         }
 
         /// <summary>
-        /// Gets the aad token asynchronous.
+        /// Gets an Azure Active Directory asynchronously. 
         /// </summary>
         /// <param name="tenantId">The tenant identifier.</param>
         /// <returns></returns>
@@ -94,12 +102,13 @@ namespace Microsoft.Samples.AzureAD.Graph.API
             {
                 values = new List<KeyValuePair<string, string>>();
 
+                values.Add(new KeyValuePair<string, string>("assertion", _userAssertionToken));
+                values.Add(new KeyValuePair<string, string>("client_id", Configuration.ApplicationId));
+                values.Add(new KeyValuePair<string, string>("client_secret", Configuration.ApplicationSecret));
+                values.Add(new KeyValuePair<string, string>("grant_type", "urn:ietf:params:oauth:grant-type:jwt-bearer"));
+                values.Add(new KeyValuePair<string, string>("requested_token_use", "on_behalf_of"));
                 values.Add(new KeyValuePair<string, string>("resource", Configuration.AzureADGraphAPIRoot));
-                values.Add(new KeyValuePair<string, string>("client_id", Configuration.WebApplicationId));
-                values.Add(new KeyValuePair<string, string>("client_secret", Configuration.WebApplicationSecret));
-                values.Add(new KeyValuePair<string, string>("grant_type", "password"));
-                values.Add(new KeyValuePair<string, string>("password", Configuration.Password));
-                values.Add(new KeyValuePair<string, string>("username", Configuration.Username));
+                values.Add(new KeyValuePair<string, string>("scope", "openid"));
 
                 content = new FormUrlEncodedContent(values);
 

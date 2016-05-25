@@ -3,33 +3,61 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div id="resourceGroups-table" style="margin-top: 25px;"></div>
+<br />
+
+<table>
+    <tr>
+        <td>
+            <h5>Resource Group</h5>
+            <select id="ddlResourceGroups" class="form-control">
+                <option>Loading...</option>
+            </select>
+        </td>
+        <td style="padding-left: 20px;">
+            <h5>ARM Template Uri</h5>
+            <input id="txtTemplateUri" type="text" />
+        </td>
+        <td style="padding-left: 20px;">
+            <h5>ARM Template Parameters Uri</h5>
+            <input id="txtParametersUri" type="text" />
+        </td>
+        <td style="padding-left: 20px; padding-top: 30px;">
+            <a class="btn btn-default" id="btnApply" href="#">Apply Template</a>
+        </td>
+    </tr>
+</table>
 
 <div id="resources-table" style="margin-top: 25px;"></div>
 
 @section scripts {
     <script>
-
         $(document).ready(function () {
-            $('#resourceGroups-table').jtable({
-                actions: {
-                    listAction: '@Url.Action("GetResourceGroups")?subscriptionId=@Request.QueryString["subscriptionId"]&tenantId=@Request.QueryString["tenantId"]'
-                },
-                create: false,
-                edit: false,
-                paging: false,
-                sorting: false,
-                title: 'Resource Groups',
-                fields: {
-                    Name: {
-                        title: 'Name',
-                        width: '30%',
-                    },
-                    Location: {
-                        title: 'Location',
-                        width: '30%',
-                    }
+            var ddlResourceGroups = $('#ddlResourceGroups');
+
+            $.ajax({
+                cache: true,
+                type: 'GET',
+                url: '@Url.Action("GetResourceGroups")?subscriptionId=@Request.QueryString["subscriptionId"]&tenantId=@Request.QueryString["tenantId"]',
+                success: function (data) {
+                    ddlResourceGroups.html('');
+                    $.each(data, function (id, option) {
+                        ddlResourceGroups.append($('<option></option>').val(option).html(option));
+                    })
+
+                    $('#resources-table').jtable('load');
                 }
+            });
+
+            $('#btnApply').click(function () {
+                $.post(
+                    '@Url.Action("ApplyARMTemplate", "Manage")', {
+                        subscriptionId: '@Request.QueryString["subscriptionId"]',
+                        tenantId: '@Request.QueryString["tenantId"]',
+                        resourceGroup: $('#ddlResourceGroups').find(":selected").text(),
+                        templateUri: $('#txtTemplateUri').val(),
+                        parametersUri: $('#txtParametersUri').val()
+                    }
+                );
             });
 
             $('#resources-table').jtable({
@@ -57,8 +85,6 @@
                 }
             });
 
-            $('#resourceGroups-table').jtable('load');
-            $('#resources-table').jtable('load');
         });
     </script>
 }

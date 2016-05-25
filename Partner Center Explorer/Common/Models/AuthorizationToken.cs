@@ -8,16 +8,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.Common.Models
     /// </summary>
     public class AuthorizationToken
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AuthorizationToken"/> class.
-        /// </summary>
-        /// <param name="accessToken">The access token value.</param>
-        /// <param name="expiresIn">When the token will expire.</param>
-        public AuthorizationToken(string accessToken, long expiresIn)
-        {
-            AccessToken = accessToken;
-            ExpiresOn = DateTime.UtcNow.AddSeconds(expiresIn);
-        }
+        private long _expiresIn;
 
         /// <summary>
         /// Gets the access token.
@@ -39,14 +30,24 @@ namespace Microsoft.Store.PartnerCenter.Samples.Common.Models
         }
 
         /// <summary>
-        /// Gets or set the token expiry time.
+        /// Gets the point in time in which the Access Token returned in the AccessToken property ceases to be valid.
         /// </summary>
         /// <value>
-        /// The time when the the token expires.
+        /// The point in time when the Access Token ceases to be valid.
         /// </value>
-        //[JsonProperty("expires_on")]
-        // TODO - This needs to corrected it cannot convert 
-        private DateTime ExpiresOn
-        { get; set; }
+        public DateTime ExpiresOn
+        {
+            get
+            {
+                return DateTime.UtcNow.AddSeconds(_expiresIn);
+            }
+        }
+
+        [JsonProperty("expires_in")]
+        private long ExpiresIn
+        {
+            get { return _expiresIn; }
+            set { _expiresIn = value; }
+        }
     }
 }

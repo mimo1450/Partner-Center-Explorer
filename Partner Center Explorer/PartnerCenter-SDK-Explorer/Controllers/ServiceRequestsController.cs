@@ -9,26 +9,16 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
     /// Controller class for the Serivce Requests view. 
     /// </summary>
     /// <seealso cref="Controller" />
+    [Authorize]
     public class ServiceRequestsController : Controller
     {
-        IAggregatePartner _operations;
+        SdkContext _context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ServiceRequestsController"/> class.
         /// </summary>
         public ServiceRequestsController()
-        {
-            _operations = SdkContext.UserPartnerOperations;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ServiceRequestsController"/> class.
-        /// </summary>
-        /// <param name="operations">An instance of <see cref="IAggregatePartner"/>.</param>
-        public ServiceRequestsController(IAggregatePartner operations)
-        {
-            _operations = operations;
-        }
+        { }
 
         /// <summary>
         /// Handles the HTTP GET request for the Index view. 
@@ -52,13 +42,26 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             try
             {
-                requests = _operations.ServiceRequests.Get();
+                requests = Context.PartnerOperations.ServiceRequests.Get();
                 return Json(new { Result = "OK", Records = requests.Items, TotalRecordCount = requests.TotalCount });
 
             }
             finally
             {
                 requests = null;
+            }
+        }
+
+        private SdkContext Context
+        {
+            get
+            {
+                if (_context == null)
+                {
+                    _context = new SdkContext();
+                }
+
+                return _context;
             }
         }
     }

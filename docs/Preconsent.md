@@ -1,3 +1,5 @@
+*This method is considered to be outdated. Please check [here](https://github.com/Microsoft/Partner-Center-Explorer/blob/master/README.md) for the updated method.* 
+
 # Enabling Pre-consent for an Application
 
 There is no UI to enable "Pre-Consent" yet. For now, you need to use Graph API to enable/disable 
