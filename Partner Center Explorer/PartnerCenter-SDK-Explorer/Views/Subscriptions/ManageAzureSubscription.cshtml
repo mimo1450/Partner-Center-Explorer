@@ -1,0 +1,25 @@
+﻿@model Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models.SubscriptionManageModel
+
+<div class="row">
+    <table>
+        <tr>
+            <td>
+                <h5>Resource Group</h5>
+                <select id="ddlResourceGroups" class="form-control">
+                    <option>Loading...</option>
+                </select>
+            </td>
+            <td style="padding-left: 20px;">
+                <h5>Template Url</h5>
+                <input id="txtTemplateUri" type="text" />
+            </td>
+            <td style="padding-left: 20px;">
+                <h5>Parameters Url</h5>
+                <input id="txtParametersUri" type="text" />
+            </td>
+            <td style="padding-left: 20px; padding-top: 30px;">
+                <a class="btn btn-default" id="btnApply" href="#">Apply Template</a>
+            </td>
+        </tr>
+    </table>
+</div>

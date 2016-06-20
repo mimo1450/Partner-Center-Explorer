@@ -1,92 +1,76 @@
-﻿using Microsoft.Store.PartnerCenter.Models;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 using Microsoft.Store.PartnerCenter.Models.Customers;
-using Microsoft.Store.PartnerCenter.Models.Subscriptions;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context;
+using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models;
+using System;
 using System.Web.Mvc;
 
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 {
-    /// <summary>
-    /// Controller for the Customers views. 
-    /// </summary>
-    /// <seealso cref="Controller" />
-    [Authorize(Roles = "PartnerAdmin")]
+    [AuthorizationFilter(ClaimType = ClaimTypes.Role, ClaimValue = "PartnerAdmin")]
     public class CustomersController : Controller
     {
-        SdkContext _context;
+        private SdkContext _context;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CustomersController"/> class.
-        /// </summary>
-        public CustomersController()
-        { }
-
-        /// <summary>
-        /// Handles the HTTP GET for the Index view.
-        /// </summary>
-        /// <returns></returns>
         public ActionResult Index()
         {
-            return View();
+            CustomersModel customersModel = new CustomersModel()
+            {
+                Customers = Context.PartnerOperations.Customers.Get()
+            };
+
+            return View(customersModel);
         }
 
-        /// <summary>
-        /// Gets a collection of resources representing all the partner's customers.
-        /// </summary>
-        /// <returns>
-        /// An instance of <see cref="JsonResult"/> containing a collect of resource representing the partner's customers.
-        /// </returns>
-        /// <remarks>
-        /// This function uses the Partner Center SDK to retrieve a collection of resources representing the partner's customers.
-        /// Additional information can be found at https://msdn.microsoft.com/en-us/library/partnercenter/mt634685.aspx
-        /// </remarks>
-        [HttpPost]
-        public JsonResult GetCustomers()
+        public ActionResult Show(string customerId)
         {
-            ResourceCollection<Customer> customers;
+            Customer customer;
+            CustomerModel customerModel;
 
-            try
+            if (string.IsNullOrEmpty(customerId))
             {
-                customers = Context.PartnerOperations.Customers.Get();
-                return Json(new { Result = "OK", Records = customers.Items, TotalRecordCount = customers.TotalCount });
-            }
-            finally
-            {
-                customers = null;
-            }
-        }
-
-        /// <summary>
-        /// Gets a collection of resources that represent the subscriptions for the specified tenant.
-        /// </summary>
-        /// <param name="tenantId">The tenant identifier.</param>
-        /// <returns>
-        /// An instance of <see cref="JsonResult"/> contain an array of resources representing the subscriptions for the specified tenant. 
-        /// </returns>
-        /// <remarks>
-        /// This function uses the Partner Center SDK to retrieve a collection of resources representing the subscriptions for 
-        /// tenant with the specified identifier. Additional information can be found at 
-        /// https://msdn.microsoft.com/en-us/library/partnercenter/mt634673.aspx
-        /// </remarks>
-        [HttpPost]
-        public JsonResult GetSubscriptions(string tenantId)
-        {
-            ResourceCollection<Subscription> subscriptions;
-
-            if (string.IsNullOrEmpty(tenantId))
-            {
-                return Json(new { Result = "ERROR", Message = "Argument tenantId cannot be null." });
+                throw new ArgumentNullException("customerId");
             }
 
             try
             {
-                subscriptions = Context.PartnerOperations.Customers.ById(tenantId).Subscriptions.Get();
-                return Json(new { Result = "OK", Records = subscriptions.Items, TotalRecordCount = subscriptions.TotalCount });
+                customer = Context.PartnerOperations.Customers.ById(customerId).Get();
+
+                customerModel = new CustomerModel()
+                {
+                    BillingProfile = customer.BillingProfile,
+                    CompanyName = customer.CompanyProfile.CompanyName,
+                    CompanyProfile = customer.CompanyProfile,
+                    DomainName = customer.CompanyProfile.Domain,
+                    TenantId = customer.CompanyProfile.TenantId
+                };
+
+                customerModel.Subscriptions = Context.PartnerOperations.Customers.ById(customerId).Subscriptions.Get();
+
+                return View(customerModel);
             }
             finally
             {
-                subscriptions = null;
+                customer = null;
+                customerModel = null;
             }
+        }
+
+        public ActionResult Subscriptions(string customerId)
+        {
+            if (string.IsNullOrEmpty(customerId))
+            {
+                throw new ArgumentNullException("customerId");
+            }
+
+            SubscriptionsModel subscriptionsModel = new SubscriptionsModel()
+            {
+                Subscriptions = Context.PartnerOperations.Customers.ById(customerId).Subscriptions.Get()
+            };
+
+            return View(subscriptionsModel);
         }
 
         private SdkContext Context

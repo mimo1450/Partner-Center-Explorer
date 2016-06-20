@@ -1,55 +1,25 @@
-﻿using Microsoft.Store.PartnerCenter.Models;
-using Microsoft.Store.PartnerCenter.Models.ServiceRequests;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context;
+using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models;
 using System.Web.Mvc;
 
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 {
-    /// <summary>
-    /// Controller class for the Serivce Requests view. 
-    /// </summary>
-    /// <seealso cref="Controller" />
-    [Authorize]
+    [AuthorizationFilter(ClaimType = ClaimTypes.Role, ClaimValue = "PartnerAdmin")]
     public class ServiceRequestsController : Controller
     {
-        SdkContext _context;
+        private SdkContext _context;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ServiceRequestsController"/> class.
-        /// </summary>
-        public ServiceRequestsController()
-        { }
-
-        /// <summary>
-        /// Handles the HTTP GET request for the Index view. 
-        /// </summary>
-        /// <returns></returns>
         public ActionResult Index()
         {
-            return View();
-        }
-
-        /// <summary>
-        /// Gets a list of service requests opened by the partner. 
-        /// </summary>
-        /// <returns>
-        /// A list of service requests opened by the partner.
-        /// </returns>
-        [HttpPost]
-        public JsonResult GetServiceRequests()
-        {
-            ResourceCollection<ServiceRequest> requests;
-
-            try
+            ServiceRequestsModel serviceRequestsModel = new ServiceRequestsModel()
             {
-                requests = Context.PartnerOperations.ServiceRequests.Get();
-                return Json(new { Result = "OK", Records = requests.Items, TotalRecordCount = requests.TotalCount });
+                ServiceRequests = Context.PartnerOperations.ServiceRequests.Get()
+            };
 
-            }
-            finally
-            {
-                requests = null;
-            }
+            return View(serviceRequestsModel);
         }
 
         private SdkContext Context

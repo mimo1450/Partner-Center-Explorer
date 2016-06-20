@@ -1,149 +1,200 @@
-﻿using Microsoft.Samples.AzureAD.Graph.API.Models;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using Microsoft.Samples.AzureAD.Graph.API.Models;
 using Microsoft.Store.PartnerCenter.Samples.Common;
-using Microsoft.Store.PartnerCenter.Samples.Common.Models;
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace Microsoft.Samples.AzureAD.Graph.API
 {
-    /// <summary>
-    /// Object utilized to interface with the Azure AD Graph API.
-    /// </summary>
-    /// <seealso cref="IGraphClient" />
     public class GraphClient : IGraphClient
     {
-        private AuthorizationToken _aadToken;
         private Communication _comm;
-        private string _userAssertionToken;
+        private string _token;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphClient" /> class.
+        /// Initializes a new instance of the <see cref="GraphClient"/> class.
         /// </summary>
-        /// <param name="userAssertionToken">The user assertion token.</param>
-        /// <exception cref="ArgumentNullException">userAssertionToken</exception>
-        public GraphClient(string userAssertionToken)
+        /// <param name="token">A valid JSON Web Token (JWT).</param>
+        public GraphClient(string token)
         {
-            if (string.IsNullOrEmpty(userAssertionToken))
-            {
-                throw new ArgumentNullException("userAssertionToken");
-            }
-
             _comm = new Communication();
-            _userAssertionToken = userAssertionToken;
+            _token = token;
         }
 
-        /// <summary>
-        /// Gets a collection of users that belong to the specified tenant identifer.
-        /// </summary>
-        /// <param name="tenantId">The tenant identifier.</param>
-        /// <returns>
-        /// A collection of users that belong to the specified tenant identifer.
-        /// </returns>
-        /// <exception cref="ArgumentNullException">tenantId</exception>
-        public List<User> GetUsers(string tenantId)
+        public void AssignUserLicense(string customerId, string userId, LicenseAssignment assignment)
         {
-            if (string.IsNullOrEmpty(tenantId))
+            if (string.IsNullOrEmpty(customerId))
             {
-                throw new ArgumentNullException("tenantId");
+                throw new ArgumentNullException("customerId");
+            }
+            else if (string.IsNullOrEmpty(userId))
+            {
+                throw new ArgumentNullException("userId");
+            }
+            else if (assignment == null)
+            {
+                throw new ArgumentNullException("assignment");
             }
 
-            return SynchronousExecute(() => GetUsersAsync(tenantId));
+            SynchronousExecute(() => AssignUserLicenseAsync(customerId, userId, assignment));
         }
 
-        /// <summary>
-        /// Asynchronously get a collection of users that belong to the specified tenant identifier.
-        /// </summary>
-        /// <param name="tenantId">The tenant identifier.</param>
-        /// <returns>
-        /// A collection of users that belong to the specified tenant identifer.
-        /// </returns>
-        /// <exception cref="ArgumentNullException">tenantId</exception>
-        public async Task<List<User>> GetUsersAsync(string tenantId)
+        public async Task<LicenseAssignment> AssignUserLicenseAsync(string customerId, string userId, LicenseAssignment assignment)
         {
-            Result<User> users;
             string requestUri;
 
-            if (string.IsNullOrEmpty(tenantId))
+            if (string.IsNullOrEmpty(customerId))
             {
-                throw new ArgumentNullException("tenantId");
+                throw new ArgumentNullException("customerId");
+            }
+            else if (string.IsNullOrEmpty(userId))
+            {
+                throw new ArgumentNullException("userId");
+            }
+            else if (assignment == null)
+            {
+                throw new ArgumentNullException("assignment");
             }
 
-            requestUri = string.Format(
-                "{0}/{1}/users?api-version=1.6",
-                Configuration.AzureADGraphAPIRoot,
-                tenantId
+            requestUri = string.Format("{0}/{1}/users/{2}/assignLicense?api-version=1.6",
+                AppConfig.GraphUri,
+                customerId,
+                userId
             );
 
-            users = await _comm.GetAsync<Result<User>>(
+            await _comm.PostAsJsonAsync(
                 requestUri,
                 new MediaTypeWithQualityHeaderValue("application/json"),
-                GetAADToken(tenantId).AccessToken,
-                Guid.NewGuid().ToString()
+                assignment,
+                _token
             );
 
-            return users.Value;
+            return null;
         }
 
-        /// <summary>
-        /// Gets an Azure Active Directory asynchronously. 
-        /// </summary>
-        /// <param name="tenantId">The tenant identifier.</param>
-        /// <returns></returns>
-        private async Task<AuthorizationToken> GetAADTokenAsync(string tenantId)
+        public List<SubscribedSku> GetSubscribedSkus(string customerId)
         {
-            HttpContent content;
-            List<KeyValuePair<string, string>> values;
+            if (string.IsNullOrEmpty(customerId))
+            {
+                throw new ArgumentNullException("customerId");
+            }
+
+            return SynchronousExecute(() => GetSubscribedSkusAsync(customerId));
+        }
+
+        public async Task<List<SubscribedSku>> GetSubscribedSkusAsync(string customerId)
+        {
+            Result<SubscribedSku> result;
             string requestUri;
+
+            if (string.IsNullOrEmpty(customerId))
+            {
+                throw new ArgumentNullException("customerId");
+            }
 
             try
             {
-                values = new List<KeyValuePair<string, string>>();
-
-                values.Add(new KeyValuePair<string, string>("assertion", _userAssertionToken));
-                values.Add(new KeyValuePair<string, string>("client_id", Configuration.ApplicationId));
-                values.Add(new KeyValuePair<string, string>("client_secret", Configuration.ApplicationSecret));
-                values.Add(new KeyValuePair<string, string>("grant_type", "urn:ietf:params:oauth:grant-type:jwt-bearer"));
-                values.Add(new KeyValuePair<string, string>("requested_token_use", "on_behalf_of"));
-                values.Add(new KeyValuePair<string, string>("resource", Configuration.AzureADGraphAPIRoot));
-                values.Add(new KeyValuePair<string, string>("scope", "openid"));
-
-                content = new FormUrlEncodedContent(values);
-
-                requestUri = string.Format(
-                    "{0}/{1}/oauth2/token",
-                    Configuration.Authority,
-                    tenantId
+                requestUri = string.Format("{0}/{1}/subscribedSkus?api-version=1.6",
+                    AppConfig.GraphUri,
+                    customerId
                 );
 
-                return await _comm.PostAsync<AuthorizationToken>(requestUri, content);
+                result = await _comm.GetAsync<Result<SubscribedSku>>(
+                    requestUri,
+                    new MediaTypeWithQualityHeaderValue("application/json"),
+                    _token
+                );
+
+                return result.Value;
             }
             finally
             {
-                content = null;
-                values = null;
+                result = null;
             }
         }
 
-        /// <summary>
-        /// Synchronously obtains an Azure AD token token.
-        /// </summary>
-        /// <param name="tenantId">The tenant identifier.</param>
-        /// <returns>
-        /// An instance of <see cref="AuthorizationToken"/> containing the access token.
-        /// </returns>
-        private AuthorizationToken GetAADToken(string tenantId)
+        public User GetUser(string customerId, string userId)
         {
-            if (_aadToken == null || _aadToken.IsNearExpiry())
+            if (string.IsNullOrEmpty(customerId))
             {
-                _aadToken = SynchronousExecute(
-                    () => GetAADTokenAsync(tenantId)
-                );
+                throw new ArgumentNullException("customerId");
+            }
+            else if (string.IsNullOrEmpty(userId))
+            {
+                throw new ArgumentNullException("userId");
             }
 
-            return _aadToken;
+            return SynchronousExecute(() => GetUserAsync(customerId, userId));
+        }
+
+        public async Task<User> GetUserAsync(string customerId, string userId)
+        {
+            User user;
+            string requestUri;
+
+            if (string.IsNullOrEmpty(customerId))
+            {
+                throw new ArgumentNullException("customerId");
+            }
+            else if (string.IsNullOrEmpty(userId))
+            {
+                throw new ArgumentNullException("userId");
+            }
+
+            requestUri = string.Format("{0}/{1}/users/{2}?api-version=1.6",
+                AppConfig.GraphUri,
+                customerId,
+                userId
+            );
+
+            user = await _comm.GetAsync<User>(
+                requestUri,
+                new MediaTypeWithQualityHeaderValue("application/json"),
+                _token
+             );
+
+            user.AvailableSkus = await GetSubscribedSkusAsync(customerId);
+
+            return user;
+        }
+
+        public List<User> GetUsers(string customerId)
+        {
+            if (string.IsNullOrEmpty(customerId))
+            {
+                throw new ArgumentNullException("customerId");
+            }
+
+            return SynchronousExecute(() => GetUsersAsync(customerId));
+        }
+
+        public async Task<List<User>> GetUsersAsync(string customerId)
+        {
+            Result<User> results;
+
+            if(string.IsNullOrEmpty(customerId))
+            {
+                throw new ArgumentNullException("customerId");
+            }
+
+            try
+            {
+                results = await _comm.GetAsync<Result<User>>(
+                    string.Format("{0}/{1}/users?api-version=1.6", AppConfig.GraphUri, customerId),
+                    new MediaTypeWithQualityHeaderValue("application/json"),
+                    _token
+                );
+
+                return results.Value;
+            }
+            finally
+            {
+                results = null;
+            }
         }
 
         /// <summary>

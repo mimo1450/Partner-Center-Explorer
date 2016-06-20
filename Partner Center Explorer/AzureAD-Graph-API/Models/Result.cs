@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 using System.Collections.Generic;
 
 namespace Microsoft.Samples.AzureAD.Graph.API.Models
@@ -9,10 +11,6 @@ namespace Microsoft.Samples.AzureAD.Graph.API.Models
     /// <typeparam name="T"></typeparam>
     public class Result<T>
     {
-        [JsonProperty("odata.metadata")]
-        private string ODataMetadata
-        { get; set; }
-
         /// <summary>
         /// Gets or sets the value.
         /// </summary>

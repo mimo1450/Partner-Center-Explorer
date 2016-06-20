@@ -1,107 +1,54 @@
-﻿using Microsoft.Store.PartnerCenter.Models;
-using Microsoft.Store.PartnerCenter.Models.Usage;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using Microsoft.Store.PartnerCenter.Models.Customers;
+using Microsoft.Store.PartnerCenter.Models.Subscriptions;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context;
+using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models;
 using System;
-using System.Linq;
 using System.Web.Mvc;
 
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 {
-    /// <summary>
-    /// Controller for the Usage views. 
-    /// </summary>
-    /// <seealso cref="Controller" />
-    [Authorize(Roles = "PartnerAdmin")]
     public class UsageController : Controller
     {
-        SdkContext _context;
+        private SdkContext _context;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UsageController"/> class.
-        /// </summary>
-        public UsageController()
-        { }
-
-        /// <summary>
-        /// Handles the HTTP GET request for the Index view.
-        /// </summary>
-        /// <param name="subscriptionId">The subscription identifier.</param>
-        /// <param name="tenantId">The tenant identifier.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">
-        /// subscriptionId
-        /// or
-        /// tenantId
-        /// </exception>
-        public ActionResult Index(string subscriptionId, string tenantId)
+        public ActionResult ViewUsage(string customerId, string subscriptionId)
         {
-            if (string.IsNullOrEmpty(subscriptionId))
+            Customer customer;
+            Subscription subscription;
+
+            if (string.IsNullOrEmpty(customerId))
+            {
+                throw new ArgumentNullException("customerId");
+            }
+            else if (string.IsNullOrEmpty(subscriptionId))
             {
                 throw new ArgumentNullException("subscriptionId");
-            }
-            else if (string.IsNullOrEmpty(tenantId))
-            {
-                throw new ArgumentNullException("tenantId");
-            }
-
-            ViewBag.SubscriptionId = subscriptionId;
-            ViewBag.TenantId = tenantId;
-
-            return View();
-        }
-
-        /// <summary>
-        /// Gets a collection of resources that contains a list of services within the specified subscription and the 
-        /// associated rated usage information.
-        /// </summary>
-        /// <param name="subscriptionId">The subscription identifier.</param>
-        /// <param name="tenantId">The tenant identifier.</param>
-        /// <returns>
-        /// An instance of <see cref="JsonResult"/> containing a list of services within the specified subscription and 
-        /// the associated rated usage information.
-        /// </returns>
-        /// <remarks>
-        /// This function uses the Partner Center SDK to obtain the rated usage information. Addtional information can
-        /// be found at https://msdn.microsoft.com/en-us/library/partnercenter/mt651646.aspx
-        /// </remarks>
-        [HttpPost]
-        public JsonResult GetUsage(string subscriptionId, string tenantId)
-        {
-            ResourceCollection<AzureResourceMonthlyUsageRecord> records;
-
-            if (string.IsNullOrEmpty(subscriptionId))
-            {
-                return Json(new { Result = "ERROR", Message = "Argument subscriptionId cannot be null." });
-            }
-            else if (string.IsNullOrEmpty(tenantId))
-            {
-                return Json(new { Result = "ERROR", Message = "Argument tenantId cannot be null." });
             }
 
             try
             {
-                records = Context.PartnerOperations.Customers.ById(tenantId).Subscriptions.ById(subscriptionId).UsageRecords.Resources.Get();
+                customer = Context.PartnerOperations.Customers.ById(customerId).Get();
+                subscription = Context.PartnerOperations.Customers.ById(customerId).Subscriptions.ById(subscriptionId).Get();
 
-                // This is done to work around a circular reference error that occurs when attempting to 
-                // serialize the CurrencyLocale property. 
-                var dataSet = records.Items.Select(x => new
+                UsageModel usageModel = new UsageModel()
                 {
-                    Category = x.Category,
-                    LastModifiedDate = x.LastModifiedDate,
-                    QuantityUsed = x.QuantityUsed,
-                    ResourceId = x.ResourceId,
-                    ResourceName = x.ResourceName,
-                    Subcategory = x.Subcategory,
-                    TotalCost = x.TotalCost,
-                    Unit = x.Unit
-                });
+                    CompanyName = customer.CompanyProfile.CompanyName,
+                    DailyUsage = Context.PartnerOperations.Customers.ById(customerId)
+                        .Subscriptions.ById(subscriptionId).UsageRecords.Daily.Get(),
+                    MonthlyUsage = Context.PartnerOperations.Customers.ById(customerId)
+                        .Subscriptions.ById(subscriptionId).UsageRecords.Resources.Get(),
+                    SubscriptionFriendlyName = subscription.FriendlyName
+                };
 
-
-                return Json(new { Result = "OK", Records = dataSet, TotalRecordCount = records.TotalCount });
+                return View(usageModel);
             }
             finally
             {
-                records = null;
+                customer = null;
+                subscription = null;
             }
         }
 

@@ -3,44 +3,85 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - Partner Center Explorer</title>
+    <title>@ViewBag.Title</title>
     @Styles.Render("~/Content/css")
-    @Styles.Render("~/Content/jtable-style")
     @Scripts.Render("~/bundles/modernizr")
 </head>
-<body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                @Html.ActionLink("Partner Center Explorer", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+<body class="flat-blue">
+    <div class="app-container">
+        <div class="row content-container">
+            <nav class="navbar navbar-default navbar-fixed-top navbar-top">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-expand-toggle">
+                            <i class="fa fa-bars icon"></i>
+                        </button>
+                        @RenderSection("Breadcrumbs", false)
+                        <button type="button" class="navbar-right-expand-toggle pull-right visible-xs">
+                            <i class="fa fa-th icon"></i>
+                        </button>
+                    </div>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown profile">
+                            @Html.Partial("_LoginPartial")
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            @{
+                string className = string.Empty;
+                string controller = ViewContext.RouteData.Values["Controller"].ToString();
+            }
+            <div class="side-menu sidebar-inverse">
+                <nav class="navbar navbar-default" role="navigation">
+                    <div class="side-menu-container">
+                        <ul class="nav navbar-nav">
+                            <li class="@(controller == "Home" ? "active" : "")">
+                                >
+                                <a href="/">
+                                    <span class="icon fa fa-home"></span><span class="title">Home</span>
+                                </a>
+                            </li>
+                            @if (controller == "Customers" || controller == "Subscriptions" || controller == "Usage")
+                            {
+                                className = "active";
+                            }
+                            <li class="@className">
+                                <a href="/Customers">
+                                    <span class="icon fa fa-child"></span><span class="title">Customers</span>
+                                </a>
+                            </li>
+                            <li class="@(controller == "Invoices" ? "active" : "")">
+                                <a href="/Invoices">
+                                    <span class="icon fa fa-dollar"></span><span class="title">Invoices</span>
+                                </a>
+                            </li>
+                            @Html.Action("Reports", "Reports")
+                            <li class="@(controller == "ServiceRequests" ? "active" : "")">
+                                <a href="/ServiceRequests">
+                                    <span class="icon fa fa-heart-o"></span><span class="title">Service Requests</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
             </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("Customers", "Index", "Customers")</li>
-                    <li>@Html.ActionLink("Invoices", "Index", "Invoices")</li>
-                    <li>@Html.ActionLink("Service Requests", "Index", "ServiceRequests")</li>
-                </ul>
-                @Html.Partial("_LoginPartial")
+            <div class="container-fluid">
+                @RenderBody()
             </div>
         </div>
-    </div>
-    <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - Microsoft</p>
+        <footer class="app-footer">
+            <div class="wrapper">
+                &copy; @DateTime.Now.Year - Microsoft
+            </div>
         </footer>
     </div>
 
     @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryui")
     @Scripts.Render("~/bundles/bootstrap")
-    @Scripts.Render("~/bundles/jtable")
     @RenderSection("scripts", required: false)
+    <script type="text/javascript" src="~/Scripts/application.js"></script>
+    <script type="text/javascript" src="~/Scripts/powerbi.min.js"></script>
 </body>
 </html>

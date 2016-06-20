@@ -1,67 +1,48 @@
-﻿@{
+﻿@model Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models.InvoicesModel
+@using Microsoft.Store.PartnerCenter.Models.Invoices
+
+@{
     ViewBag.Title = "Invoices";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div id="invoice-table" style="margin-top: 25px;"></div>
 
-@section scripts {
-    <script>
-        $(document).ready(function () {
-            $('#invoice-table').jtable({
-                title: 'Invoices from Partner Center',
-                paging: false,
-                sorting: false,
-                edit: false,
-                create: false,
-                actions: {
-                    listAction: '@Url.Action("GetInvoices")'
-                },
-                fields: {
-                    InvoiceDate: {
-                        displayFormat: 'mm/dd/yy',
-                        title: 'Date',
-                        type: 'date',
-                        width: '20%'
-                    },
-                    Id: {
-                        title: 'Invoice Id',
-                        width: '20%'
-                    },
-                    TotalCharges: {
-                        title: 'Total Charges',
-                        width: '20%'
-                    },
-                    Details: {
-                        display: function (data) {
-                            var $link = $('<a href="#" data-invoice-id="' + data.record.Id + '">Details</a>');
-
-                            $link.click(function () {
-                                window.location = '@Url.Action("Details", "Invoices")?invoiceId=' + data.record.Id;
-                            });
-
-                            return $link;
-                        },
-                        title: '',
-                        width: '10%'
-                    },
-                    Export: {
-                        display: function (data) {
-                            var $link = $('<a href="#" data-invoice-id="' + data.record.Id + '">Export</a>');
-
-                            $link.click(function () {
-                                window.location = '@Url.Action("ExportInvoice", "Invoices")?invoiceId=' + data.record.Id;
-                            });
-
-                            return $link;
-                        },
-                        title: '',
-                        width: '10%'
-                    },
-                }
-            });
-
-            $('#invoice-table').jtable('load');
-        });
-    </script>
+@section Breadcrumbs{
+    <ol class="breadcrumb navbar-breadcrumb">
+        <li>Invoices</li>
+    </ol>
 }
+
+<div class="side-body padding-top">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Identifier</th>
+                <th>Total Charges</th>
+                <th></th>
+            </tr>
+        </thead>
+        @foreach (Invoice invoice in Model.Invoices.Items)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(item => invoice.InvoiceDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(item => invoice.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(item => invoice.TotalCharges)
+                </td>
+                <td>
+                    @Html.ActionLink(
+                        "Details",
+                        string.Format("/{0}/Details", invoice.Id),
+                        "Invoices"
+                    )
+                </td>
+            </tr>
+        }
+    </table>
+</div>

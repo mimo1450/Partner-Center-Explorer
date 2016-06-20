@@ -1,10 +1,13 @@
-﻿using Microsoft.Owin.Security;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OpenIdConnect;
 using Owin;
 using System.Configuration;
-using System.Threading.Tasks;
 using System.IdentityModel.Tokens;
+using System.Threading.Tasks;
 
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer
 {
@@ -13,10 +16,6 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer
         private string ClientId = ConfigurationManager.AppSettings["ApplicationId"];
         private string Authority = ConfigurationManager.AppSettings["Authority"] + "/common";
 
-        /// <summary>
-        /// Configures the authentication.
-        /// </summary>
-        /// <param name="app">The application.</param>
         public void ConfigureAuth(IAppBuilder app)
         {
             app.SetDefaultSignInAsAuthenticationType(CookieAuthenticationDefaults.AuthenticationType);
@@ -30,15 +29,9 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer
                     Authority = Authority,
                     TokenValidationParameters = new TokenValidationParameters
                     {
+                        RoleClaimType = "roles",
                         SaveSigninToken = true,
-                        // instead of using the default validation (validating against a single issuer value, as we do in line of business apps), 
-                        // we inject our own multitenant validation logic
                         ValidateIssuer = false,
-                        // If the app needs access to the entire organization, then add the logic
-                        // of validating the Issuer here.
-                        // IssuerValidator
-                        // 
-                        RoleClaimType = "roles"
                     },
                     Notifications = new OpenIdConnectAuthenticationNotifications()
                     {

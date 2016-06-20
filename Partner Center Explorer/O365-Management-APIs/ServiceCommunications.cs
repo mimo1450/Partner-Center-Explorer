@@ -1,4 +1,7 @@
-﻿using Microsoft.Samples.Office365.Management.API.Models;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using Microsoft.Samples.Office365.Management.API.Models;
 using Microsoft.Store.PartnerCenter.Samples.Common;
 using Microsoft.Store.PartnerCenter.Samples.Common.Models;
 using System;
@@ -38,7 +41,7 @@ namespace Microsoft.Samples.Office365.Management.API
         /// <param name="tenantId">The tenant identifier.</param>
         /// <returns>A list of status details associated with the specified tenant identifier.</returns>
         /// <exception cref="ArgumentNullException">tenantId</exception>
-        public List<StatusDetails> GetCurrentStatus(string tenantId)
+        public List<IHealthEvent> GetCurrentStatus(string tenantId)
         {
             if (string.IsNullOrEmpty(tenantId))
             {
@@ -52,11 +55,11 @@ namespace Microsoft.Samples.Office365.Management.API
         /// Gets the current status for the specified tenant asynchronously.
         /// </summary>
         /// <param name="tenantId">The tenant identifier.</param>
-        /// <returns>A list of status details associated with the specified tenant identifier.</returns>
+        /// <returns>A list of health events associated with the specified tenant identifier.</returns>
         /// <exception cref="ArgumentNullException">tenantId</exception>
-        public async Task<List<StatusDetails>> GetCurrentStatusAsync(string tenantId)
+        public async Task<List<IHealthEvent>> GetCurrentStatusAsync(string tenantId)
         {
-            Result<StatusDetails> records;
+            Result<OfficeHealthEvent> records;
             string requestUri;
 
             if (string.IsNullOrEmpty(tenantId))
@@ -68,17 +71,17 @@ namespace Microsoft.Samples.Office365.Management.API
             {
                 requestUri = string.Format(
                     "{0}/api/v1.0/{1}/ServiceComms/CurrentStatus",
-                    Configuration.O365ManageAPIRoot,
+                    OfficeConfig.ApiUri,
                     tenantId
                 );
 
-                records = await _comm.GetAsync<Result<StatusDetails>>(
+                records = await _comm.GetAsync<Result<OfficeHealthEvent>>(
                     requestUri,
                     new MediaTypeWithQualityHeaderValue("application/json"),
                     GetToken(tenantId).AccessToken
                 );
 
-                return records.Value;
+                return records.Value.ToList<IHealthEvent>();
             }
             finally
             {
@@ -140,7 +143,7 @@ namespace Microsoft.Samples.Office365.Management.API
             {
                 requestUri = string.Format(
                     "{0}/api/v1.0/{1}/ServiceComms/Messages?$filter=Id eq '{2}'",
-                    Configuration.O365ManageAPIRoot,
+                    OfficeConfig.ApiUri,
                     tenantId,
                     messageId
                 );
@@ -195,7 +198,7 @@ namespace Microsoft.Samples.Office365.Management.API
             {
                 requestUri = string.Format(
                     "{0}/api/v1.0/{1}/ServiceComms/Messages",
-                    Configuration.O365ManageAPIRoot,
+                    OfficeConfig.ApiUri,
                     tenantId
                 );
 
@@ -249,7 +252,7 @@ namespace Microsoft.Samples.Office365.Management.API
             {
                 requestUri = string.Format(
                     "{0}/api/v1.0/{1}/ServiceComms/Services",
-                    Configuration.O365ManageAPIRoot,
+                    OfficeConfig.ApiUri,
                     tenantId
                 );
 
@@ -310,18 +313,18 @@ namespace Microsoft.Samples.Office365.Management.API
                 values = new List<KeyValuePair<string, string>>();
 
                 values.Add(new KeyValuePair<string, string>("assertion", _userAssertionToken));
-                values.Add(new KeyValuePair<string, string>("client_id", Configuration.ApplicationId));
-                values.Add(new KeyValuePair<string, string>("client_secret", Configuration.ApplicationSecret));
+                values.Add(new KeyValuePair<string, string>("client_id", AppConfig.ApplicationId));
+                values.Add(new KeyValuePair<string, string>("client_secret", AppConfig.ApplicationSecret));
                 values.Add(new KeyValuePair<string, string>("grant_type", "urn:ietf:params:oauth:grant-type:jwt-bearer"));
                 values.Add(new KeyValuePair<string, string>("requested_token_use", "on_behalf_of"));
-                values.Add(new KeyValuePair<string, string>("resource", Configuration.O365ManageAPIRoot));
+                values.Add(new KeyValuePair<string, string>("resource", OfficeConfig.ApiUri));
                 values.Add(new KeyValuePair<string, string>("scope", "openid"));
 
                 content = new FormUrlEncodedContent(values);
 
                 requestUri = string.Format(
                     "{0}/{1}/oauth2/token",
-                    Configuration.Authority,
+                    AppConfig.Authority,
                     tenantId
                 );
 

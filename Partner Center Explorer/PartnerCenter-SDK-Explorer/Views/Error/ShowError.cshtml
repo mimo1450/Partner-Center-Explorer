@@ -4,6 +4,8 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-@Html.Partial("Error")
+<div class="side-body padding-top">
+    @Html.Partial("Error")
 
-<p style="color:red">@ViewBag.ErrorMessage</p>
+    <p style="color:red">@ViewBag.ErrorMessage</p>
+</div>

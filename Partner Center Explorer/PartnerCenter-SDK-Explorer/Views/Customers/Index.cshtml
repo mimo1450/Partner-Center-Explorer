@@ -1,149 +1,39 @@
-﻿@{
+﻿@model Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models.CustomersModel
+@using Microsoft.Store.PartnerCenter.Models.Customers;
+
+@{
     ViewBag.Title = "Customers";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div id="customer-table" style="margin-top: 25px;"> </div>
-
-@section scripts {
-    <script>
-
-        $(document).ready(function () {
-            $('#customer-table').jtable({
-                title: 'Customers in Partner Center',
-                paging: false,
-                sorting: false,
-                edit: false,
-                create: false,
-                actions: {
-                    listAction: '@Url.Action("GetCustomers")'
-                },
-                fields: {
-                    objectId: {
-                        key: true,
-                        title: 'Object Id',
-                        list: false
-                    },
-                    Name: {
-                        title: 'Name',
-                        width: '35%',
-                        display: function (data) {
-                            return data.record.CompanyProfile.CompanyName;
-                        },
-                    },
-                    Domain: {
-                        title: 'Domain',
-                        width: '30%',
-                        display: function (data) {
-                            return data.record.CompanyProfile.Domain
-                        },
-                    },
-                    customerContextId: {
-                        title: 'AAD Tenant ID',
-                        width: '25%',
-                        display: function (data) {
-                            return data.record.CompanyProfile.TenantId;
-                        },
-                    },
-                    subscriptions: {
-                        title: '',
-                        width: '10%',
-                        sorting: false,
-                        listClass: 'child-opener-image-column',
-                        display: function (data) {
-                            var subLink = $('<a href="#" data-subscription-id="' + data.record.Id + '">Subscriptions</a>');
-                            subLink.click(function () {
-                                var tenantId = data.record.CompanyProfile.TenantId;
-                                $('#customer-table').jtable('openChildTable',
-                                    subLink.closest('tr'),
-                                    {
-                                        title: data.record.CompanyProfile.CompanyName + ' - Subscriptions',
-                                        paging: false,
-                                        sorting: false,
-                                        defaultSorting: 'id ASC',
-                                        edit: false,
-                                        create: false,
-                                        actions: {
-                                            listAction: '@Url.Action("GetSubscriptions")?tenantId=' + data.record.Id
-                                        },
-                                        fields: {
-                                            FriendlyName: {
-                                                title: 'Name',
-                                                width: '35%',
-                                                display: function (data) {
-                                                    return data.record.FriendlyName == null ? data.record.Id : data.record.FriendlyName;
-                                                }
-                                            },
-                                            Id: {
-                                                key: true,
-                                                title: 'Subscription ID',
-                                                width: '30%'
-                                            },
-                                            Status: {
-                                                title: 'Status',
-                                                width: '30%'
-                                            },
-                                            Manage: {
-                                                sorting: false,
-                                                title: '',
-                                                width: '20%',
-                                                display: function (data) {
-                                                    var link = $('<a alt="" data-subscription-id="' + data.record.Id + '" href="#">Manage</a>');
-
-                                                    link.click(function () {
-                                                        if (data.record.OfferName.indexOf("Office") != -1) {
-                                                            window.location = '@Url.Action("Office", "Manage")?tenantId=' + tenantId;
-                                                        } else {
-                                                            window.location = '@Url.Action("Azure", "Manage")?subscriptionId=' + data.record.Id + '&tenantId=' + tenantId;
-                                                        }
-                                                    });
-
-                                                    return link;
-                                                }
-                                            },
-                                            StatusLink: {
-                                                title: '',
-                                                width: '20%',
-                                                display: function (data) {
-                                                    var link = $('<a href="#">Status</a>');
-
-                                                    link.click(function () {
-                                                        window.location = '@Url.Action("Office", "Status")?tenantId=' + tenantId;
-                                                    });
-
-                                                    if (data.record.OfferName.indexOf("Office") != -1) {
-                                                        return link;
-                                                    }
-                                                }
-                                            },
-                                            Usage: {
-                                                title: '',
-                                                width: '20%',
-                                                sorting: false,
-                                                display: function (data) {
-                                                    var link = $('<a alt="View usage information" data-subscription-id="' + data.record.Id + '" href="#">Usage</a>');
-
-                                                    link.click(function () {
-                                                        window.location = '@Url.Action("Index", "Usage")?subscriptionId=' + data.record.Id + '&tenantId=' + tenantId;
-                                                    });
-
-                                                    if (data.record.OfferName.indexOf("Office") == -1) {
-                                                        return link;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }, function (data) {
-                                        data.childTable.jtable('load');
-                                    });
-                            });
-                            return subLink;
-                        }
-                    }
-                }
-            });
-
-            $('#customer-table').jtable('load');
-        });
-    </script>
+@section Breadcrumbs{
+    <ol class="breadcrumb navbar-breadcrumb">
+        <li>Customers</li>
+    </ol>
 }
+
+<div class="side-body padding-top">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Domain</th>
+                <th>Relationship</th>
+            </tr>
+        </thead>
+        @foreach (Customer customer in Model.Customers.Items)
+        {
+            <tr>
+                <td>
+                    @Html.ActionLink(customer.CompanyProfile.CompanyName, customer.Id, "Customers")
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => customer.CompanyProfile.Domain)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => customer.RelationshipToPartner)
+                </td>
+            </tr>
+        }
+    </table>
+</div>

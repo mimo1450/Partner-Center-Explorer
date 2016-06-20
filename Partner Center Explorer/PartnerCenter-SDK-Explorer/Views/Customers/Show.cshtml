@@ -1,0 +1,96 @@
+﻿@model Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models.CustomerModel
+@using Microsoft.Store.PartnerCenter.Models.Subscriptions;
+
+@{
+    ViewBag.Title = "Customers";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Breadcrumbs{
+    <ol class="breadcrumb navbar-breadcrumb">
+        <li>Customers</li>
+        <li class="active">@Model.CompanyName</li>
+    </ol>
+}
+
+<div class="side-body padding-top">
+    <div class="row">
+        <div class="col-md-6 col-sm-12">
+            <h4>Billing Profile</h4>
+            <hr />
+            @Html.DisplayFor(item => item.BillingProfile.FirstName) @Html.DisplayFor(item => item.BillingProfile.LastName)
+            <br />
+            @Html.DisplayFor(item => item.BillingProfile.Email)
+            <br />
+            @Html.DisplayFor(item => item.BillingProfile.DefaultAddress.AddressLine1)
+            <br />
+            @Html.DisplayFor(item => item.BillingProfile.DefaultAddress.City),
+            @Html.DisplayFor(item => item.BillingProfile.DefaultAddress.State)
+            @Html.DisplayFor(item => item.BillingProfile.DefaultAddress.PostalCode)
+        </div>
+        <div class="col-md-6 col-sm-12">
+            <h4>Company Profile</h4>
+            <hr />
+            @Html.DisplayFor(item => item.CompanyProfile.CompanyName)
+            <br />
+            Domain Name: @Html.DisplayFor(item => item.CompanyProfile.Domain)
+            <br />
+            Microsoft ID: @Html.DisplayFor(item => item.CompanyProfile.TenantId)
+        </div>
+    </div>
+    <h4>Subscriptions</h4>
+    <hr />
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Identifier</th>
+                <th>Status</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        @foreach (Subscription s in Model.Subscriptions.Items)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(item => s.FriendlyName)
+                </td>
+                <td>
+                    @Html.DisplayFor(item => s.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(item => s.Status)
+                </td>
+                <td>
+                    @Html.ActionLink(
+                        "Health",
+                        string.Format("Subscription/{0}/Health", s.Id),
+                        string.Format("Customers/{0}", Model.TenantId)
+                    )
+                </td>
+                <td>
+                    @Html.ActionLink(
+                        "Manage",
+                        string.Format("Subscription/{0}/Manage", s.Id),
+                        string.Format("Customers/{0}", Model.TenantId)
+                    )
+                </td>
+                @if (s.BillingType == Microsoft.Store.PartnerCenter.Models.Invoices.BillingType.Usage)
+                {
+                    <td>
+                        @Html.ActionLink(
+                          "Usage",
+                          string.Format("Subscription/{0}/Usage", s.Id),
+                          string.Format("Customers/{0}", Model.TenantId)
+                    )
+                    </td>
+                }
+                else
+                {
+                    <td></td>
+                }
+            </tr>
+        }
+    </table>
+</div>

@@ -1,206 +1,96 @@
-﻿
+﻿@model Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models.InvoiceDetailsModel
+@using Microsoft.Store.PartnerCenter.Models.Usage
+
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = "Invoice Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<br />
+@section Breadcrumbs{
+    <ol class="breadcrumb navbar-breadcrumb">
+        <li>Invoices</li>
+        <li>@Model.InvoiceId</li>
+        <li class="active">Details</li>
+    </ol>
+}
 
-<table>
-    <tr>
-        <td>
-            <h5>Select Customer</h5>
-            <select id="ddlCustomers" class="form-control">
-                <option>Loading...</option>
-            </select>
-        </td>
-        <td style="padding-left: 20px;">
-            <h5>Select Type</h5>
-            <select id="ddlProviderTypes" class="form-control">
-                <option>Azure</option>
-                <option>Office</option>
-            </select>
-        </td>
-        <td style="padding-left: 20px; padding-top: 30px;">
-            <a class="btn btn-default" id="btnExport" href="#">Export</a>
-        </td>
-    </tr>
-</table>
+@section Scripts {
+    <script type="text/javascript">
+        var ddlCustomers = $('#ddlCustomers')
 
-<div id="license-details-table" style="margin-top: 25px;"></div>
-<div id="usage-details-table" style="margin-top: 25px;"></div>
+        $.ajax({
+            cache: true,
+            data: { invoiceId: '@Model.InvoiceId' },
+            type: 'GET',
+            url: '@Url.Action("GetCustomers")',
+            success: function (data) {
+                ddlCustomers.html('');
+                $.each(data, function (id, option) {
+                    ddlCustomers.append($('<option></option>').val(option).html(option));
+                })
 
-@section scripts {
-    <script>
-        $(document).ready(function () {
-            var ddlCustomers = $('#ddlCustomers')
+                var customerName = $('#ddlCustomers').find(":selected").text();
+                var provider = $('#ddlProviderTypes').find(":selected").text();
 
-            $.ajax({
-                cache: true,
-                data: { invoiceId: '@Request.QueryString["invoiceId"]' },
-                type: 'GET',
-                url: '@Url.Action("GetCustomers")',
-                success: function (data) {
-                    ddlCustomers.html('');
-                    $.each(data, function (id, option) {
-                        ddlCustomers.append($('<option></option>').val(option).html(option));
-                    })
+                $.get('/Invoices/@Model.InvoiceId/' + customerName + '/' + provider + 'Details', function (data) {
+                    $('#details').html(data);
+                    $('#details').fadeIn('fast');
+                });
+            }
+        });
 
-                    $('#license-details-table').jtable('load');
-                    $('#license-details-table').hide();
-                    $('#usage-details-table').jtable('load');
-                }
+        $('#btnExport').click(function () {
+            var customerName = $('#ddlCustomers').find(":selected").text();
+            var provider = $('#ddlProviderTypes').find(":selected").text();
+
+            window.location = '@Url.Action("/")' + customerName + '/ExportCustomer?providerType=' + provider
+        });
+
+        $('#ddlCustomers').change(function () {
+            var value = $(this).val();
+            var provider = $('#ddlProviderTypes').find(":selected").text();
+
+            $.get('/Invoices/@Model.InvoiceId/' + value + '/' + provider + 'Details', function (data) {
+                $('#details').html(data);
+                $('#details').fadeIn('fast');
             });
+        });
 
-            $('#btnExport').click(function () {
-                window.location = '@Url.Action("ExportInvoiceLineItems", "Invoices")?invoiceId=@Request.QueryString["invoiceId"]&customerName=' + $('#ddlCustomers').find(":selected").text() + '&providerType=' + $('#ddlProviderTypes').find(":selected").text();
-            });
+        $('#ddlProviderTypes').change(function () {
+            var value = $(this).val();
+            var customerName = $('#ddlCustomers').find(":selected").text();
 
-            $('#ddlCustomers').change(function () {
-                if ($('#ddlProviderTypes').find(":selected").text() == 'Azure') {
-                    $('#usage-details-table').jtable('reload');
-                } else {
-                    $('#license-details-table').jtable('reload');
-                }
-            });
-
-            $('#ddlProviderTypes').change(function () {
-                if ($('#ddlProviderTypes').find(":selected").text() == 'Azure') {
-                    $('#license-details-table').hide();
-                    $('#usage-details-table').show();
-                } else {
-                    $('#license-details-table').show();
-                    $('#usage-details-table').hide();
-                }
-            });
-
-            $('#license-details-table').jtable({
-                title: 'Office 365 Details',
-                paging: false,
-                sorting: false,
-                edit: false,
-                create: false,
-                actions: {
-                    listAction: function (postData, jtParams) {
-                        return $.Deferred(function ($dfd) {
-                            $.ajax({
-                                url: '@Url.Action("GetLineItems")?invoiceId=@Request.QueryString["invoiceId"]&customerName=' + $('#ddlCustomers').find(":selected").text() + '&providerType=Office',
-                                type: 'POST',
-                                dataType: 'json',
-                                data: postData,
-                                success: function (data) {
-                                    $dfd.resolve(data);
-                                },
-                                error: function () {
-                                    $dfd.reject();
-                                }
-                            });
-                        })
-                    }
-                },
-                fields: {
-                    CustomerName: {
-                        title: 'Customer',
-                        width: '15%'
-                    },
-                    ChargeStartDate: {
-                        displayFormat: 'mm/dd/yy',
-                        title: 'Charget Start Date',
-                        type: 'date',
-                        width: '15%'
-                    },
-                    ChargeEndDate: {
-                        displayFormat: 'mm/dd/yy',
-                        title: 'Charge End Date',
-                        type: 'date',
-                        width: '15%',
-                    },
-                    ChargeType: {
-                        title: 'Charge Type',
-                        width: '15%'
-                    },
-                    OfferName: {
-                        title: 'Offer Name',
-                        width: '15%'
-                    },
-                    Quantity: {
-                        title: 'Quantity',
-                        width: '15%'
-                    },
-                    Subtotal: {
-                        title: 'Subtotal',
-                        width: '15%'
-                    },
-                    UnitPrice: {
-                        title: 'Unit Price',
-                        width: '15%'
-                    }
-                }
-            });
-
-            $('#usage-details-table').jtable({
-                title: 'Azure Details',
-                paging: false,
-                sorting: false,
-                edit: false,
-                create: false,
-                actions: {
-                    listAction: function (postData, jtParams) {
-                        return $.Deferred(function ($dfd) {
-                            $.ajax({
-                                url: '@Url.Action("GetLineItems")?invoiceId=@Request.QueryString["invoiceId"]&customerName=' + $('#ddlCustomers').find(":selected").text() + '&providerType=Azure',
-                                type: 'POST',
-                                dataType: 'json',
-                                data: postData,
-                                success: function (data) {
-                                    $dfd.resolve(data);
-                                },
-                                error: function () {
-                                    $dfd.reject();
-                                }
-                            });
-                        })
-                    }
-                },
-                fields: {
-                    CustomerCompanyName: {
-                        title: 'Customer',
-                        width: '15%'
-                    },
-                    ChargeStartDate: {
-                        displayFormat: 'mm/dd/yy',
-                        title: 'Charget Start Date',
-                        type: 'date',
-                        width: '15%'
-                    },
-                    ChargeEndDate: {
-                        displayFormat: 'mm/dd/yy',
-                        title: 'Charge End Date',
-                        type: 'date',
-                        width: '15%',
-                    },
-                    ChargeType: {
-                        title: 'Charge Type',
-                        width: '15%'
-                    },
-                    ListPrice: {
-                        title: 'ListPrice',
-                        width: '15%'
-                    },
-                    ResourceName: {
-                        title: 'Resource Name',
-                        width: '15%'
-                    },
-                    ServiceName: {
-                        title: 'Service Name',
-                        width: '15%'
-                    },
-                    ServiceType: {
-                        title: 'Service Type',
-                        width: '15%'
-                    }
-                }
+            $.get('/Invoices/@Model.InvoiceId/' + customerName + '/' + value + 'Details', function (data) {
+                $('#details').html(data);
+                $('#details').fadeIn('fast');
             });
         });
     </script>
 }
+
+<div class="side-body padding-top">
+    <table>
+        <tr>
+            <td>
+                <h5>Select Customer</h5>
+                <select id="ddlCustomers" class="form-control">
+                    <option>Loading...</option>
+                </select>
+            </td>
+            <td style="padding-left: 20px;">
+                <h5>Select Type</h5>
+                <select id="ddlProviderTypes" class="form-control">
+                    <option>Azure</option>
+                    <option>Office</option>
+                </select>
+            </td>
+            <td style="padding-left: 20px; padding-top: 30px;">
+                <a class="btn btn-default" id="btnExport" href="#">Export</a>
+            </td>
+        </tr>
+    </table>
+    <br />
+    <div class="row">
+        <div id="details" style="display: none;"></div>
+    </div>
+</div>

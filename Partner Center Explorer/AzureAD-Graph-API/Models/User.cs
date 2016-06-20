@@ -1,12 +1,22 @@
-﻿using System;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using System;
+using System.Collections.Generic;
 
 namespace Microsoft.Samples.AzureAD.Graph.API.Models
 {
-    /// <summary>
-    /// Represents a user from Azure AD.
-    /// </summary>
     public class User
     {
+        public List<AssignedLicense> AssignedLicenses
+        { get; set; }
+
+        public List<AssignedPlan> AssignedPlans
+        { get; set; }
+
+        public List<SubscribedSku> AvailableSkus
+        { get; set; }
+
         /// <summary>
         /// Gets or sets the city.
         /// </summary>
@@ -116,6 +126,9 @@ namespace Microsoft.Samples.AzureAD.Graph.API.Models
         /// The mobile telephone number assigned to the user.
         /// </value>
         public string Mobile
+        { get; set; }
+
+        public Guid ObjectId
         { get; set; }
 
         /// <summary>

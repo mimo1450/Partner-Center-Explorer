@@ -1,48 +1,52 @@
-﻿@{
-    ViewBag.Title = "Index";
+﻿@model Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models.ServiceRequestsModel
+@using Microsoft.Store.PartnerCenter.Models.ServiceRequests
+
+@{
+    ViewBag.Title = "Service Requests";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div id="requests-table" style="margin-top: 25px;"> </div>
 
-@section scripts {
-    <script>
-
-        $(document).ready(function () {
-            $('#requests-table').jtable({
-                title: 'Service Requests',
-                paging: false,
-                sorting: false,
-                edit: false,
-                create: false,
-                actions: {
-                    listAction: '@Url.Action("GetServiceRequests")'
-                },
-                fields: {
-                    CreatedDate: {
-                        displayFormat: 'mm/dd/yy',
-                        title: 'Created Date',
-                        type: 'date',
-                        width: '20%'
-                    },
-                    LastModifiedDate: {
-                        displayFormat: 'mm/dd/yy',
-                        title: 'Modified Date',
-                        type: 'date',
-                        width: '20%'
-                    },
-                    Title: {
-                        title: 'Title',
-                        width: '30%'
-                    },
-                    Status: {
-                        title: 'Status',
-                        width: '30%',
-                    },
-                }
-            });
-        
-        $('#requests-table').jtable('load');
-        });
-    </script>
+@section Breadcrumbs{
+    <ol class="breadcrumb navbar-breadcrumb">
+        <li>Service Requests</li>
+    </ol>
 }
+
+<div class="side-body padding-top">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Identifier</th>
+                <th>Created Date</th>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Organization</th>
+                <th>Product Name</th>
+            </tr>
+        </thead>
+        @foreach (ServiceRequest request in Model.ServiceRequests.Items)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(item => request.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(item => request.CreatedDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(item => request.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(item => request.Status)
+                </td>
+                <td>
+                    @Html.DisplayFor(item => request.Organization)
+                </td>
+                <td>
+                    @Html.DisplayFor(item => request.ProductName)
+                </td>
+            </tr>
+        }
+    </table>
+</div>

@@ -1,0 +1,7 @@
+﻿@model Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models.SubscriptionManageModel
+
+<h4>Users</h4>
+<hr />
+<div id="Users">
+    @Html.Action("ManageUsers", "Subscriptions", new { customerId = Model.CustomerId })
+</div>

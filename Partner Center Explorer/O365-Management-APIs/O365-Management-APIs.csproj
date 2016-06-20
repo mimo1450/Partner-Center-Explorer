@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Microsoft.Samples.Office365.Management.API</RootNamespace>
     <AssemblyName>Microsoft.Samples.Office365.Management.API</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -57,8 +58,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Communication.cs" />
-    <Compile Include="CommunicationException.cs" />
+    <Compile Include="Models\AuthorizationToken.cs" />
     <Compile Include="Models\Feature.cs" />
     <Compile Include="Models\Message.cs" />
     <Compile Include="Models\MessageDetails.cs" />

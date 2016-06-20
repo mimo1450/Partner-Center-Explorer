@@ -1,4 +1,7 @@
-﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Store.PartnerCenter.Extensions;
 using Microsoft.Store.PartnerCenter.Samples.Common;
 using System.Threading.Tasks;
@@ -38,13 +41,13 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context
                 if (_partnerOperations == null)
                 {
                     AuthenticationResult authResult = TokenContext.GetAADToken(
-                        string.Format("{0}/common/oauth2", Configuration.Authority),
-                        Configuration.ApiServiceRoot
+                        string.Format("{0}/{1}/oauth2", AppConfig.Authority, AppConfig.AccountId),
+                        AppConfig.PartnerCenterApiUri
                     );
 
                     // Authenticate by user context with the partner service
                     IPartnerCredentials userCredentials = PartnerCredentials.Instance.GenerateByUserCredentials(
-                        Configuration.ApplicationId,
+                        AppConfig.ApplicationId,
                         new AuthenticationToken(
                             authResult.AccessToken,
                             authResult.ExpiresOn),
@@ -52,8 +55,8 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context
                         {
                             // token has expired, re-Login to Azure Active Directory
                             AuthenticationResult aadToken = TokenContext.GetAADToken(
-                                string.Format("{0}/common/oauth2", Configuration.Authority),
-                                Configuration.ApiServiceRoot
+                                string.Format("{0}/{1}/oauth2", AppConfig.Authority, AppConfig.AccountId),
+                                AppConfig.PartnerCenterApiUri
                             );
 
                             // give the partner SDK the new add token information

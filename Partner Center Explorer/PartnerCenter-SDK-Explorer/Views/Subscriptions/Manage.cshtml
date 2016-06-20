@@ -1,0 +1,72 @@
+﻿@model Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models.SubscriptionManageModel
+
+@{
+    ViewBag.Title = "Manage";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Breadcrumbs{
+    <ol class="breadcrumb navbar-breadcrumb">
+        <li>Customers</li>
+        <li>@Model.CompanyName</li>
+        <li>Subscription</li>
+        <li class="active">@Model.FriendlyName</li>
+    </ol>
+}
+
+@section Scripts {
+    @if (Model.SubscriptionType.Equals("Azure", StringComparison.CurrentCultureIgnoreCase))
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                var ddlResourceGroups = $('#ddlResourceGroups');
+
+                $.ajax({
+                    cache: true,
+                    type: 'GET',
+                    url: '@Url.Action("/ResourceGroups")',
+                    success: function (data) {
+                        ddlResourceGroups.html('');
+                        $.each(data, function (index, item) {
+                            ddlResourceGroups.append($('<option></option>').val(item.Name).html(item.Name));
+                        })
+                    }
+                });
+
+                $('#btnApply').click(function () {
+                    $.post(
+                        '@Url.Action("ApplyTemplate", "Subscriptions")', {
+                            customerId: '@Model.CustomerId',
+                            subscriptionId: '@Model.SubscriptionId',
+                            resourceGroupName: $('#ddlResourceGroups').find(":selected").text(),
+                            templateUri: $('#txtTemplateUri').val(),
+                            parametersUri: $('#txtParametersUri').val()
+                        }
+                    );
+                });
+            });
+        </script>
+    }
+    else
+    {
+        <script type="text/javascript">
+            $(".lnkEdit").click(function (e) {
+                e.preventDefault();
+                $(this).attr('data-target', '#modal-container');
+                $(this).attr('data-toggle', 'modal');
+            });
+        </script>
+    }
+
+}
+
+<div class="side-body padding-top">
+    @if (Model.SubscriptionType.Equals("Azure", StringComparison.CurrentCultureIgnoreCase))
+    {
+        Html.RenderPartial("~/Views/Subscriptions/ManageAzureSubscription.cshtml", Model);
+    }
+    else
+    {
+        Html.RenderPartial("~/Views/Subscriptions/ManageOfficeSubscription.cshtml", Model);
+    }
+</div>
