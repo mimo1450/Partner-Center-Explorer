@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System;
 using System.Configuration;
 
 namespace Microsoft.Store.PartnerCenter.Samples.Common
@@ -32,6 +33,11 @@ namespace Microsoft.Store.PartnerCenter.Samples.Common
             get { return ConfigurationManager.AppSettings["Azure:ADGraphUri"]; }
         }
 
+        public static bool IsSandboxEnvironment
+        {
+            get { return Convert.ToBoolean(ConfigurationManager.AppSettings["IsSandboxEnvironment"]); }
+        }
+
         public static string ManagementUri
         {
             get { return ConfigurationManager.AppSettings["Azure:ManagementUri"]; }
@@ -40,6 +46,11 @@ namespace Microsoft.Store.PartnerCenter.Samples.Common
         public static string PartnerCenterApiUri
         {
             get { return ConfigurationManager.AppSettings["PartnerCenterApiUri"]; }
+        }
+
+        public static string RedisConnection
+        {
+            get { return ConfigurationManager.AppSettings["Redis:Connnection"]; }
         }
     }
 }

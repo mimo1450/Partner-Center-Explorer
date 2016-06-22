@@ -10,5 +10,8 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models
     {
         public ResourceCollection<Customer> Customers
         { get; set; }
+
+        public bool IsSandboxEnvironment
+        { get; set; }
     }
 }

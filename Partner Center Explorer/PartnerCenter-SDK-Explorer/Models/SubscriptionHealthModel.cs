@@ -11,6 +11,9 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models
         public string CompanyName
         { get; set; }
 
+        public string CustomerId
+        { get; set; }
+
         public string FriendlyName
         { get; set; }
 

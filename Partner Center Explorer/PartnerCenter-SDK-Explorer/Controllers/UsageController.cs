@@ -10,6 +10,7 @@ using System.Web.Mvc;
 
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 {
+    [AuthorizationFilter(ClaimType = ClaimTypes.Role, ClaimValue = "PartnerAdmin")]
     public class UsageController : Controller
     {
         private SdkContext _context;
@@ -36,6 +37,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                 UsageModel usageModel = new UsageModel()
                 {
                     CompanyName = customer.CompanyProfile.CompanyName,
+                    CustomerId = customerId,
                     DailyUsage = Context.PartnerOperations.Customers.ById(customerId)
                         .Subscriptions.ById(subscriptionId).UsageRecords.Daily.Get(),
                     MonthlyUsage = Context.PartnerOperations.Customers.ById(customerId)

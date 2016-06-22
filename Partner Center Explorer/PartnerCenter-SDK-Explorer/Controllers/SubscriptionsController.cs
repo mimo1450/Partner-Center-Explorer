@@ -232,6 +232,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                 healthModel = new SubscriptionHealthModel()
                 {
                     CompanyName = customer.CompanyProfile.CompanyName,
+                    CustomerId = customerId, 
                     FriendlyName = subscription.FriendlyName
                 };
 
@@ -318,7 +319,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             string name = model.SubscriptionDetails.FriendlyName;
             int quantity = ((OfficeSubscriptionDetails)model.SubscriptionDetails).Quantity;
 
-            return View(); 
+            return View();
         }
 
         private SdkContext Context

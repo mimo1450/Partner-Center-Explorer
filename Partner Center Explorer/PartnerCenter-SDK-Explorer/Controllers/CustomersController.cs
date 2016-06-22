@@ -2,9 +2,12 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Microsoft.Store.PartnerCenter.Models.Customers;
+using Microsoft.Store.PartnerCenter.Samples.Common;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models;
 using System;
+using System.Net;
+using System.Net.Http;
 using System.Web.Mvc;
 
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
@@ -14,11 +17,30 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
     {
         private SdkContext _context;
 
+        [HttpDelete]
+        public HttpResponseMessage Delete(string customerId)
+        {
+            if (string.IsNullOrEmpty(customerId))
+            {
+                throw new ArgumentNullException("customerId");
+            }
+
+            // A customer can only be deleted in the integration sandbox environment.   
+            // If this request is attempted in a non-sandbox environment it will fail. 
+            if (AppConfig.IsSandboxEnvironment)
+            {
+                // Context.PartnerOperations.Customers.ById(customerId).Delete();
+            }
+
+            return new HttpResponseMessage(HttpStatusCode.NoContent);
+        }
+
         public ActionResult Index()
         {
             CustomersModel customersModel = new CustomersModel()
             {
-                Customers = Context.PartnerOperations.Customers.Get()
+                Customers = Context.PartnerOperations.Customers.Get(),
+                IsSandboxEnvironment = AppConfig.IsSandboxEnvironment
             };
 
             return View(customersModel);

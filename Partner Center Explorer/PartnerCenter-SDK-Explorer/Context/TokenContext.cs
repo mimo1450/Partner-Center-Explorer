@@ -3,6 +3,7 @@
 
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Store.PartnerCenter.Samples.Common;
+using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Cache;
 using System;
 using System.Linq;
 using System.Security.Claims;
@@ -70,7 +71,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context
         public static async Task<AuthenticationResult> GetAADTokenAsync(string authority, string resource)
         {
             AuthenticationContext authContext;
-            // DistributedTokenCache tokenCache;
+            DistributedTokenCache tokenCache;
 
             if (string.IsNullOrEmpty(authority))
             {
@@ -83,9 +84,15 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context
 
             try
             {
-                // tokenCache = new DistributedTokenCache(resource);
-                // authContext = new AuthenticationContext(authority, tokenCache);
-                authContext = new AuthenticationContext(authority);
+                if (string.IsNullOrEmpty(AppConfig.RedisConnection))
+                {
+                    authContext = new AuthenticationContext(authority);
+                }
+                else
+                {
+                    tokenCache = new DistributedTokenCache(resource);
+                    authContext = new AuthenticationContext(authority, tokenCache);
+                }
 
                 return await authContext.AcquireTokenAsync(
                     resource,
@@ -99,7 +106,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context
             finally
             {
                 authContext = null;
-                // tokenCache = null;
+                tokenCache = null;
             }
         }
 

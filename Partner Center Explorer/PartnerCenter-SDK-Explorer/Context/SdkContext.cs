@@ -41,7 +41,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context
                 if (_partnerOperations == null)
                 {
                     AuthenticationResult authResult = TokenContext.GetAADToken(
-                        string.Format("{0}/{1}/oauth2", AppConfig.Authority, AppConfig.AccountId),
+                        string.Format("{0}/common/oauth2", AppConfig.Authority),
                         AppConfig.PartnerCenterApiUri
                     );
 
@@ -55,7 +55,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context
                         {
                             // token has expired, re-Login to Azure Active Directory
                             AuthenticationResult aadToken = TokenContext.GetAADToken(
-                                string.Format("{0}/{1}/oauth2", AppConfig.Authority, AppConfig.AccountId),
+                                string.Format("{0}/common/oauth2", AppConfig.Authority),
                                 AppConfig.PartnerCenterApiUri
                             );
 

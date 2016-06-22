@@ -1,4 +1,5 @@
 ﻿@model Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models.CustomersModel
+@using Microsoft.Store.PartnerCenter.Samples.Common;
 @using Microsoft.Store.PartnerCenter.Models.Customers;
 
 @{
@@ -12,6 +13,14 @@
     </ol>
 }
 
+@section Scripts {
+    <script type="text/javascript">
+        function OnSuccessCallback(data) {
+            $('#' + data).remove();
+        }
+    </script>
+}
+
 <div class="side-body padding-top">
     <table class="table table-striped">
         <thead>
@@ -19,11 +28,12 @@
                 <th>Name</th>
                 <th>Domain</th>
                 <th>Relationship</th>
+                <th></th>
             </tr>
         </thead>
         @foreach (Customer customer in Model.Customers.Items)
         {
-            <tr>
+            <tr id="@customer.Id">
                 <td>
                     @Html.ActionLink(customer.CompanyProfile.CompanyName, customer.Id, "Customers")
                 </td>
@@ -33,7 +43,19 @@
                 <td>
                     @Html.DisplayFor(modelItem => customer.RelationshipToPartner)
                 </td>
+                @if (AppConfig.IsSandboxEnvironment)
+                {
+                    <td>
+                        @Ajax.RouteLink("Delete", new { action = "Delete", customerId = customer.Id },
+                            new AjaxOptions()
+                            {
+                                HttpMethod = "Delete",
+                                Confirm = string.Format("Are you sure you want to delete {0}?", customer.CompanyProfile.CompanyName),
+                                OnComplete = string.Format("OnSuccessCallback('{0}')", customer.Id)
+                        })
+                    </td>
+                }
             </tr>
         }
     </table>
-</div>
+</div>  
