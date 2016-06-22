@@ -29,7 +29,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             // If this request is attempted in a non-sandbox environment it will fail. 
             if (AppConfig.IsSandboxEnvironment)
             {
-                // Context.PartnerOperations.Customers.ById(customerId).Delete();
+                Context.PartnerOperations.Customers.ById(customerId).Delete();
             }
 
             return new HttpResponseMessage(HttpStatusCode.NoContent);

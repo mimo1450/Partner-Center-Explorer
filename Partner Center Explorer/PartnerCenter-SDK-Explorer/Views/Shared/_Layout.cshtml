@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.Store.PartnerCenter.Samples.Common;
+
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -56,7 +58,12 @@
                                     <span class="icon fa fa-dollar"></span><span class="title">Invoices</span>
                                 </a>
                             </li>
-                            @Html.Action("Reports", "Reports")
+                            @if (!string.IsNullOrEmpty(PowerBIConfig.AccessKey) &&
+                                !string.IsNullOrEmpty(PowerBIConfig.WorkspaceCollectionName) &&
+                                !string.IsNullOrEmpty(PowerBIConfig.WorkspaceId))
+                            {
+                                @Html.Action("Reports", "Reports")
+                            }
                             <li class="@(controller == "ServiceRequests" ? "active" : "")">
                                 <a href="/ServiceRequests">
                                     <span class="icon fa fa-heart-o"></span><span class="title">Service Requests</span>
