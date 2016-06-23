@@ -18,13 +18,5 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             return View();
         }
-
-        public ActionResult ShowError(string errorMessage, string signIn)
-        {
-            ViewBag.SignIn = signIn;
-            ViewBag.ErrorMessage = errorMessage;
-
-            return View();
-        }
     }
 }
