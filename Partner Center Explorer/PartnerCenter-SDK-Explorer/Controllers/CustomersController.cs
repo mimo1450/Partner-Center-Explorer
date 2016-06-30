@@ -35,6 +35,12 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             return new HttpResponseMessage(HttpStatusCode.NoContent);
         }
 
+        [HttpPost]
+        public ActionResult Create()
+        {
+            throw new NotImplementedException();
+        }
+
         public ActionResult Index()
         {
             CustomersModel customersModel = new CustomersModel()

@@ -4,6 +4,7 @@
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Samples.Azure.Management;
 using Microsoft.Samples.AzureAD.Graph.API;
+using Microsoft.Samples.AzureAD.Graph.API.Models;
 using Microsoft.Samples.Office365.Management.API;
 using Microsoft.Store.PartnerCenter.Models.Customers;
 using Microsoft.Store.PartnerCenter.Models.Invoices;
@@ -151,6 +152,48 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
         #endregion
 
+        #region Domain Operations
+
+        [HttpGet]
+        public JsonResult GetDomains(string customerId)
+        {
+            AuthenticationResult token;
+            GraphClient client;
+            List<Domain> domains;
+
+            if (string.IsNullOrEmpty(customerId))
+            {
+                throw new ArgumentNullException("customerId");
+
+            }
+
+            try
+            {
+                token = TokenContext.GetAADToken(
+                    string.Format(
+                        "{0}/{1}",
+                        AppConfig.Authority,
+                        customerId
+                    ),
+                    AppConfig.GraphUri
+                );
+
+                client = new GraphClient(token.AccessToken);
+                domains = client.GetDomains(customerId);
+
+                return Json(domains, JsonRequestBehavior.AllowGet);
+
+            }
+            finally
+            {
+                client = null;
+                domains = null;
+                token = null;
+            }
+        }
+
+        #endregion  
+
         #region Office Subscriptions
 
         private List<IHealthEvent> GetOfficeSubscriptionHealth(string customerId)
@@ -170,14 +213,14 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
         public ActionResult ManageUsers(string customerId)
         {
+            AuthenticationResult token;
+            GraphClient client;
+            SubscriptionManageUsersModel manageUsersModel;
+
             if (string.IsNullOrEmpty(customerId))
             {
                 throw new ArgumentNullException("customerId");
             }
-
-            AuthenticationResult token;
-            GraphClient client;
-            SubscriptionManageUsersModel manageUsersModel;
 
             try
             {
@@ -232,7 +275,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                 healthModel = new SubscriptionHealthModel()
                 {
                     CompanyName = customer.CompanyProfile.CompanyName,
-                    CustomerId = customerId, 
+                    CustomerId = customerId,
                     FriendlyName = subscription.FriendlyName
                 };
 

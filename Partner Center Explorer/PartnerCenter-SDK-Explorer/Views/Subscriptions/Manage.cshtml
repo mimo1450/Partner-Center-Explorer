@@ -50,6 +50,37 @@
     else
     {
         <script type="text/javascript">
+            var ddlDomains = $('#ddlDomains')
+
+            $.ajax({
+                cache: true,
+                data: { invoiceId: '@Model.CustomerId' },
+                type: 'GET',
+                url: '@Url.Action("GetDomains")',
+                success: function (data) {
+                    ddlDomains.html('');
+                    $.each(data, function (id) {
+                        ddlDomains.append($('<option></option>').val(data[id].Name).html(data[id].Name));
+                    })
+
+                    var domain = $('#ddlDomains').find(":selected").text();
+
+                    $.get('/Customers/@Model.CustomerId/Domains/' + domain + '/ConfigurationRecords', function (data) {
+                        $('#records').html(data);
+                        $('#records').fadeIn('fast');
+                    });
+                }
+            });
+
+            $('#ddlDomains').change(function () {
+                var domain = $(this).val();
+
+                $.get('/Customers/@Model.CustomerId/Domains/' + domain + '/ConfigurationRecords', function (data) {
+                    $('#records').html(data);
+                    $('#records').fadeIn('fast');
+                });
+            });
+
             $(".lnkEdit").click(function (e) {
                 e.preventDefault();
                 $(this).attr('data-target', '#modal-container');

@@ -25,6 +25,12 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer
             );
 
             routes.MapRoute(
+                name: "Domains",
+                url: "Customers/{customerId}/Domains/{domain}/{action}",
+                defaults: new { controller = "Domains" }
+            );
+
+            routes.MapRoute(
                 name: "Invoices",
                 url: "Invoices/{invoiceId}/{action}",
                 defaults: new { controller = "Invoices", action = "Details" }

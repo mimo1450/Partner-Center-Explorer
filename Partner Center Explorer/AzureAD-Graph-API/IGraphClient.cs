@@ -13,6 +13,14 @@ namespace Microsoft.Samples.AzureAD.Graph.API
 
         Task<LicenseAssignment> AssignUserLicenseAsync(string customerId, string userId, LicenseAssignment assignment);
 
+        List<Domain> GetDomains(string customerId);
+
+        Task<List<Domain>> GetDomainsAsync(string customerId);
+
+        List<ServiceConfigurationRecord> GetServiceConfigurationRecords(string customerId, string domain);
+
+        Task<List<ServiceConfigurationRecord>> GetServiceConfigurationRecordsAsync(string customerId, string domain);
+
         List<SubscribedSku> GetSubscribedSkus(string customerId);
 
         Task<List<SubscribedSku>> GetSubscribedSkusAsync(string customerId);

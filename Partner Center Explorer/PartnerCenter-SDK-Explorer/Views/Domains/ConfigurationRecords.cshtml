@@ -1,0 +1,52 @@
+﻿@model Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models.ConfigurationRecordsModel
+@using Microsoft.Samples.AzureAD.Graph.API.Models;
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Record</th>
+            <th>Value</th>
+            <th>Type</th>
+            <th>TTL</th>
+            <th>Service</th>
+        </tr>
+    </thead>
+    @foreach (ServiceConfigurationRecord record in Model.ServiceConfigurationRecords)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(item => record.Label)
+            </td>
+            <td>
+                @if (record.RecordType.Equals("cname", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    @Html.DisplayFor(item => ((DomainDnsCnameRecord)record).CanonicalName)
+                }
+                else if (record.RecordType.Equals("mx", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    @Html.DisplayFor(item => ((DomainDnsMxRecord)record).MailExchange)
+                }
+                else if (record.RecordType.Equals("srv", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    DomainDnsSrvRecord s = (DomainDnsSrvRecord)record; 
+
+                    @(string.Format("Port={0} Priority={1} Protocol={2} Service={3} Weight={4}",
+                        s.Port, s.Priority, s.Protocol, s.Service, s.Weight))
+                }
+                else if (record.RecordType.Equals("txt", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    @Html.DisplayFor(item => ((DomainDnsTxtRecord)record).Text)
+                }
+            </td>
+            <td>
+                @Html.DisplayFor(item => record.RecordType)
+            </td>
+            <td>
+                @Html.DisplayFor(item => record.Ttl)
+            </td>
+            <td>
+                @Html.DisplayFor(item => record.SupportedService)
+            </td>
+        </tr>
+    }
+</table>
