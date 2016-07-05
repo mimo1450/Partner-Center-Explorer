@@ -28,9 +28,19 @@ namespace Microsoft.Store.PartnerCenter.Samples.Common
             get { return ConfigurationManager.AppSettings["Authority"]; }
         }
 
+        public static string CountryCode
+        {
+            get { return ConfigurationManager.AppSettings["CountryCode"]; }
+        }
+
         public static string GraphUri
         {
             get { return ConfigurationManager.AppSettings["Azure:ADGraphUri"]; }
+        }
+
+        public static string InstrumentationKey
+        {
+            get { return ConfigurationManager.AppSettings["AppInsights:InstrumentationKey"]; }
         }
 
         public static bool IsSandboxEnvironment

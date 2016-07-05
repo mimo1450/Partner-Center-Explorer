@@ -18,10 +18,31 @@
         function OnSuccessCallback(data) {
             $('#' + data).remove();
         }
+
+        $(".lnkNewCustomer").click(function (e) {
+            e.preventDefault();
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+        });
+
+        $(document).on('hidden.bs.modal', function (e) {
+            $(e.target).removeData('bs.modal');
+        });
     </script>
 }
 
 <div class="side-body padding-top">
+    <div id="dialog-newCustomer" style="display: none"></div>
+
+    <div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-content">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4 col-sm-8">
+            <a class="lnkNewCustomer" href="/Customers/Create" id="NewCustomer">New Customer</a>
+        </div>
+    </div>
     <table class="table table-striped">
         <thead>
             <tr>
@@ -32,10 +53,10 @@
             </tr>
         </thead>
         @foreach (Customer customer in Model.Customers.Items)
-        {
+            {
             <tr id="@customer.Id">
                 <td>
-                    @Html.ActionLink(customer.CompanyProfile.CompanyName, customer.Id, "Customers")
+                    @Html.ActionLink(customer.CompanyProfile.CompanyName, string.Format("{0}/Show", customer.Id), "Customers")
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => customer.CompanyProfile.Domain)
@@ -58,4 +79,4 @@
             </tr>
         }
     </table>
-</div>  
+</div>

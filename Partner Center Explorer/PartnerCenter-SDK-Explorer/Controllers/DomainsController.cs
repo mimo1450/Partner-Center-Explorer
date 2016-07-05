@@ -14,6 +14,8 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
     [AuthorizationFilter(ClaimType = ClaimTypes.Role, ClaimValue = "PartnerAdmin")]
     public class DomainsController : Controller
     {
+        private SdkContext _context;
+
         [HttpGet]
         public PartialViewResult ConfigurationRecords(string customerId, string domain)
         {
@@ -48,7 +50,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                     ServiceConfigurationRecords = client.GetServiceConfigurationRecords(customerId, domain)
                 };
 
-                return PartialView(domainDetailsModel); 
+                return PartialView(domainDetailsModel);
             }
             finally
             {
@@ -57,10 +59,35 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
         }
 
+        public JsonResult IsDomainAvailable(string primaryDomain)
+        {
+            if (string.IsNullOrEmpty(primaryDomain))
+            {
+                return Json(false, JsonRequestBehavior.AllowGet);
+            }
+
+            bool exists = Context.PartnerOperations.Domains.ByDomain(primaryDomain + ".onmicrosoft.com").Exists();
+
+            return Json(!exists, JsonRequestBehavior.AllowGet);
+        }
+
         // GET: Domains
         public ActionResult Index()
         {
             return View();
+        }
+
+        private SdkContext Context
+        {
+            get
+            {
+                if (_context == null)
+                {
+                    _context = new SdkContext();
+                }
+
+                return _context;
+            }
         }
     }
 }

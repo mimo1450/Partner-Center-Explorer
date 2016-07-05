@@ -43,7 +43,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer
                         AuthenticationFailed = (context) =>
                         {
                             // Pass in the context back to the app
-                            context.OwinContext.Response.Redirect("/Home/Error");
+                            context.OwinContext.Response.Redirect("/Error/ShowError");
                             context.HandleResponse(); // Suppress the exception
                             return Task.FromResult(0);
                         }

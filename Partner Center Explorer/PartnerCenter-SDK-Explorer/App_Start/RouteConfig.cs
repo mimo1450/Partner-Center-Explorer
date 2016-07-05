@@ -13,10 +13,16 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(
-                name: "Customers",
-                url: "Customers/{customerId}",
-                defaults: new { controller = "Customers", action = "Show" }
-            );
+                 name: "CustomerAction",
+                 url: "Customers/{action}",
+                 defaults: new { controller = "Customers" }
+             );
+
+            //routes.MapRoute(
+            //    name: "Customers",
+            //    url: "Customers/{customerId}",
+            //    defaults: new { controller = "Customers", action = "Show" }
+            //);
 
             routes.MapRoute(
                 name: "CustomersActions",

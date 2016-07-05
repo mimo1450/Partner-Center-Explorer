@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using Microsoft.Store.PartnerCenter.Models;
 using Microsoft.Store.PartnerCenter.Models.Customers;
 using Microsoft.Store.PartnerCenter.Samples.Common;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context;
@@ -35,10 +36,83 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             return new HttpResponseMessage(HttpStatusCode.NoContent);
         }
 
-        [HttpPost]
+        [HttpGet]
         public ActionResult Create()
         {
-            throw new NotImplementedException();
+            NewCustomerModel newCustomerModel = new NewCustomerModel()
+            {
+                SupportedStates = Context.PartnerOperations.CountryValidationRules.ByCountry(AppConfig.CountryCode).Get().SupportedStatesList
+            };
+
+            return View(newCustomerModel);
+        }
+
+        [HttpPost]
+        public ActionResult Create(NewCustomerModel newCustomerModel)
+        {
+            Customer entity;
+            CreatedCustomerModel createdCustomerModel;
+
+            if (newCustomerModel == null)
+            {
+            }
+
+            try
+            {
+                entity = new Customer()
+                {
+                    BillingProfile = new CustomerBillingProfile()
+                    {
+                        CompanyName = newCustomerModel.Name,
+                        Culture = "en-US",
+                        DefaultAddress = new Address()
+                        {
+                            AddressLine1 = newCustomerModel.AddressLine1,
+                            AddressLine2 = newCustomerModel.AddressLine2,
+                            City = newCustomerModel.City,
+                            Country = "US",
+                            FirstName = newCustomerModel.FirstName,
+                            LastName = newCustomerModel.LastName,
+                            PhoneNumber = newCustomerModel.PhoneNumber,
+                            PostalCode = newCustomerModel.ZipCode,
+                            State = newCustomerModel.State
+                        },
+                        Email = newCustomerModel.EmailAddress,
+                        FirstName = newCustomerModel.FirstName,
+                        Language = "en",
+                        LastName = newCustomerModel.LastName
+                    },
+                    CompanyProfile = new CustomerCompanyProfile()
+                    {
+                        CompanyName = newCustomerModel.Name,
+                        Domain = string.Format("{0}.onmicrosoft.com", newCustomerModel.PrimaryDomain)
+                    }
+                };
+
+                entity = Context.PartnerOperations.Customers.Create(entity);
+
+                createdCustomerModel = new CreatedCustomerModel()
+                {
+                    Domain = string.Format("{0}.onmicrosoft.com", newCustomerModel.PrimaryDomain),
+                    Password = entity.UserCredentials.Password,
+                    Username = entity.UserCredentials.UserName
+                };
+
+                return PartialView("CreatedSuccessfully", createdCustomerModel);
+            }
+            finally
+            {
+                entity = null;
+            }
+        }
+
+        [HttpGet]
+        public JsonResult GetCountryValidationRules()
+        {
+            PartnerCenter.Models.CountryValidationRules.CountryValidationRules rules =
+                Context.PartnerOperations.CountryValidationRules.ByCountry(AppConfig.CountryCode).Get();
+
+            return Json(rules, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult Index()
