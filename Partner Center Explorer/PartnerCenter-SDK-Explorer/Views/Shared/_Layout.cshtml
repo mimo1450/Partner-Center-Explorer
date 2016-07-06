@@ -44,6 +44,11 @@
                                     <span class="icon fa fa-home"></span><span class="title">Home</span>
                                 </a>
                             </li>
+                            <li class="@(controller == "Audit" ? "action" : "")">
+                                <a href="/Audit/Search">
+                                    <span class="icon fa fa-unlock-alt"></span><span class="title">Audit Log</span>
+                                </a>
+                            </li>
                             @if (controller == "Customers" || controller == "Subscriptions" || controller == "Usage")
                             {
                                 className = "active";
@@ -59,8 +64,8 @@
                                 </a>
                             </li>
                             @if (!string.IsNullOrEmpty(PowerBIConfig.AccessKey) &&
-                !string.IsNullOrEmpty(PowerBIConfig.WorkspaceCollectionName) &&
-                !string.IsNullOrEmpty(PowerBIConfig.WorkspaceId))
+                                !string.IsNullOrEmpty(PowerBIConfig.WorkspaceCollectionName) &&
+                                !string.IsNullOrEmpty(PowerBIConfig.WorkspaceId))
                             {
                                 @Html.Action("Reports", "Reports")
                             }
