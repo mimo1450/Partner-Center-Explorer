@@ -73,6 +73,12 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer
             );
 
             routes.MapRoute(
+                name: "UserActions",
+                url: "Customers/{customerId}/users/{action}",
+                defaults: new { controller = "Users" }
+            );
+
+            routes.MapRoute(
                 name: "Users",
                 url: "Customers/{customerId}/users/{userId}/{action}",
                 defaults: new { controller = "Users" }

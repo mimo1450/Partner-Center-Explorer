@@ -211,45 +211,6 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
         }
 
-        public ActionResult ManageUsers(string customerId)
-        {
-            AuthenticationResult token;
-            GraphClient client;
-            SubscriptionManageUsersModel manageUsersModel;
-
-            if (string.IsNullOrEmpty(customerId))
-            {
-                throw new ArgumentNullException("customerId");
-            }
-
-            try
-            {
-                token = TokenContext.GetAADToken(
-                    string.Format(
-                        "{0}/{1}",
-                        AppConfig.Authority,
-                        customerId
-                    ),
-                    AppConfig.GraphUri
-                );
-
-                client = new GraphClient(token.AccessToken);
-
-                manageUsersModel = new SubscriptionManageUsersModel()
-                {
-                    CustomerId = customerId,
-                    Users = client.GetUsers(customerId)
-                };
-
-                return View(manageUsersModel);
-            }
-            finally
-            {
-                client = null;
-                token = null;
-            }
-        }
-
         #endregion
 
         public ActionResult Health(string customerId, string subscriptionId)

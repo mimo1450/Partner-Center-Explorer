@@ -1,0 +1,60 @@
+﻿@model Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models.UsersModel
+@using Microsoft.Store.PartnerCenter.Models.Users;
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Display Name</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Last Directory Sync Time</th>
+            <th>Usage Location</th>
+            <th>User Principal Name</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    @foreach (CustomerUser user in Model.Users.Items)
+    {
+        <tr id="@user.Id">
+            <td>
+                @Html.DisplayFor(item => user.DisplayName)
+            </td>
+            <td>
+                @Html.DisplayFor(item => user.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(item => user.LastName)
+            </td>
+            <td>
+                @Html.DisplayFor(item => user.LastDirectorySyncTime)
+            </td>
+            <td>
+                @Html.DisplayFor(item => user.UsageLocation)
+            </td>
+            <td>
+                @Html.DisplayFor(item => user.UserPrincipalName)
+            </td>
+            <td>
+                <a class="lnkEditUser" href="/Customers/@Model.CustomerId/Users/@user.Id/Edit" id="EditUser">Edit</a>
+            </td>
+            <td>
+                @Ajax.RouteLink("Delete", new { action = "Delete", controller = "Users", customerId = Model.CustomerId, userId = user.Id },
+                    new AjaxOptions()
+                    {
+                        HttpMethod = "Delete",
+                        Confirm = string.Format("Are you sure you want to delete the user {0}?", user.DisplayName),
+                        OnSuccess = string.Format("OnUserDeleteCallback('{0}')", user.Id),
+                    })
+            </td>
+        </tr>
+    }
+</table>
+
+<script type="text/javascript">
+    $(".lnkEditUser").click(function (e) {
+        e.preventDefault();
+        $(this).attr('data-target', '#modal-container');
+        $(this).attr('data-toggle', 'modal');
+    });
+</script>

@@ -73,20 +73,14 @@
     <Compile Include="Converters\ServiceConfigurationRecordConverter.cs" />
     <Compile Include="GraphClient.cs" />
     <Compile Include="IGraphClient.cs" />
-    <Compile Include="Models\AssignedLicense.cs" />
-    <Compile Include="Models\AssignedPlan.cs" />
     <Compile Include="Models\Domain.cs" />
     <Compile Include="Models\DomainDnsCnameRecord.cs" />
     <Compile Include="Models\DomainDnsMxRecord.cs" />
     <Compile Include="Models\DomainDnsSrvRecord.cs" />
     <Compile Include="Models\DomainDnsTxtRecord.cs" />
     <Compile Include="Models\IServiceConfigurationRecord.cs" />
-    <Compile Include="Models\LicenseAssignment.cs" />
     <Compile Include="Models\Result.cs" />
     <Compile Include="Models\ServiceConfigurationRecord.cs" />
-    <Compile Include="Models\ServicePlan.cs" />
-    <Compile Include="Models\SubscribedSku.cs" />
-    <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

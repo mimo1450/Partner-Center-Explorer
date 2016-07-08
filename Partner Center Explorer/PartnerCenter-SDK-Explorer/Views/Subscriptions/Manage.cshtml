@@ -72,6 +72,14 @@
                 }
             });
 
+            function OnUserDeleteCallback(data) {
+                $('#' + data).remove();
+            }
+
+            function OnUserSuccessCallback(data, status, xhr) {
+                $('#modal-container').modal('hide');
+            }
+
             $('#ddlDomains').change(function () {
                 var domain = $(this).val();
 
@@ -81,10 +89,20 @@
                 });
             });
 
-            $(".lnkEdit").click(function (e) {
+            $(".lnkEditUser").click(function (e) {
                 e.preventDefault();
                 $(this).attr('data-target', '#modal-container');
                 $(this).attr('data-toggle', 'modal');
+            });
+
+            $(".lnkNewUser").click(function (e) {
+                e.preventDefault();
+                $(this).attr('data-target', '#modal-container');
+                $(this).attr('data-toggle', 'modal');
+            });
+
+            $(document).on('hidden.bs.modal', function (e) {
+                $(e.target).removeData('bs.modal');
             });
         </script>
     }

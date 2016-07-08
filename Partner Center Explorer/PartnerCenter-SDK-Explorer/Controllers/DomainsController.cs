@@ -7,6 +7,7 @@ using Microsoft.Store.PartnerCenter.Samples.Common;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models;
 using System;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
@@ -17,7 +18,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         private SdkContext _context;
 
         [HttpGet]
-        public PartialViewResult ConfigurationRecords(string customerId, string domain)
+        public async Task<PartialViewResult> ConfigurationRecords(string customerId, string domain)
         {
             AuthenticationResult token;
             ConfigurationRecordsModel domainDetailsModel;
@@ -47,7 +48,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
                 domainDetailsModel = new ConfigurationRecordsModel()
                 {
-                    ServiceConfigurationRecords = client.GetServiceConfigurationRecords(customerId, domain)
+                    ServiceConfigurationRecords = await client.GetServiceConfigurationRecordsAsync(customerId, domain)
                 };
 
                 return PartialView(domainDetailsModel);
@@ -59,19 +60,18 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
         }
 
-        public JsonResult IsDomainAvailable(string primaryDomain)
+        public async Task<JsonResult> IsDomainAvailable(string primaryDomain)
         {
             if (string.IsNullOrEmpty(primaryDomain))
             {
                 return Json(false, JsonRequestBehavior.AllowGet);
             }
 
-            bool exists = Context.PartnerOperations.Domains.ByDomain(primaryDomain + ".onmicrosoft.com").Exists();
+            bool exists = await Context.PartnerOperations.Domains.ByDomain(primaryDomain + ".onmicrosoft.com").ExistsAsync();
 
             return Json(!exists, JsonRequestBehavior.AllowGet);
         }
 
-        // GET: Domains
         public ActionResult Index()
         {
             return View();

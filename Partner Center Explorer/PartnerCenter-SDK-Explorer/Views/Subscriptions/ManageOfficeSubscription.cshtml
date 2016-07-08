@@ -1,6 +1,9 @@
 ﻿@model Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models.SubscriptionManageModel
 
 
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content"></div>
+</div>
 <div class="row">
     <div class="col-md-4 col-sm-8">
         <select id="ddlDomains" class="form-control">
@@ -13,9 +16,13 @@
     <hr />
     <div id="records" style="display: none;"></div>
 </div>
-
 <h4>Users</h4>
 <hr />
+<div class="row">
+    <div class="col-md-4 col-sm-8">
+        <a class="lnkNewUser" href="/Customers/@Model.CustomerId/Users/Create" id="NewUser">New User</a>
+    </div>
+</div>
 <div id="Users">
-    @Html.Action("ManageUsers", "Subscriptions", new { customerId = Model.CustomerId })
+    @Html.Action("ListUsers", "Users", new { customerId = Model.CustomerId })
 </div>
