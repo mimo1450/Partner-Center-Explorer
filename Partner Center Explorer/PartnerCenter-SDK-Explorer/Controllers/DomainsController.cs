@@ -12,11 +12,26 @@ using System.Web.Mvc;
 
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 {
+    /// <summary>
+    /// Controller for all Domain views.
+    /// </summary>
+    /// <seealso cref="System.Web.Mvc.Controller" />
     [AuthorizationFilter(ClaimType = ClaimTypes.Role, ClaimValue = "PartnerAdmin")]
     public class DomainsController : Controller
     {
         private SdkContext _context;
 
+        /// <summary>
+        /// Handles the request to view Office 365 service configuration records.
+        /// </summary>
+        /// <param name="customerId">The customer identifier.</param>
+        /// <param name="domain">The domain that service configuration records should be returned.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// customerId
+        /// or
+        /// domain
+        /// </exception>
         [HttpGet]
         public async Task<PartialViewResult> ConfigurationRecords(string customerId, string domain)
         {
@@ -60,6 +75,15 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
         }
 
+        /// <summary>
+        /// Determines whether the specified domain is available or not.
+        /// </summary>
+        /// <param name="primaryDomain">The domain prefix to be checked.</param>
+        /// <returns><c>true</c> if the domain available; otherwise <c>false</c> is returned.</returns>
+        /// <remarks>
+        /// This checks if the specified domain is available using the Partner Center API. A domain is 
+        /// considered to be available if the domain is not already in used by another Azure AD tenant.
+        /// </remarks>
         public async Task<JsonResult> IsDomainAvailable(string primaryDomain)
         {
             if (string.IsNullOrEmpty(primaryDomain))
@@ -70,11 +94,6 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             bool exists = await Context.PartnerOperations.Domains.ByDomain(primaryDomain + ".onmicrosoft.com").ExistsAsync();
 
             return Json(!exists, JsonRequestBehavior.AllowGet);
-        }
-
-        public ActionResult Index()
-        {
-            return View();
         }
 
         private SdkContext Context

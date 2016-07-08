@@ -75,7 +75,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         }
 
         [HttpDelete]
-        public HttpResponseMessage Delete(string customerId, string userId)
+        public async Task<HttpResponseMessage> Delete(string customerId, string userId)
         {
             if (string.IsNullOrEmpty(customerId))
             {
@@ -86,7 +86,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                 throw new ArgumentNullException("userId");
             }
 
-            Context.PartnerOperations.Customers.ById(customerId).Users.ById(userId).Delete();
+            await Context.PartnerOperations.Customers.ById(customerId).Users.ById(userId).DeleteAsync();
 
             return new HttpResponseMessage(HttpStatusCode.NoContent);
         }
@@ -116,7 +116,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                     DisplayName = customerUser.DisplayName,
                     FirstName = customerUser.FirstName,
                     LastName = customerUser.LastName,
-                    Licenses = GetLicenses(customerId, userId),
+                    Licenses = await GetLicenses(customerId, userId),
                     UserId = userId,
                     UserPrincipalName = customerUser.UserPrincipalName
                 };
@@ -175,7 +175,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
         }
 
-        public ActionResult ListUsers(string customerId)
+        public async Task<ActionResult> ListUsers(string customerId)
         {
             if (string.IsNullOrEmpty(customerId))
             {
@@ -185,7 +185,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             UsersModel usersModel = new UsersModel()
             {
                 CustomerId = customerId,
-                Users = Context.PartnerOperations.Customers.ById(customerId).Users.Get()
+                Users = await Context.PartnerOperations.Customers.ById(customerId).Users.GetAsync()
             };
 
             return PartialView(usersModel);
@@ -204,7 +204,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
         }
 
-        private List<LicenseModel> GetLicenses(string customerId, string userId)
+        private async Task<List<LicenseModel>> GetLicenses(string customerId, string userId)
         {
             LicenseModel licenseModel;
             List<LicenseModel> values;
@@ -223,8 +223,8 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             try
             {
                 values = new List<LicenseModel>();
-                licenses = Context.PartnerOperations.Customers.ById(customerId).Users.ById(userId).Licenses.Get();
-                subscribedSkus = Context.PartnerOperations.Customers.ById(customerId).SubscribedSkus.Get();
+                licenses = await Context.PartnerOperations.Customers.ById(customerId).Users.ById(userId).Licenses.GetAsync();
+                subscribedSkus = await Context.PartnerOperations.Customers.ById(customerId).SubscribedSkus.GetAsync();
 
                 foreach (SubscribedSku sku in subscribedSkus.Items)
                 {
@@ -264,7 +264,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             try
             {
                 assignments = new List<LicenseAssignment>();
-                current = GetLicenses(model.CustomerId, model.UserId);
+                current = await GetLicenses(model.CustomerId, model.UserId);
                 licenseUpdate = new LicenseUpdate();
                 removals = new List<string>();
 

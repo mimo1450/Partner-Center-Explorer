@@ -16,6 +16,7 @@ using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Subscriptions;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
@@ -120,7 +121,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
         }
 
-        private List<IHealthEvent> GetAzureSubscriptionHealth(string customerId, string subscriptionId)
+        private async Task<List<IHealthEvent>> GetAzureSubscriptionHealth(string customerId, string subscriptionId)
         {
             AuthenticationResult token;
 
@@ -141,7 +142,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                 ))
                 {
 
-                    return insights.GetHealthEvents();
+                    return await insights.GetHealthEventsAsync();
                 }
             }
             finally
@@ -196,14 +197,14 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
         #region Office Subscriptions
 
-        private List<IHealthEvent> GetOfficeSubscriptionHealth(string customerId)
+        private async Task<List<IHealthEvent>> GetOfficeSubscriptionHealth(string customerId)
         {
             ServiceCommunications comm;
 
             try
             {
                 comm = new ServiceCommunications(TokenContext.UserAssertionToken);
-                return comm.GetCurrentStatus(customerId);
+                return await comm.GetCurrentStatusAsync(customerId);
             }
             finally
             {
@@ -213,7 +214,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
         #endregion
 
-        public ActionResult Health(string customerId, string subscriptionId)
+        public async Task<ActionResult> Health(string customerId, string subscriptionId)
         {
             Customer customer;
             SubscriptionHealthModel healthModel;
@@ -244,11 +245,11 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
                 if (healthModel.SubscriptionType.Equals("Azure", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    healthModel.HealthEvents = GetAzureSubscriptionHealth(customerId, subscriptionId);
+                    healthModel.HealthEvents = await GetAzureSubscriptionHealth(customerId, subscriptionId);
                 }
                 else
                 {
-                    healthModel.HealthEvents = GetOfficeSubscriptionHealth(customerId);
+                    healthModel.HealthEvents = await GetOfficeSubscriptionHealth(customerId);
                 }
 
                 return View(healthModel);
@@ -260,7 +261,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
         }
 
-        public ActionResult Manage(string customerId, string subscriptionId)
+        public async Task<ActionResult> Manage(string customerId, string subscriptionId)
         {
             Customer customer;
             SubscriptionManageModel manageModel;
@@ -277,8 +278,8 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             try
             {
-                customer = Context.PartnerOperations.Customers.ById(customerId).Get();
-                subscription = Context.PartnerOperations.Customers.ById(customerId).Subscriptions.ById(subscriptionId).Get();
+                customer = await Context.PartnerOperations.Customers.ById(customerId).GetAsync();
+                subscription = await Context.PartnerOperations.Customers.ById(customerId).Subscriptions.ById(subscriptionId).GetAsync();
 
                 manageModel = new SubscriptionManageModel()
                 {
@@ -315,15 +316,6 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                 customer = null;
                 subscription = null;
             }
-        }
-
-        [HttpPost]
-        public ActionResult Update(SubscriptionManageModel model)
-        {
-            string name = model.SubscriptionDetails.FriendlyName;
-            int quantity = ((OfficeSubscriptionDetails)model.SubscriptionDetails).Quantity;
-
-            return View();
         }
 
         private SdkContext Context

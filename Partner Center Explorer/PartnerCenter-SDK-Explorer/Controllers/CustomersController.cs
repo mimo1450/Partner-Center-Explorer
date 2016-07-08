@@ -9,17 +9,28 @@ using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models;
 using System;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 {
+    /// <summary>
+    /// Controller for all Customers views.
+    /// </summary>
+    /// <seealso cref="System.Web.Mvc.Controller" />
     [AuthorizationFilter(ClaimType = ClaimTypes.Role, ClaimValue = "PartnerAdmin")]
     public class CustomersController : Controller
     {
         private SdkContext _context;
 
+        /// <summary>
+        /// Deletes the specified customer.
+        /// </summary>
+        /// <param name="customerId">The customer identifier.</param>
+        /// <returns>Returns the NoContent HTTP status code.</returns>
+        /// <exception cref="System.ArgumentNullException">customerId</exception>
         [HttpDelete]
-        public HttpResponseMessage Delete(string customerId)
+        public async Task<HttpResponseMessage> Delete(string customerId)
         {
             if (string.IsNullOrEmpty(customerId))
             {
@@ -30,32 +41,38 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             // If this request is attempted in a non-sandbox environment it will fail. 
             if (AppConfig.IsSandboxEnvironment)
             {
-                Context.PartnerOperations.Customers.ById(customerId).Delete();
+                await Context.PartnerOperations.Customers.ById(customerId).DeleteAsync();
             }
 
             return new HttpResponseMessage(HttpStatusCode.NoContent);
         }
 
+        /// <summary>
+        /// Handles the request to load the new customer partial view. 
+        /// </summary>
+        /// <returns>Returns a partial view for creating new customers.</returns>
         [HttpGet]
-        public ActionResult Create()
+        public PartialViewResult Create()
         {
+            // TODO - Do not get the supported states list each time. This data should be cached so the forms will load more rapidly. 
             NewCustomerModel newCustomerModel = new NewCustomerModel()
             {
                 SupportedStates = Context.PartnerOperations.CountryValidationRules.ByCountry(AppConfig.CountryCode).Get().SupportedStatesList
             };
 
-            return View(newCustomerModel);
+            return PartialView(newCustomerModel);
         }
 
+        /// <summary>
+        /// Create the customer represented by the instance of <see cref="NewCustomerModel"/>.
+        /// </summary>
+        /// <param name="newCustomerModel">The new customer model.</param>
+        /// <returns>Returns a partial view containing result of the customer creation.</returns>
         [HttpPost]
-        public ActionResult Create(NewCustomerModel newCustomerModel)
+        public async Task<ActionResult> Create(NewCustomerModel newCustomerModel)
         {
             Customer entity;
             CreatedCustomerModel createdCustomerModel;
-
-            if (newCustomerModel == null)
-            {
-            }
 
             try
             {
@@ -89,7 +106,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                     }
                 };
 
-                entity = Context.PartnerOperations.Customers.Create(entity);
+                entity = await Context.PartnerOperations.Customers.CreateAsync(entity);
 
                 createdCustomerModel = new CreatedCustomerModel()
                 {
@@ -106,27 +123,28 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
         }
 
-        [HttpGet]
-        public JsonResult GetCountryValidationRules()
-        {
-            PartnerCenter.Models.CountryValidationRules.CountryValidationRules rules =
-                Context.PartnerOperations.CountryValidationRules.ByCountry(AppConfig.CountryCode).Get();
-
-            return Json(rules, JsonRequestBehavior.AllowGet);
-        }
-
-        public ActionResult Index()
+        /// <summary>
+        /// Handles the index page load event.
+        /// </summary>
+        /// <returns>Returns a list of customers the belong to the specified partner.</returns>
+        public async Task<ActionResult> Index()
         {
             CustomersModel customersModel = new CustomersModel()
             {
-                Customers = Context.PartnerOperations.Customers.Get(),
+                Customers = await Context.PartnerOperations.Customers.GetAsync(),
                 IsSandboxEnvironment = AppConfig.IsSandboxEnvironment
             };
 
             return View(customersModel);
         }
 
-        public ActionResult Show(string customerId)
+        /// <summary>
+        /// Handles the request to view the customer associated with the specified customer identifier.
+        /// </summary>
+        /// <param name="customerId">The customer identifier.</param>
+        /// <returns>Returns view to display the customer details.</returns>
+        /// <exception cref="System.ArgumentNullException">customerId</exception>
+        public async Task<ActionResult> Show(string customerId)
         {
             Customer customer;
             CustomerModel customerModel;
@@ -138,7 +156,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             try
             {
-                customer = Context.PartnerOperations.Customers.ById(customerId).Get();
+                customer = await Context.PartnerOperations.Customers.ById(customerId).GetAsync();
 
                 customerModel = new CustomerModel()
                 {
@@ -149,7 +167,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                     TenantId = customer.CompanyProfile.TenantId
                 };
 
-                customerModel.Subscriptions = Context.PartnerOperations.Customers.ById(customerId).Subscriptions.Get();
+                customerModel.Subscriptions = await Context.PartnerOperations.Customers.ById(customerId).Subscriptions.GetAsync();
 
                 return View(customerModel);
             }
@@ -160,7 +178,13 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
         }
 
-        public ActionResult Subscriptions(string customerId)
+        /// <summary>
+        /// Handles the request to view subscription belonging to the customer associated with the specified customer identifier.
+        /// </summary>
+        /// <param name="customerId">The customer identifier.</param>
+        /// <returns>Returns a veiw containing all of the subscriptions owned by the specificed customer.</returns>
+        /// <exception cref="System.ArgumentNullException">customerId</exception>
+        public async Task<ActionResult> Subscriptions(string customerId)
         {
             if (string.IsNullOrEmpty(customerId))
             {
@@ -169,7 +193,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             SubscriptionsModel subscriptionsModel = new SubscriptionsModel()
             {
-                Subscriptions = Context.PartnerOperations.Customers.ById(customerId).Subscriptions.Get()
+                Subscriptions = await Context.PartnerOperations.Customers.ById(customerId).Subscriptions.GetAsync()
             };
 
             return View(subscriptionsModel);

@@ -9,8 +9,15 @@ using System.Web.Mvc;
 
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 {
+    /// <summary>
+    /// Controller to manage authentication operations.
+    /// </summary>
+    /// <seealso cref="System.Web.Mvc.Controller" />
     public class AccountController : Controller
     {
+        /// <summary>
+        /// Handles the sign-in request. 
+        /// </summary>
         public void SignIn()
         {
             // Send an OpenID Connect sign-in request.
@@ -21,6 +28,9 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
         }
 
+        /// <summary>
+        /// Represents an event that is raised when the sign-out operation is complete.
+        /// </summary>
         public void SignOut()
         {
             string callbackUrl = Url.Action("SignOutCallback", "Account", routeValues: null, protocol: Request.Url.Scheme);
@@ -30,6 +40,10 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                 OpenIdConnectAuthenticationDefaults.AuthenticationType, CookieAuthenticationDefaults.AuthenticationType);
         }
 
+        /// <summary>
+        /// Handles the callback that happens after the user is signed out from Azure AD. 
+        /// </summary>
+        /// <returns>Returns a redirect to the home page.</returns>
         public ActionResult SignOutCallback()
         {
             if (Request.IsAuthenticated)

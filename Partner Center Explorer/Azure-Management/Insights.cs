@@ -9,6 +9,7 @@ using Microsoft.Store.PartnerCenter.Samples.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Microsoft.Samples.Azure.Management
 {
@@ -64,16 +65,16 @@ namespace Microsoft.Samples.Azure.Management
 
             if (disposing)
             {
-                if(_client != null)
+                if (_client != null)
                 {
-                    _client.Dispose(); 
+                    _client.Dispose();
                 }
             }
 
             _disposed = true;
         }
 
-        public List<IHealthEvent> GetHealthEvents()
+        public async Task<List<IHealthEvent>> GetHealthEventsAsync()
         {
             DateTime end;
             DateTime start;
@@ -95,7 +96,7 @@ namespace Microsoft.Samples.Azure.Management
                         && (eventData.ResourceProvider == "Azure.Health")
                 );
 
-                response = Client.EventOperations.ListEvents(filter, null);
+                response = await Client.EventOperations.ListEventsAsync(filter, null);
 
                 foreach (EventData data in response.EventDataCollection.Value)
                 {

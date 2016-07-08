@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Caching;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
@@ -20,7 +21,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
     {
         private SdkContext _context;
 
-        public ActionResult AzureDetails(string customerName, string invoiceId)
+        public async Task<ActionResult> AzureDetails(string customerName, string invoiceId)
         {
             if (string.IsNullOrEmpty(customerName))
             {
@@ -33,17 +34,17 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             InvoiceDetailsModel invoiceDetailsModel = new InvoiceDetailsModel()
             {
-                InvoiceLineItems = GetInvoiceLineItems(invoiceId, customerName, "Azure")
+                InvoiceLineItems = await GetInvoiceLineItemsAsync(invoiceId, customerName, "Azure")
             };
 
             return PartialView(invoiceDetailsModel);
         }
 
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
             InvoicesModel invoicesModel = new InvoicesModel()
             {
-                Invoices = Context.PartnerOperations.Invoices.Get()
+                Invoices = await Context.PartnerOperations.Invoices.GetAsync()
             };
 
             return View(invoicesModel);
@@ -62,7 +63,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         /// data is used to populate the ddlCustomers drop down on the Index view. 
         /// </remarks>
         [HttpGet]
-        public JsonResult GetCustomers(string invoiceId)
+        public async Task<JsonResult> GetCustomers(string invoiceId)
         {
             List<string> customers;
             List<InvoiceLineItem> lineItems;
@@ -70,7 +71,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             try
             {
                 customers = new List<string>();
-                lineItems = GetInvoiceLineItems(invoiceId);
+                lineItems = await GetInvoiceLineItemsAsync(invoiceId);
 
                 customers.AddRange(
                     lineItems
@@ -131,7 +132,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         /// or
         /// providerType
         /// </exception>
-        public FileContentResult ExportCustomer(string invoiceId, string customerName, string providerType)
+        public async Task<FileContentResult> ExportCustomer(string invoiceId, string customerName, string providerType)
         {
             byte[] data;
 
@@ -152,11 +153,11 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             {
                 if (providerType.Equals("Azure", StringComparison.OrdinalIgnoreCase))
                 {
-                    data = GetUsageRecords(invoiceId, customerName);
+                    data = await GetUsageRecordsAsync(invoiceId, customerName);
                 }
                 else
                 {
-                    data = GetLicensedRecords(invoiceId, customerName);
+                    data = await GetLicensedRecordsAsync(invoiceId, customerName);
                 }
 
                 return File(data.ToArray(), "text/csv", string.Format("Invoice-{0}-{1}-{2}.csv", invoiceId, customerName, providerType));
@@ -168,7 +169,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
         }
 
-        public ActionResult OfficeDetails(string customerName, string invoiceId)
+        public async Task<ActionResult> OfficeDetails(string customerName, string invoiceId)
         {
             if (string.IsNullOrEmpty(customerName))
             {
@@ -181,7 +182,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             InvoiceDetailsModel invoiceDetailsModel = new InvoiceDetailsModel()
             {
-                InvoiceLineItems = GetInvoiceLineItems(invoiceId, customerName, "Office")
+                InvoiceLineItems = await GetInvoiceLineItemsAsync(invoiceId, customerName, "Office")
             };
 
             return PartialView(invoiceDetailsModel);
@@ -211,7 +212,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         /// for the specified invoice. Additional details regarding the SDK calls used in this function can 
         /// be found at https://msdn.microsoft.com/en-us/library/partnercenter/mt712733.aspx
         /// </remarks>
-        private List<InvoiceLineItem> GetInvoiceLineItems(string invoiceId)
+        private async Task<List<InvoiceLineItem>> GetInvoiceLineItemsAsync(string invoiceId)
         {
             Invoice invoice;
             List<InvoiceLineItem> lineItems;
@@ -231,12 +232,12 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
                 if (lineItems == null)
                 {
-                    invoice = Context.PartnerOperations.Invoices.ById(invoiceId).Get();
+                    invoice = await Context.PartnerOperations.Invoices.ById(invoiceId).GetAsync();
                     lineItems = new List<InvoiceLineItem>();
 
                     foreach (InvoiceDetail detail in invoice.InvoiceDetails)
                     {
-                        data = Context.PartnerOperations.Invoices.ById(invoiceId).By(detail.BillingProvider, detail.InvoiceLineItemType).Get();
+                        data = await Context.PartnerOperations.Invoices.ById(invoiceId).By(detail.BillingProvider, detail.InvoiceLineItemType).GetAsync();
                         lineItems.AddRange(data.Items);
                     }
 
@@ -251,7 +252,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
         }
 
-        private List<InvoiceLineItem> GetInvoiceLineItems(string invoiceId, string customerName, string providerType)
+        private async Task<List<InvoiceLineItem>> GetInvoiceLineItemsAsync(string invoiceId, string customerName, string providerType)
         {
             List<InvoiceLineItem> items;
 
@@ -272,7 +273,9 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             {
                 if (providerType.Equals("Azure", StringComparison.OrdinalIgnoreCase))
                 {
-                    items = GetInvoiceLineItems(invoiceId)
+                    items = await GetInvoiceLineItemsAsync(invoiceId);
+
+                    return items
                         .Where(x => x.GetType() == typeof(UsageBasedLineItem))
                         .Cast<UsageBasedLineItem>()
                         .Where(x => x.CustomerCompanyName.Equals(customerName, StringComparison.OrdinalIgnoreCase))
@@ -280,7 +283,9 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                 }
                 else if (providerType.Equals("Office", StringComparison.OrdinalIgnoreCase))
                 {
-                    items = GetInvoiceLineItems(invoiceId)
+                    items = await GetInvoiceLineItemsAsync(invoiceId);
+
+                    return items
                         .Where(x => x.GetType() == typeof(LicenseBasedLineItem))
                         .Cast<LicenseBasedLineItem>()
                         .Where(x => x.CustomerName.Equals(customerName, StringComparison.OrdinalIgnoreCase))
@@ -288,10 +293,8 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                 }
                 else
                 {
-                    items = new List<InvoiceLineItem>();
+                    return new List<InvoiceLineItem>();
                 }
-
-                return items;
             }
             finally
             {
@@ -299,8 +302,9 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
         }
 
-        private byte[] GetLicensedRecords(string invoiceId, string customerName)
+        private async Task<byte[]> GetLicensedRecordsAsync(string invoiceId, string customerName)
         {
+            List<InvoiceLineItem> data;
             List<LicenseBasedLineItem> items;
 
             if (string.IsNullOrEmpty(invoiceId))
@@ -314,7 +318,8 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             try
             {
-                items = GetInvoiceLineItems(invoiceId, customerName, "Office").Cast<LicenseBasedLineItem>().ToList();
+                data = await GetInvoiceLineItemsAsync(invoiceId, customerName, "Office");
+                items = data.Cast<LicenseBasedLineItem>().ToList();
 
                 using (MemoryStream stream = new MemoryStream())
                 {
@@ -336,8 +341,9 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
         }
 
-        private byte[] GetUsageRecords(string invoiceId, string customerName)
+        private async Task<byte[]> GetUsageRecordsAsync(string invoiceId, string customerName)
         {
+            List<InvoiceLineItem> data;
             List<UsageBasedLineItem> items;
 
             if (string.IsNullOrEmpty(invoiceId))
@@ -351,7 +357,8 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             try
             {
-                items = GetInvoiceLineItems(invoiceId, customerName, "Azure").Cast<UsageBasedLineItem>().ToList();
+                data = await GetInvoiceLineItemsAsync(invoiceId, customerName, "Azure");
+                items = data.Cast<UsageBasedLineItem>().ToList();
 
                 using (MemoryStream stream = new MemoryStream())
                 {
@@ -369,6 +376,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
             finally
             {
+                data = null;
                 items = null;
             }
         }

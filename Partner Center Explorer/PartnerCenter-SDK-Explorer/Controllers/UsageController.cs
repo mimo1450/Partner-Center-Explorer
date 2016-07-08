@@ -6,6 +6,7 @@ using Microsoft.Store.PartnerCenter.Models.Subscriptions;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models;
 using System;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
@@ -15,7 +16,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
     {
         private SdkContext _context;
 
-        public ActionResult ViewUsage(string customerId, string subscriptionId)
+        public async Task<ActionResult> ViewUsage(string customerId, string subscriptionId)
         {
             Customer customer;
             Subscription subscription;
@@ -31,8 +32,8 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             try
             {
-                customer = Context.PartnerOperations.Customers.ById(customerId).Get();
-                subscription = Context.PartnerOperations.Customers.ById(customerId).Subscriptions.ById(subscriptionId).Get();
+                customer = await Context.PartnerOperations.Customers.ById(customerId).GetAsync();
+                subscription = await Context.PartnerOperations.Customers.ById(customerId).Subscriptions.ById(subscriptionId).GetAsync();
 
                 UsageModel usageModel = new UsageModel()
                 {
