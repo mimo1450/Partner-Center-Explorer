@@ -15,9 +15,16 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context
     {
         private IAggregatePartner _partnerOperations;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SdkContext"/> class.
+        /// </summary>
         public SdkContext()
         { }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SdkContext"/> class.
+        /// </summary>
+        /// <param name="partnerOperations">The partner operations.</param>
         public SdkContext(IAggregatePartner partnerOperations)
         {
             _partnerOperations = partnerOperations;
@@ -41,7 +48,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context
                 if (_partnerOperations == null)
                 {
                     AuthenticationResult authResult = TokenContext.GetAADToken(
-                        string.Format("{0}/common/oauth2", AppConfig.Authority),
+                        string.Format("{0}/{1}/oauth2", AppConfig.Authority, AppConfig.AccountId),
                         AppConfig.PartnerCenterApiUri
                     );
 
@@ -53,13 +60,12 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context
                             authResult.ExpiresOn),
                         delegate
                         {
-                            // token has expired, re-Login to Azure Active Directory
+                            // Token has expired re-authentication to Azure Active Directory is required.
                             AuthenticationResult aadToken = TokenContext.GetAADToken(
-                                string.Format("{0}/common/oauth2", AppConfig.Authority),
+                                string.Format("{0}/{1}/oauth2", AppConfig.Authority, AppConfig.AccountId),
                                 AppConfig.PartnerCenterApiUri
                             );
 
-                            // give the partner SDK the new add token information
                             return Task.FromResult(new AuthenticationToken(aadToken.AccessToken, aadToken.ExpiresOn));
                         });
 

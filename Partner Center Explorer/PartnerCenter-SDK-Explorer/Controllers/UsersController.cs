@@ -175,7 +175,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
         }
 
-        public async Task<ActionResult> ListUsers(string customerId)
+        public ActionResult ListUsers(string customerId)
         {
             if (string.IsNullOrEmpty(customerId))
             {
@@ -185,7 +185,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             UsersModel usersModel = new UsersModel()
             {
                 CustomerId = customerId,
-                Users = await Context.PartnerOperations.Customers.ById(customerId).Users.GetAsync()
+                Users = Context.PartnerOperations.Customers.ById(customerId).Users.Get()
             };
 
             return PartialView(usersModel);

@@ -11,6 +11,10 @@ using System.Security.Cryptography;
 
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Cache
 {
+    /// <summary>
+    /// Token cache for Azure AD tokens obtained using ADAL. 
+    /// </summary>
+    /// <seealso cref="Microsoft.IdentityModel.Clients.ActiveDirectory.TokenCache" />
     public class DistributedTokenCache : TokenCache
     {
         private IDatabase _cache;
@@ -33,13 +37,13 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Cache
             _resource = resource;
 
             AfterAccess = AfterAccessNotification;
-            LoadFromCache();
+            BeforeAccess = BeforeAccessNotification;
         }
 
         /// <summary>
-        /// Afters the access notification.
+        /// Notification method called after any library method accesses the cache. 
         /// </summary>
-        /// <param name="args">The arguments.</param>
+        /// <param name="args">Contains parameters used by the ADAL call accessing the cache.</param>
         public void AfterAccessNotification(TokenCacheNotificationArgs args)
         {
             if (HasStateChanged)
@@ -57,28 +61,11 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Cache
             }
         }
 
-        private static ConnectionMultiplexer Connection
-        {
-            get
-            {
-                return _connection.Value;
-            }
-        }
-
-        private string Key
-        {
-            get
-            {
-                return string.Format(
-                    "Resource:{0}::UserId:{1}",
-                    _resource,
-                    ClaimsPrincipal.Current.Identities.First().FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value
-                );
-            }
-        }
-
-
-        private void LoadFromCache()
+        /// <summary>
+        /// Notification method called before any library method accesses the cache. 
+        /// </summary>
+        /// <param name="args">Contains parameters used by the ADAL call accessing the cache.</param>
+        public void BeforeAccessNotification(TokenCacheNotificationArgs args)
         {
             byte[] data;
 
@@ -97,6 +84,47 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Cache
             finally
             {
                 data = null;
+            }
+        }
+
+        /// <summary>
+        /// Clears the cache by deleting all the items. Note that if the cache is the default shared cache, clearing it would
+        /// impact all the instances of <see cref="T:Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationContext" /> which share that cache.
+        /// </summary>
+        public override void Clear()
+        {
+            base.Clear();
+            _cache.KeyDelete(Key);
+        }
+
+        /// <summary>
+        /// Deletes an item from the cache.
+        /// </summary>
+        /// <param name="item">The item to delete from the cache</param>
+        public override void DeleteItem(TokenCacheItem item)
+        {
+            base.DeleteItem(item);
+            _cache.KeyDelete(Key);
+        }
+
+
+        private static ConnectionMultiplexer Connection
+        {
+            get
+            {
+                return _connection.Value;
+            }
+        }
+
+        private string Key
+        {
+            get
+            {
+                return string.Format(
+                    "Resource:{0}::UserId:{1}",
+                    _resource,
+                    ClaimsPrincipal.Current.Identities.First().FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value
+                );
             }
         }
     }
