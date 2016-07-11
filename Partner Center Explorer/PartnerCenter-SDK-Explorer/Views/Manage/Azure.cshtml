@@ -31,7 +31,7 @@
         <hr />
         <div class="row">
             <div class="col-md-4 col-sm-8">
-                <a class="lnkNewDeployment" href="/Customers/@Model.CustomerId/Subscription/@Model.SubscriptionId/Manage/NewDeployment" id="NewDeployment">New Deployment</a>
+                <a class="lnkNewDeployment" href="/Customers/@Model.CustomerId/Subscriptions/@Model.SubscriptionId/Manage/NewDeployment" id="NewDeployment">New Deployment</a>
             </div>
         </div>
         <div id="deployments" style="display: none;"></div>
@@ -55,7 +55,7 @@
 
                     var group = ddlResourceGroups.find(":selected").text();
 
-                    $.get('/Customers/@Model.CustomerId/Subscription/@Model.SubscriptionId/Manage/Deployments?resourceGroupName=' + group, function (data) {
+                    $.get('/Customers/@Model.CustomerId/Subscriptions/@Model.SubscriptionId/Manage/Deployments?resourceGroupName=' + group, function (data) {
                         $('#deployments').html(data);
                         $('#deployments').fadeIn('fast');
                     });
