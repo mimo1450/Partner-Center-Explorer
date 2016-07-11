@@ -7,7 +7,7 @@
 <div class="modal-header">
     <h4 class="modal-title">New User</h4>
 </div>
-@using (Ajax.BeginForm("Create", "Users", new AjaxOptions { HttpMethod = "POST", InsertionMode = InsertionMode.Replace, OnSuccess = "OnUserSuccessCallback", UpdateTargetId = "Users" }))
+@using (Ajax.BeginForm("Create", "Users", new AjaxOptions { HttpMethod = "POST", InsertionMode = InsertionMode.Replace, OnSuccess = "OnUserSuccessCallback", UpdateTargetId = "users" }))
 {
     <fieldset>
         <div class="row">

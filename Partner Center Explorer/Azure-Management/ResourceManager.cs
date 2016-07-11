@@ -4,17 +4,23 @@
 using Microsoft.Azure.Management.ResourceManager;
 using Microsoft.Azure.Management.ResourceManager.Models;
 using Microsoft.Rest;
+using Microsoft.Rest.Azure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Microsoft.Samples.Azure.Management
 {
+    /// <summary>
+    /// Facilitates interactions with the Azure Resource Manager API.
+    /// </summary>
+    /// <seealso cref="System.IDisposable" />
     public class ResourceManager : IDisposable
     {
         private ResourceManagementClient _client;
         private string _token;
-        private bool _disposed; 
+        private bool _disposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceManager"/> class.
@@ -56,17 +62,28 @@ namespace Microsoft.Samples.Azure.Management
             _disposed = true;
         }
 
-        public string ApplyTemplate(string customerId, string subscriptionId, string resourceGroupName, string templateUri, string parametersUri)
+        /// <summary>
+        /// Apply an Azure Resource Manager (ARM) template.
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <param name="resourceGroupName">Name of the resource group.</param>
+        /// <param name="templateUri">URI for the ARM template.</param>
+        /// <param name="parametersUri">URI for the ARM template parameters.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// subscriptionId
+        /// or
+        /// resourceGroupName
+        /// or
+        /// templateUri
+        /// </exception>
+        public async Task<string> ApplyTemplateAsync(string subscriptionId, string resourceGroupName, string templateUri, string parametersUri)
         {
             Deployment deployment;
             DeploymentExtended result;
             string deploymentName;
 
-            if (string.IsNullOrEmpty(customerId))
-            {
-                throw new ArgumentNullException("customerId");
-            }
-            else if (string.IsNullOrEmpty(subscriptionId))
+            if (string.IsNullOrEmpty(subscriptionId))
             {
                 throw new ArgumentNullException("subscriptionId");
             }
@@ -97,7 +114,7 @@ namespace Microsoft.Samples.Azure.Management
 
                 deploymentName = Guid.NewGuid().ToString();
 
-                result = Client.Deployments.CreateOrUpdate(resourceGroupName, deploymentName, deployment);
+                result = await Client.Deployments.CreateOrUpdateAsync(resourceGroupName, deploymentName, deployment);
 
                 return result.Properties.ProvisioningState;
             }
@@ -108,20 +125,70 @@ namespace Microsoft.Samples.Azure.Management
             }
         }
 
-        public List<ResourceGroup> GetResourceGroups(string customerId, string subscriptionId)
+        /// <summary>
+        /// Gets a list of deployments for the specified subscription and resource group.
+        /// </summary>
+        /// <param name="subscrptionId">The subscrption identifier.</param>
+        /// <param name="resourceGroupName">Name of the resource group.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// subscritpionId
+        /// or
+        /// resourceGroupName
+        /// </exception>
+        public async Task<List<DeploymentExtended>> GetDeploymentsAsync(string subscrptionId, string resourceGroupName)
         {
-            if (string.IsNullOrEmpty(customerId))
+            IPage<DeploymentExtended> deployements;
+
+            if (string.IsNullOrEmpty(subscrptionId))
             {
-                throw new ArgumentNullException("customerId");
+                throw new ArgumentNullException("subscritpionId");
             }
-            else if (string.IsNullOrEmpty(subscriptionId))
+            else if (string.IsNullOrEmpty(resourceGroupName))
+            {
+                throw new ArgumentNullException("resourceGroupName");
+            }
+
+            try
+            {
+                Client.SubscriptionId = subscrptionId;
+                deployements = await Client.Deployments.ListAsync(resourceGroupName);
+
+                return deployements.ToList();
+            }
+            finally
+            {
+                deployements = null;
+            }
+        }
+
+        /// <summary>
+        /// Gets a collection of resource groups for the specified subscription.
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <returns>A collection of resource groups.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// subscriptinId
+        /// </exception>
+        public async Task<List<ResourceGroup>> GetResourceGroupsAsync(string subscriptionId)
+        {
+            if (string.IsNullOrEmpty(subscriptionId))
             {
                 throw new ArgumentNullException("subscriptinId");
             }
 
-            Client.SubscriptionId = subscriptionId;
+            IPage<ResourceGroup> resourceGroups;
 
-            return Client.ResourceGroups.List().ToList();
+            try
+            {
+                Client.SubscriptionId = subscriptionId;
+                resourceGroups = await Client.ResourceGroups.ListAsync();
+                return resourceGroups.ToList();
+            }
+            finally
+            {
+                resourceGroups = null;
+            }
         }
 
         private ResourceManagementClient Client

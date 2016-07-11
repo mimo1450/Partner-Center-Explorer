@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Microsoft.Samples.Office365.Management.API.Models
 {
     /// <summary>
-    /// Represents status details obtained from the Office 365 Service Communication 
+    /// Represents status details obtained from the Office 365 Service Communication
     /// </summary>
     public class StatusDetails
     {

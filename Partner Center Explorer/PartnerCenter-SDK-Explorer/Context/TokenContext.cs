@@ -118,7 +118,6 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context
             }
             catch (AggregateException ex)
             {
-
                 throw ex.InnerException;
             }
         }

@@ -18,7 +18,7 @@ namespace Microsoft.Samples.AzureAD.Graph.API.Converters
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             JObject json;
-            ServiceConfigurationRecord record = null; 
+            ServiceConfigurationRecord record = null;
             string recordType;
 
             if (reader.TokenType == JsonToken.Null)
@@ -79,7 +79,6 @@ namespace Microsoft.Samples.AzureAD.Graph.API.Converters
                     record.RecordType = json["recordType"].Value<string>();
                     record.SupportedService = json["supportedService"].Value<string>();
                     record.Ttl = json["ttl"].Value<int>();
-
                 }
 
                 return record;

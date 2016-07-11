@@ -35,7 +35,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         }
 
         /// <summary>
-        /// Handles the request for the Search view. 
+        /// Handles the request for the Search view.
         /// </summary>
         /// <returns>Returns an empty view.</returns>
         public ActionResult Search()

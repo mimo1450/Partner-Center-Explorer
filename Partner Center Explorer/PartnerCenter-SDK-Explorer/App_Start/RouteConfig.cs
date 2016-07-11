@@ -6,8 +6,15 @@ using System.Web.Routing;
 
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer
 {
+    /// <summary>
+    /// Configures routing for the application.
+    /// </summary>
     public class RouteConfig
     {
+        /// <summary>
+        /// Registers the routes for the application.
+        /// </summary>
+        /// <param name="routes">A collection of routes.</param>
         public static void RegisterRoutes(RouteCollection routes)
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
@@ -49,32 +56,33 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer
             );
 
             routes.MapRoute(
-                name: "SubscriptionHealth",
-                url: "Customers/{customerId}/Subscription/{subscriptionId}/Health",
-                defaults: new { controller = "Subscriptions", action = "Health" }
+                name: "Subscriptions",
+                url: "Customers/{customerId}/Subscriptions/{subscriptionId}",
+                defaults: new { controller = "Subscriptions", action = "Index" }
             );
 
             routes.MapRoute(
-                name: "SubscriptionManage",
-                url: "Customers/{customerId}/Subscription/{subscriptionId}/Manage",
-                defaults: new { controller = "Subscriptions", action = "Manage" }
+                name: "SubscriptionHealth",
+                url: "Customers/{customerId}/Subscriptions/{subscriptionId}/Health",
+                defaults: new { controller = "Health", action = "Index" }
             );
+
 
             routes.MapRoute(
                 name: "SubscriptionManageResource",
-                url: "Customers/{customerId}/Subscription/{subscriptionId}/Manage/{action}",
-                defaults: new { controller = "Subscriptions" }
+                url: "Customers/{customerId}/Subscriptions/{subscriptionId}/Manage/{action}",
+                defaults: new { controller = "Manage", action = "Index" }
             );
 
             routes.MapRoute(
                 name: "Usage",
-                url: "Customers/{customerId}/Subscription/{subscriptionId}/Usage",
+                url: "Customers/{customerId}/Subscriptions/{subscriptionId}/Usage",
                 defaults: new { controller = "Usage", action = "ViewUsage" }
             );
 
             routes.MapRoute(
                 name: "UserActions",
-                url: "Customers/{customerId}/users/{action}",
+                url: "Customers/{customerId}/Users/{action}",
                 defaults: new { controller = "Users" }
             );
 

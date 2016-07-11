@@ -109,7 +109,6 @@ namespace Microsoft.Samples.Azure.Management
                         ResourceProviderName = data.ResourceProviderName.Value,
                         ResourceType = data.ResourceType.Value,
                         Status = data.Level.ToString(),
-
                     };
 
                     healthEvents.Add(healthEvent);

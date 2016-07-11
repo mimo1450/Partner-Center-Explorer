@@ -11,11 +11,26 @@ using System.Web.Mvc;
 
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 {
+    /// <summary>
+    /// Controller for all Usage views.
+    /// </summary>
+    /// <seealso cref="System.Web.Mvc.Controller" />
     [AuthorizationFilter(ClaimType = ClaimTypes.Role, ClaimValue = "PartnerAdmin")]
     public class UsageController : Controller
     {
         private SdkContext _context;
 
+        /// <summary>
+        /// Views the usage.
+        /// </summary>
+        /// <param name="customerId">The customer identifier.</param>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// customerId
+        /// or
+        /// subscriptionId
+        /// </exception>
         public async Task<ActionResult> ViewUsage(string customerId, string subscriptionId)
         {
             Customer customer;
@@ -39,10 +54,11 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                 {
                     CompanyName = customer.CompanyProfile.CompanyName,
                     CustomerId = customerId,
-                    DailyUsage = Context.PartnerOperations.Customers.ById(customerId)
-                        .Subscriptions.ById(subscriptionId).UsageRecords.Daily.Get(),
-                    MonthlyUsage = Context.PartnerOperations.Customers.ById(customerId)
-                        .Subscriptions.ById(subscriptionId).UsageRecords.Resources.Get(),
+                    // DailyUsage = await Context.PartnerOperations.Customers.ById(customerId)
+                    //    .Subscriptions.ById(subscriptionId).UsageRecords.Daily.GetAsync(),
+                    MonthlyUsage = await Context.PartnerOperations.Customers.ById(customerId)
+                        .Subscriptions.ById(subscriptionId).UsageRecords.Resources.GetAsync(),
+                    SubscriptionId = subscriptionId,
                     SubscriptionFriendlyName = subscription.FriendlyName
                 };
 

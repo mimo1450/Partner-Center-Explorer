@@ -16,9 +16,9 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer
     {
         /// <summary>
         /// By Default, MVC returns a 401 Unauthorized when a user's roles do not meet the AuthorizeAttribute requirements.
-        /// This initializes a reauthentication request to our identity provider. Since the user is already logged in, 
+        /// This initializes a reauthentication request to our identity provider. Since the user is already logged in,
         /// AAD returns to the same page, which then issues another 401, creating a redirect loop.
-        /// Here, we override the AuthorizeAttribute's HandleUnauthorizedRequest method to show something that makes 
+        /// Here, we override the AuthorizeAttribute's HandleUnauthorizedRequest method to show something that makes
         /// sense in the context of our application.
         /// </summary>
         protected override void HandleUnauthorizedRequest(AuthorizationContext filterContext)

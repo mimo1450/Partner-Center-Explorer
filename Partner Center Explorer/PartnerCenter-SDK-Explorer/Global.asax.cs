@@ -10,8 +10,15 @@ using System.Web.Routing;
 
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer
 {
+    /// <summary>
+    /// The MVC application
+    /// </summary>
+    /// <seealso cref="System.Web.HttpApplication" />
     public class MvcApplication : HttpApplication
     {
+        /// <summary>
+        /// Called when the application starts.
+        /// </summary>
         protected void Application_Start()
         {
             AreaRegistration.RegisterAllAreas();

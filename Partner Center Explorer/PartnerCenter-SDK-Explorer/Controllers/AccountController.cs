@@ -16,7 +16,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
     public class AccountController : Controller
     {
         /// <summary>
-        /// Handles the sign-in request. 
+        /// Handles the sign-in request.
         /// </summary>
         public void SignIn()
         {
@@ -41,7 +41,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         }
 
         /// <summary>
-        /// Handles the callback that happens after the user is signed out from Azure AD. 
+        /// Handles the callback that happens after the user is signed out from Azure AD.
         /// </summary>
         /// <returns>Returns a redirect to the home page.</returns>
         public ActionResult SignOutCallback()

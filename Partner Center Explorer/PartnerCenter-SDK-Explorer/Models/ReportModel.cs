@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.PowerBI.Api;
+using Microsoft.PowerBI.Api.V1.Models;
 
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models
 {
@@ -25,7 +25,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models
         /// <value>
         /// The Power BI report to be displayed.
         /// </value>
-        public IReport Report
+        public Report Report
         { get; set; }
     }
 }

@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.PowerBI.Api.Beta;
-using Microsoft.PowerBI.Api.Beta.Models;
+using Microsoft.PowerBI.Api.V1;
+using Microsoft.PowerBI.Api.V1.Models;
 using Microsoft.PowerBI.Security;
 using Microsoft.Rest;
 using Microsoft.Store.PartnerCenter.Samples.Common;
@@ -18,15 +18,13 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
     public class ReportsController : Controller
     {
         private IPowerBIClient _client;
-        private PowerBIToken _token;
 
         public ReportsController()
         { }
 
-        public ReportsController(IPowerBIClient powerbiClient, PowerBIToken token)
+        public ReportsController(IPowerBIClient powerbiClient)
         {
             _client = powerbiClient;
-            _token = token;
         }
 
         public ActionResult Index()
@@ -84,7 +82,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                         PowerBIConfig.WorkspaceId
                     );
 
-                    report = response.Value.FirstOrDefault(x => x.Id == reportId);
+                    report = response.Value.FirstOrDefault(r => r.Id == reportId);
 
                     embedToken = PowerBIToken.CreateReportEmbedToken(
                         PowerBIConfig.WorkspaceCollectionName,
@@ -107,46 +105,26 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                 report = null;
                 response = null;
             }
-
         }
 
         private IPowerBIClient GetPowerBIClient()
         {
             TokenCredentials credentials;
-            string token;
 
             if (_client == null)
             {
-                token = Token.Generate(
-                    PowerBIConfig.AccessKey
-                );
-
                 credentials = new TokenCredentials(
-                    token,
-                    "AppToken"
+                    PowerBIConfig.AccessKey,
+                    "Appkey"
                 );
 
-                _client = new PowerBIClient(credentials);
-                _client.BaseUri = PowerBIConfig.BaseUri;
+                _client = new PowerBIClient(credentials)
+                {
+                    BaseUri = PowerBIConfig.BaseUri
+                };
             }
 
             return _client;
-        }
-
-        private PowerBIToken Token
-        {
-            get
-            {
-                if (_token == null)
-                {
-                    _token = PowerBIToken.CreateDevToken(
-                        PowerBIConfig.WorkspaceCollectionName,
-                        PowerBIConfig.WorkspaceId
-                    );
-                }
-
-                return _token;
-            }
         }
     }
 }

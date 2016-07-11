@@ -54,8 +54,13 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(item => s.FriendlyName)
+                    @Html.ActionLink(
+                        s.FriendlyName,
+                        string.Format("Subscriptions/{0}/", s.Id),
+                        string.Format("Customers/{0}", Model.TenantId)
+                    )
                 </td>
+
                 <td>
                     @Html.DisplayFor(item => s.Id)
                 </td>
@@ -65,14 +70,14 @@
                 <td>
                     @Html.ActionLink(
                         "Health",
-                        string.Format("Subscription/{0}/Health", s.Id),
+                        string.Format("Subscriptions/{0}/Health", s.Id),
                         string.Format("Customers/{0}", Model.TenantId)
                     )
                 </td>
                 <td>
                     @Html.ActionLink(
                         "Manage",
-                        string.Format("Subscription/{0}/Manage", s.Id),
+                        string.Format("Subscriptions/{0}/Manage", s.Id),
                         string.Format("Customers/{0}", Model.TenantId)
                     )
                 </td>
@@ -81,7 +86,7 @@
                     <td>
                         @Html.ActionLink(
                           "Usage",
-                          string.Format("Subscription/{0}/Usage", s.Id),
+                          string.Format("Subscriptions/{0}/Usage", s.Id),
                           string.Format("Customers/{0}", Model.TenantId)
                     )
                     </td>

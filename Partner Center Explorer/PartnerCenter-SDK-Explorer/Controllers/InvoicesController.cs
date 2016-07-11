@@ -51,16 +51,16 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         }
 
         /// <summary>
-        /// Gets a list of customers included in the specified invoice. 
+        /// Gets a list of customers included in the specified invoice.
         /// </summary>
         /// <param name="invoiceId">The invoice identifier.</param>
         /// <returns>
         /// A distinict list of customers included in the specified invoice.
         /// </returns>
         /// <remarks>
-        /// This information is extracted from the invoice line items to  
-        /// ensure that the only customers on the invoice will be shown. This 
-        /// data is used to populate the ddlCustomers drop down on the Index view. 
+        /// This information is extracted from the invoice line items to
+        /// ensure that the only customers on the invoice will be shown. This
+        /// data is used to populate the ddlCustomers drop down on the Index view.
         /// </remarks>
         [HttpGet]
         public async Task<JsonResult> GetCustomers(string invoiceId)
@@ -161,7 +161,6 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                 }
 
                 return File(data.ToArray(), "text/csv", string.Format("Invoice-{0}-{1}-{2}.csv", invoiceId, customerName, providerType));
-
             }
             finally
             {
@@ -202,14 +201,14 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         }
 
         /// <summary>
-        /// Gets a collection of resources representing line items in the specified invoice. 
+        /// Gets a collection of resources representing line items in the specified invoice.
         /// </summary>
         /// <param name="invoiceId">The invoice identifier.</param>
         /// <returns>A collection of line items for the specified invoice.</returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <remarks>
-        /// This function utilizes the Partner Center SDK to obtain a collection of invoice line items 
-        /// for the specified invoice. Additional details regarding the SDK calls used in this function can 
+        /// This function utilizes the Partner Center SDK to obtain a collection of invoice line items
+        /// for the specified invoice. Additional details regarding the SDK calls used in this function can
         /// be found at https://msdn.microsoft.com/en-us/library/partnercenter/mt712733.aspx
         /// </remarks>
         private async Task<List<InvoiceLineItem>> GetInvoiceLineItemsAsync(string invoiceId)

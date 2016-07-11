@@ -21,7 +21,6 @@
             var endDate = $('#EndDate').val();
             var startDate = $('#StartDate').val();
 
-
             $.get('/Audit/GetRecords?StartDate=' + encodeURIComponent(startDate) + '&EndDate=' + encodeURIComponent(endDate), function (data) {
                 $('#records').html(data);
                 $('#records').fadeIn('fast');

@@ -12,7 +12,7 @@ using System.Security.Cryptography;
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Cache
 {
     /// <summary>
-    /// Token cache for Azure AD tokens obtained using ADAL. 
+    /// Token cache for Azure AD tokens obtained using ADAL.
     /// </summary>
     /// <seealso cref="Microsoft.IdentityModel.Clients.ActiveDirectory.TokenCache" />
     public class DistributedTokenCache : TokenCache
@@ -41,7 +41,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Cache
         }
 
         /// <summary>
-        /// Notification method called after any library method accesses the cache. 
+        /// Notification method called after any library method accesses the cache.
         /// </summary>
         /// <param name="args">Contains parameters used by the ADAL call accessing the cache.</param>
         public void AfterAccessNotification(TokenCacheNotificationArgs args)
@@ -62,7 +62,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Cache
         }
 
         /// <summary>
-        /// Notification method called before any library method accesses the cache. 
+        /// Notification method called before any library method accesses the cache.
         /// </summary>
         /// <param name="args">Contains parameters used by the ADAL call accessing the cache.</param>
         public void BeforeAccessNotification(TokenCacheNotificationArgs args)
@@ -106,7 +106,6 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Cache
             base.DeleteItem(item);
             _cache.KeyDelete(Key);
         }
-
 
         private static ConnectionMultiplexer Connection
         {

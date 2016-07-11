@@ -3,10 +3,12 @@
 
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Samples.AzureAD.Graph.API;
+using Microsoft.Samples.AzureAD.Graph.API.Models;
 using Microsoft.Store.PartnerCenter.Samples.Common;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -81,7 +83,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         /// <param name="primaryDomain">The domain prefix to be checked.</param>
         /// <returns><c>true</c> if the domain available; otherwise <c>false</c> is returned.</returns>
         /// <remarks>
-        /// This checks if the specified domain is available using the Partner Center API. A domain is 
+        /// This checks if the specified domain is available using the Partner Center API. A domain is
         /// considered to be available if the domain is not already in used by another Azure AD tenant.
         /// </remarks>
         public async Task<JsonResult> IsDomainAvailable(string primaryDomain)
@@ -94,6 +96,48 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             bool exists = await Context.PartnerOperations.Domains.ByDomain(primaryDomain + ".onmicrosoft.com").ExistsAsync();
 
             return Json(!exists, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Lists the domains for the specified customer identifier.
+        /// </summary>
+        /// <param name="customerId">The customer identifier.</param>
+        /// <returns>A collection of domains that belong to the specified customer identifier.</returns>
+        /// <exception cref="System.ArgumentNullException">customerId</exception>
+        [HttpGet]
+        public async Task<JsonResult> List(string customerId)
+        {
+            AuthenticationResult token;
+            GraphClient client;
+            List<Domain> domains;
+
+            if (string.IsNullOrEmpty(customerId))
+            {
+                throw new ArgumentNullException("customerId");
+            }
+
+            try
+            {
+                token = TokenContext.GetAADToken(
+                    string.Format(
+                        "{0}/{1}",
+                        AppConfig.Authority,
+                        customerId
+                    ),
+                    AppConfig.GraphUri
+                );
+
+                client = new GraphClient(token.AccessToken);
+                domains = await client.GetDomainsAsync(customerId);
+
+                return Json(domains, JsonRequestBehavior.AllowGet);
+            }
+            finally
+            {
+                client = null;
+                domains = null;
+                token = null;
+            }
         }
 
         private SdkContext Context

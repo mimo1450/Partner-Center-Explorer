@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace Microsoft.Samples.AzureAD.Graph.API.Models
 {
     /// <summary>
-    /// Represents a collection returned from an Azure AD Graph API call. 
+    /// Represents a collection returned from an Azure AD Graph API call.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class Result<T>

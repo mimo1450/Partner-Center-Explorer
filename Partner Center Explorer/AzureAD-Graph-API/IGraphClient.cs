@@ -16,6 +16,5 @@ namespace Microsoft.Samples.AzureAD.Graph.API
         List<ServiceConfigurationRecord> GetServiceConfigurationRecords(string customerId, string domain);
 
         Task<List<ServiceConfigurationRecord>> GetServiceConfigurationRecordsAsync(string customerId, string domain);
-
     }
 }

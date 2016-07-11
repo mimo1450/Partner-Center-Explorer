@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context
 {
     /// <summary>
-    /// Context class used to obtain base object to interact with the Partner Center SDK. 
+    /// Context class used to obtain base object to interact with the Partner Center SDK.
     /// </summary>
     public class SdkContext
     {
@@ -34,11 +34,11 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context
         /// Gets the an instance of <see cref="IAggregatePartner"/>.
         /// </summary>
         /// <value>
-        /// An instnace of <see cref="IAggregatePartner"/> used by the SDK to perform operations. 
+        /// An instnace of <see cref="IAggregatePartner"/> used by the SDK to perform operations.
         /// </value>
         /// <remarks>
         /// This property utilizes App + User authentication. Various operations with the Partner Center
-        /// SDK require App + User authorization. More details regarding Partner Center authentication can be 
+        /// SDK require App + User authorization. More details regarding Partner Center authentication can be
         /// found at https://msdn.microsoft.com/en-us/library/partnercenter/mt634709.aspx
         /// </remarks>
         public IAggregatePartner PartnerOperations

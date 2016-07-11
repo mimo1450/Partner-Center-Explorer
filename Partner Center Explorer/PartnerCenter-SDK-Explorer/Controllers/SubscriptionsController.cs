@@ -1,271 +1,73 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using Microsoft.Samples.Azure.Management;
-using Microsoft.Samples.AzureAD.Graph.API;
-using Microsoft.Samples.AzureAD.Graph.API.Models;
-using Microsoft.Samples.Office365.Management.API;
-using Microsoft.Store.PartnerCenter.Models.Customers;
-using Microsoft.Store.PartnerCenter.Models.Invoices;
-using Microsoft.Store.PartnerCenter.Models.Subscriptions;
-using Microsoft.Store.PartnerCenter.Samples.Common;
-using Microsoft.Store.PartnerCenter.Samples.Common.Models;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context;
-using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models;
-using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Subscriptions;
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using System;
 using System.Web.Mvc;
+using Microsoft.Store.PartnerCenter.Models.Customers;
+using Microsoft.Store.PartnerCenter.Models.Subscriptions;
+using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models;
+using Microsoft.Store.PartnerCenter.Models.Invoices;
+using System.Net.Http;
+using System.Net;
 
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 {
+    /// <summary>
+    /// Handles request for the Subscriptions views.
+    /// </summary>
+    /// <seealso cref="System.Web.Mvc.Controller" />
     [AuthorizationFilter(ClaimType = ClaimTypes.Role, ClaimValue = "PartnerAdmin")]
     public class SubscriptionsController : Controller
     {
         private SdkContext _context;
 
-        public ActionResult Index()
-        {
-            return View();
-        }
-
-        #region Azure Subscriptions 
-
         [HttpPost]
-        public ActionResult ApplyTemplate(string customerId, string subscriptionId, string resourceGroupName, string templateUri, string parametersUri)
+        public async Task<HttpResponseMessage> Edit(SubscriptionModel model)
         {
-            AuthenticationResult token;
-
-            if (string.IsNullOrEmpty(customerId))
-            {
-                throw new ArgumentNullException("customerId");
-            }
-            else if (string.IsNullOrEmpty(subscriptionId))
-            {
-                throw new ArgumentNullException("subscriptionId");
-            }
-            else if (string.IsNullOrEmpty(resourceGroupName))
-            {
-                throw new ArgumentNullException("resourceGroupName");
-            }
-            else if (string.IsNullOrEmpty(templateUri))
-            {
-                throw new ArgumentNullException("templateUri");
-            }
-
-            try
-            {
-                token = TokenContext.GetAADToken(
-                    string.Format(
-                        "{0}/{1}",
-                        AppConfig.Authority,
-                        customerId
-                    ),
-                    AppConfig.ManagementUri
-                );
-
-                using (ResourceManager manager = new ResourceManager(token.AccessToken))
-                {
-
-                    manager.ApplyTemplate(
-                        customerId,
-                        subscriptionId,
-                        resourceGroupName,
-                        templateUri,
-                        parametersUri
-                    );
-                }
-
-                return View();
-            }
-            finally
-            {
-                token = null;
-            }
-        }
-
-        [HttpGet]
-        public JsonResult ResourceGroups(string customerId, string subscriptionId)
-        {
-            AuthenticationResult token;
-            ResourceManager manager;
-
-            if (string.IsNullOrEmpty(customerId))
-            {
-                throw new ArgumentNullException("customerId");
-            }
-            else if (string.IsNullOrEmpty(subscriptionId))
-            {
-                throw new ArgumentNullException("subscriptionId");
-            }
-
-            try
-            {
-                token = TokenContext.GetAADToken(
-                   string.Format(
-                       "{0}/{1}",
-                       AppConfig.Authority,
-                       customerId
-                   ),
-                   AppConfig.ManagementUri
-               );
-
-                manager = new ResourceManager(token.AccessToken);
-                return Json(manager.GetResourceGroups(customerId, subscriptionId), JsonRequestBehavior.AllowGet);
-            }
-            finally
-            {
-                manager = null;
-            }
-        }
-
-        private async Task<List<IHealthEvent>> GetAzureSubscriptionHealth(string customerId, string subscriptionId)
-        {
-            AuthenticationResult token;
-
-            try
-            {
-                token = TokenContext.GetAADToken(
-                    string.Format(
-                        "{0}/{1}",
-                        AppConfig.Authority,
-                        customerId
-                    ),
-                    AppConfig.ManagementUri
-                );
-
-                using (Insights insights = new Insights(
-                    subscriptionId,
-                    token.AccessToken
-                ))
-                {
-
-                    return await insights.GetHealthEventsAsync();
-                }
-            }
-            finally
-            {
-                token = null;
-            }
-        }
-
-        #endregion
-
-        #region Domain Operations
-
-        [HttpGet]
-        public JsonResult GetDomains(string customerId)
-        {
-            AuthenticationResult token;
-            GraphClient client;
-            List<Domain> domains;
-
-            if (string.IsNullOrEmpty(customerId))
-            {
-                throw new ArgumentNullException("customerId");
-
-            }
-
-            try
-            {
-                token = TokenContext.GetAADToken(
-                    string.Format(
-                        "{0}/{1}",
-                        AppConfig.Authority,
-                        customerId
-                    ),
-                    AppConfig.GraphUri
-                );
-
-                client = new GraphClient(token.AccessToken);
-                domains = client.GetDomains(customerId);
-
-                return Json(domains, JsonRequestBehavior.AllowGet);
-
-            }
-            finally
-            {
-                client = null;
-                domains = null;
-                token = null;
-            }
-        }
-
-        #endregion  
-
-        #region Office Subscriptions
-
-        private async Task<List<IHealthEvent>> GetOfficeSubscriptionHealth(string customerId)
-        {
-            ServiceCommunications comm;
-
-            try
-            {
-                comm = new ServiceCommunications(TokenContext.UserAssertionToken);
-                return await comm.GetCurrentStatusAsync(customerId);
-            }
-            finally
-            {
-                comm = null;
-            }
-        }
-
-        #endregion
-
-        public async Task<ActionResult> Health(string customerId, string subscriptionId)
-        {
-            Customer customer;
-            SubscriptionHealthModel healthModel;
             Subscription subscription;
 
-            if (string.IsNullOrEmpty(customerId))
-            {
-                throw new ArgumentNullException("customerId");
-            }
-            else if (string.IsNullOrEmpty(subscriptionId))
-            {
-                throw new ArgumentNullException("subscriptionId");
-            }
-
             try
             {
-                customer = Context.PartnerOperations.Customers.ById(customerId).Get();
-                subscription = Context.PartnerOperations.Customers.ById(customerId).Subscriptions.ById(subscriptionId).Get();
+                subscription = await Context.PartnerOperations.Customers
+                    .ById(model.CustomerId).Subscriptions.ById(model.Id).GetAsync();
 
-                healthModel = new SubscriptionHealthModel()
-                {
-                    CompanyName = customer.CompanyProfile.CompanyName,
-                    CustomerId = customerId,
-                    FriendlyName = subscription.FriendlyName
-                };
+                subscription.FriendlyName = model.FriendlyName;
+                subscription.Status = model.Status;
+                subscription.Quantity = model.Quantity;
 
-                healthModel.SubscriptionType = (subscription.BillingType == BillingType.License) ? "Office" : "Azure";
+                await Context.PartnerOperations.Customers.ById(model.CustomerId)
+                    .Subscriptions.ById(model.Id).PatchAsync(subscription);
 
-                if (healthModel.SubscriptionType.Equals("Azure", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    healthModel.HealthEvents = await GetAzureSubscriptionHealth(customerId, subscriptionId);
-                }
-                else
-                {
-                    healthModel.HealthEvents = await GetOfficeSubscriptionHealth(customerId);
-                }
-
-                return View(healthModel);
+                return new HttpResponseMessage(HttpStatusCode.OK);
             }
             finally
             {
-                customer = null;
-                subscription = null;
+                subscription = null; 
             }
         }
 
-        public async Task<ActionResult> Manage(string customerId, string subscriptionId)
+        /// <summary>
+        /// Handles the index view request.
+        /// </summary>
+        /// <param name="customerId">The customer identifier.</param>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <returns>Returns either the Azure or Office subscription view.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// customerId
+        /// or
+        /// subscriptionId
+        /// </exception>
+        /// <remarks>
+        /// If the subscription's billing type is usage then the Office view is returned. 
+        /// Otherwise, the Azure view is returned.
+        /// </remarks>
+        public async Task<ActionResult> Index(string customerId, string subscriptionId)
         {
             Customer customer;
-            SubscriptionManageModel manageModel;
             Subscription subscription;
+            SubscriptionModel model;
 
             if (string.IsNullOrEmpty(customerId))
             {
@@ -281,35 +83,29 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                 customer = await Context.PartnerOperations.Customers.ById(customerId).GetAsync();
                 subscription = await Context.PartnerOperations.Customers.ById(customerId).Subscriptions.ById(subscriptionId).GetAsync();
 
-                manageModel = new SubscriptionManageModel()
+                model = new SubscriptionModel()
                 {
+                    AutoRenewEnabled = subscription.AutoRenewEnabled,
+                    BillingType = subscription.BillingType,
+                    CommitmentEndDate = subscription.CommitmentEndDate,
                     CompanyName = customer.CompanyProfile.CompanyName,
-                    CustomerId = customer.Id,
+                    CreationDate = subscription.CreationDate,
+                    CustomerId = customerId,
+                    EffectiveStartDate = subscription.EffectiveStartDate,
                     FriendlyName = subscription.FriendlyName,
-                    SubscriptionId = subscriptionId
+                    Id = subscription.Id,
+                    OfferId = subscription.OfferId,
+                    OfferName = subscription.OfferName,
+                    ParentSubscriptionId = subscription.ParentSubscriptionId,
+                    PartnerId = subscription.PartnerId,
+                    Quantity = subscription.Quantity,
+                    Status = subscription.Status,
+                    SuspensionReasons = subscription.SuspensionReasons,
+                    UnitType = subscription.UnitType,
+                    ViewModel = (subscription.BillingType == BillingType.License) ? "Office" : "Azure"
                 };
 
-                manageModel.SubscriptionType = (subscription.BillingType == BillingType.License) ? "Office" : "Azure";
-
-                if (manageModel.SubscriptionType.Equals("Azure", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    manageModel.SubscriptionDetails = new AzureSubscriptionDetails()
-                    {
-                        FriendlyName = subscription.FriendlyName,
-                        Status = subscription.Status.ToString()
-                    };
-                }
-                else
-                {
-                    manageModel.SubscriptionDetails = new OfficeSubscriptionDetails()
-                    {
-                        FriendlyName = subscription.FriendlyName,
-                        Quantity = subscription.Quantity,
-                        Status = subscription.Status.ToString()
-                    };
-                }
-
-                return View(manageModel);
+                return View(model.ViewModel, model);
             }
             finally
             {

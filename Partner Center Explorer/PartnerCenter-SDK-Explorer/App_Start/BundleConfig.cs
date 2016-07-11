@@ -5,9 +5,18 @@ using System.Web.Optimization;
 
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer
 {
+    /// <summary>
+    /// Configures the bundles used by the application.
+    /// </summary>
     public class BundleConfig
     {
-        // For more information on bundling, visit http://go.microsoft.com/fwlink/?LinkId=301862
+        /// <summary>
+        /// Registers the bundles.
+        /// </summary>
+        /// <param name="bundles">A collection of bundles.</param>
+        /// <remarks>
+        /// More information on bundling can be found at http://go.microsoft.com/fwlink/?LinkId=301862.
+        /// </remarks>
         public static void RegisterBundles(BundleCollection bundles)
         {
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(

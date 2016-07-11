@@ -37,8 +37,8 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                 throw new ArgumentNullException("customerId");
             }
 
-            // A customer can only be deleted in the integration sandbox environment.   
-            // If this request is attempted in a non-sandbox environment it will fail. 
+            // A customer can only be deleted in the integration sandbox environment.
+            // If this request is attempted in a non-sandbox environment it will fail.
             if (AppConfig.IsSandboxEnvironment)
             {
                 await Context.PartnerOperations.Customers.ById(customerId).DeleteAsync();
@@ -48,13 +48,13 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         }
 
         /// <summary>
-        /// Handles the request to load the new customer partial view. 
+        /// Handles the request to load the new customer partial view.
         /// </summary>
         /// <returns>Returns a partial view for creating new customers.</returns>
         [HttpGet]
         public PartialViewResult Create()
         {
-            // TODO - Do not get the supported states list each time. This data should be cached so the forms will load more rapidly. 
+            // TODO - Do not get the supported states list each time. This data should be cached so the forms will load more rapidly.
             NewCustomerModel newCustomerModel = new NewCustomerModel()
             {
                 SupportedStates = Context.PartnerOperations.CountryValidationRules.ByCountry(AppConfig.CountryCode).Get().SupportedStatesList

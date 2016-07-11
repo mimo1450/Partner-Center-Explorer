@@ -60,7 +60,6 @@ namespace Microsoft.Samples.AzureAD.Graph.API
                 );
 
                 return domains.Value;
-
             }
             finally
             {
@@ -110,7 +109,6 @@ namespace Microsoft.Samples.AzureAD.Graph.API
                     new MediaTypeWithQualityHeaderValue("application/json"),
                     _token
                 );
-
 
                 records = JsonConvert.DeserializeObject<Result<ServiceConfigurationRecord>>(
                     data,

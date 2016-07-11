@@ -53,7 +53,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.Common
             {
                 using (HttpClient client = new HttpClient())
                 {
-                    // Add the required headers for the request. 
+                    // Add the required headers for the request.
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                     client.DefaultRequestHeaders.Accept.Add(mediaType);
 
@@ -74,7 +74,6 @@ namespace Microsoft.Store.PartnerCenter.Samples.Common
                 response = null;
             }
         }
-
 
         /// <summary>
         /// Sends a GET request to the specified Uri as an asynchronous operation.
@@ -113,7 +112,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.Common
             {
                 using (HttpClient client = new HttpClient())
                 {
-                    // Add the required headers for the request. 
+                    // Add the required headers for the request.
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                     client.DefaultRequestHeaders.Accept.Add(mediaType);
 
@@ -277,7 +276,6 @@ namespace Microsoft.Store.PartnerCenter.Samples.Common
                     client.DefaultRequestHeaders.Accept.Add(mediaType);
 
                     response = await client.PostAsJsonAsync(requestUri, content);
-
 
                     if (!response.IsSuccessStatusCode)
                     {

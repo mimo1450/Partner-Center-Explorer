@@ -28,7 +28,7 @@
                 }
                 else if (record.RecordType.Equals("srv", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    DomainDnsSrvRecord s = (DomainDnsSrvRecord)record; 
+                    DomainDnsSrvRecord s = (DomainDnsSrvRecord)record;
 
                     @(string.Format("Port={0} Priority={1} Protocol={2} Service={3} Weight={4}",
                         s.Port, s.Priority, s.Protocol, s.Service, s.Weight))

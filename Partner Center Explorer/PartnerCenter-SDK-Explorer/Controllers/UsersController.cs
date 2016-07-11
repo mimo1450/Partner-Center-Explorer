@@ -38,7 +38,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Create(NewUserModel newUserModel)
+        public async Task<PartialViewResult> Create(NewUserModel newUserModel)
         {
             CustomerUser customerUser;
 
@@ -63,10 +63,10 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                 UsersModel usersModel = new UsersModel()
                 {
                     CustomerId = newUserModel.CustomerId,
-                    Users = await Context.PartnerOperations.Customers.ById(newUserModel.CustomerId).Users.GetAsync()
+                    Users = await GetUsersAsync(newUserModel.CustomerId)
                 };
 
-                return PartialView("ListUsers", usersModel);
+                return PartialView("List", usersModel);
             }
             finally
             {
@@ -164,10 +164,10 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                 UsersModel usersModel = new UsersModel()
                 {
                     CustomerId = editUserModel.CustomerId,
-                    Users = await Context.PartnerOperations.Customers.ById(editUserModel.CustomerId).Users.GetAsync()
+                    Users = await GetUsersAsync(editUserModel.CustomerId)
                 };
 
-                return PartialView("ListUsers", usersModel);
+                return PartialView("List", usersModel);
             }
             finally
             {
@@ -175,7 +175,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
         }
 
-        public ActionResult ListUsers(string customerId)
+        public async Task<PartialViewResult> List(string customerId)
         {
             if (string.IsNullOrEmpty(customerId))
             {
@@ -185,7 +185,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             UsersModel usersModel = new UsersModel()
             {
                 CustomerId = customerId,
-                Users = Context.PartnerOperations.Customers.ById(customerId).Users.Get()
+                Users = await GetUsersAsync(customerId)
             };
 
             return PartialView(usersModel);
@@ -253,6 +253,39 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
         }
 
+        private async Task<List<UserModel>> GetUsersAsync(string customerId)
+        {
+            List<UserModel> results;
+            SeekBasedResourceCollection<CustomerUser> users;
+
+            try
+            {
+                results = new List<UserModel>();
+                users = await Context.PartnerOperations.Customers.ById(customerId).Users.GetAsync();
+
+                foreach (CustomerUser u in users.Items)
+                {
+                    results.Add(new UserModel()
+                    {
+                        CustomerId = customerId,
+                        DisplayName = u.DisplayName,
+                        FirstName = u.FirstName,
+                        Id = u.Id,
+                        LastDirectorySyncTime = u.LastDirectorySyncTime,
+                        LastName = u.LastName,
+                        UsageLocation = u.UsageLocation,
+                        UserPrincipalName = u.UserPrincipalName
+                    });
+                }
+
+                return results;
+            }
+            finally
+            {
+                results = null;
+            }
+        }
+
         private async Task ProcessLicenseModifications(EditUserModel model)
         {
             LicenseUpdate licenseUpdate;
@@ -288,7 +321,6 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                 if (assignments.Count > 0)
                 {
                     licenseUpdate.LicensesToAssign = assignments;
-
                 }
 
                 if (removals.Count > 0)

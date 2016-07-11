@@ -3,7 +3,7 @@
 namespace Microsoft.Samples.Office365.Management.API.Models
 {
     /// <summary>
-    /// Represents message details obtained from Office 365 Service Communication Service API.  
+    /// Represents message details obtained from Office 365 Service Communication Service API.
     /// </summary>
     public class MessageDetails
     {

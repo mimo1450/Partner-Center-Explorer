@@ -20,6 +20,9 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models
         public ResourceCollection<AzureResourceMonthlyUsageRecord> MonthlyUsage
         { get; set; }
 
+        public string SubscriptionId
+        { get; set; }
+
         public string SubscriptionFriendlyName
         { get; set; }
     }

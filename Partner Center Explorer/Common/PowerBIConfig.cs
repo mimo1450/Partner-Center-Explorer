@@ -16,7 +16,6 @@ namespace Microsoft.Store.PartnerCenter.Samples.Common
         public static Uri BaseUri
         {
             get { return new Uri(ConfigurationManager.AppSettings["PowerBI:BaseUri"]); }
-
         }
 
         public static string WorkspaceCollectionName

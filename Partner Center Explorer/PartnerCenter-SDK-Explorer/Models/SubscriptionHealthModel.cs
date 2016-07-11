@@ -20,7 +20,10 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models
         public List<IHealthEvent> HealthEvents
         { get; set; }
 
-        public string SubscriptionType
+        public string SubscriptionId
+        { get; set; }
+
+        public string ViewModel
         { get; set; }
     }
 }

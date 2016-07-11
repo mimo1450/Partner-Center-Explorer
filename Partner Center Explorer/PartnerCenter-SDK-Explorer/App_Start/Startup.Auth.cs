@@ -11,11 +11,18 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer
 {
+    /// <summary>
+    /// Startup class for the application.
+    /// </summary>
     public partial class Startup
     {
         private string ClientId = ConfigurationManager.AppSettings["ApplicationId"];
         private string Authority = ConfigurationManager.AppSettings["Authority"] + "/common";
 
+        /// <summary>
+        /// Configures the authentication for the application.
+        /// </summary>
+        /// <param name="app">The application to configure.</param>
         public void ConfigureAuth(IAppBuilder app)
         {
             app.SetDefaultSignInAsAuthenticationType(CookieAuthenticationDefaults.AuthenticationType);
