@@ -57,26 +57,32 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer
 
             routes.MapRoute(
                 name: "Subscriptions",
-                url: "Customers/{customerId}/Subscriptions/{subscriptionId}",
+                url: "Customers/{customerId}/Subscriptions/{action}",
+                defaults: new { controller = "Subscriptions" }
+            );
+
+            routes.MapRoute(
+                name: "Subscription",
+                url: "Customers/{customerId}/Subscriptions/{subscriptionId}/{action}",
                 defaults: new { controller = "Subscriptions", action = "Index" }
             );
 
             routes.MapRoute(
                 name: "SubscriptionHealth",
-                url: "Customers/{customerId}/Subscriptions/{subscriptionId}/Health",
+                url: "Customers/{customerId}/Health/{subscriptionId}/",
                 defaults: new { controller = "Health", action = "Index" }
             );
 
 
             routes.MapRoute(
                 name: "SubscriptionManageResource",
-                url: "Customers/{customerId}/Subscriptions/{subscriptionId}/Manage/{action}",
+                url: "Customers/{customerId}/Manage/{subscriptionId}/{action}",
                 defaults: new { controller = "Manage", action = "Index" }
             );
 
             routes.MapRoute(
                 name: "Usage",
-                url: "Customers/{customerId}/Subscriptions/{subscriptionId}/Usage",
+                url: "Customers/{customerId}/Usage/{subscriptionId}/",
                 defaults: new { controller = "Usage", action = "ViewUsage" }
             );
 

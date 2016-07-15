@@ -34,7 +34,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         {
             if (string.IsNullOrEmpty(customerId))
             {
-                throw new ArgumentNullException("customerId");
+                throw new ArgumentNullException(nameof(customerId));
             }
 
             // A customer can only be deleted in the integration sandbox environment.
@@ -151,7 +151,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             if (string.IsNullOrEmpty(customerId))
             {
-                throw new ArgumentNullException("customerId");
+                throw new ArgumentNullException(nameof(customerId));
             }
 
             try
@@ -164,10 +164,8 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                     CompanyName = customer.CompanyProfile.CompanyName,
                     CompanyProfile = customer.CompanyProfile,
                     DomainName = customer.CompanyProfile.Domain,
-                    TenantId = customer.CompanyProfile.TenantId
+                    CustomerId = customer.CompanyProfile.TenantId
                 };
-
-                customerModel.Subscriptions = await Context.PartnerOperations.Customers.ById(customerId).Subscriptions.GetAsync();
 
                 return View(customerModel);
             }
@@ -176,27 +174,6 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                 customer = null;
                 customerModel = null;
             }
-        }
-
-        /// <summary>
-        /// Handles the request to view subscription belonging to the customer associated with the specified customer identifier.
-        /// </summary>
-        /// <param name="customerId">The customer identifier.</param>
-        /// <returns>Returns a veiw containing all of the subscriptions owned by the specificed customer.</returns>
-        /// <exception cref="System.ArgumentNullException">customerId</exception>
-        public async Task<ActionResult> Subscriptions(string customerId)
-        {
-            if (string.IsNullOrEmpty(customerId))
-            {
-                throw new ArgumentNullException("customerId");
-            }
-
-            SubscriptionsModel subscriptionsModel = new SubscriptionsModel()
-            {
-                Subscriptions = await Context.PartnerOperations.Customers.ById(customerId).Subscriptions.GetAsync()
-            };
-
-            return View(subscriptionsModel);
         }
 
         private SdkContext Context

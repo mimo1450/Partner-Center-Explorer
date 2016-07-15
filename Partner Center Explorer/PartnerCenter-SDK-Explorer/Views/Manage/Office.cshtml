@@ -10,7 +10,7 @@
         <li>Customers</li>
         <li><a href="/Customers/@Model.CustomerId/Show">@Model.CompanyName</a></li>
         <li>Subscriptions</li>
-        <li><a href="/Customers/@Model.CustomerId/Subscriptions/@Model.SubscriptionId">@Model.FriendlyName</a></li>
+        <li><a href="/Customers/@Model.CustomerId/Subscriptions/@Model.SubscriptionId/Show">@Model.FriendlyName</a></li>
         <li class="action">Manage</li>
     </ol>
 }
@@ -44,7 +44,7 @@
 @section Scripts {
     <script type="text/javascript">
         $(document).ready(function () {
-            var ddlDomains = $('#ddlDomains')
+            var ddlDomains = $('#ddlDomains');
 
             $.ajax({
                 cache: true,
@@ -55,7 +55,7 @@
                     ddlDomains.html('');
                     $.each(data, function (id) {
                         ddlDomains.append($('<option></option>').val(data[id].Name).html(data[id].Name));
-                    })
+                    });
 
                     var domain = $('#ddlDomains').find(":selected").text();
 
@@ -93,7 +93,7 @@
             });
 
             $(document).on('hidden.bs.modal', function (e) {
-                $(e.target).removeData('bs.modal');
+                $(e.target).removeData('bs.modal').find(".modal-content").empty();
             });
         });
 
@@ -101,7 +101,7 @@
             $('#' + data).remove();
         }
 
-        function OnUserSuccessCallback(data, status, xhr) {
+        function OnSuccessCallback() {
             $('#modal-container').modal('hide');
         }
     </script>

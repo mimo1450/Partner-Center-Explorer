@@ -86,6 +86,7 @@
     <Compile Include="AppConfig.cs" />
     <Compile Include="Communication.cs" />
     <Compile Include="CommunicationException.cs" />
+    <Compile Include="Models\Automation\RunbookModel.cs" />
     <Compile Include="Models\AzureHealthEvent.cs" />
     <Compile Include="Models\HealthEventType.cs" />
     <Compile Include="Models\IHeathEvent.cs" />

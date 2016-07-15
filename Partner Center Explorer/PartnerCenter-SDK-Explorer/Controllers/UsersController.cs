@@ -13,20 +13,31 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Microsoft.Store.PartnerCenter.Samples.Common;
 
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 {
+    /// <summary>
+    /// Controller for Users views.
+    /// </summary>
+    /// <seealso cref="System.Web.Mvc.Controller" />
     [AuthorizationFilter(ClaimType = ClaimTypes.Role, ClaimValue = "PartnerAdmin")]
     public class UsersController : Controller
     {
         private SdkContext _context;
 
+        /// <summary>
+        /// Handles the Create view request.
+        /// </summary>
+        /// <param name="customerId">The customer identifier.</param>
+        /// <returns>A partial view containing the NewUserModel model.</returns>
+        /// <exception cref="System.ArgumentNullException">customerId</exception>
         [HttpGet]
-        public ActionResult Create(string customerId)
+        public PartialViewResult Create(string customerId)
         {
             if (string.IsNullOrEmpty(customerId))
             {
-                throw new ArgumentNullException("customerId");
+                throw new ArgumentNullException(nameof(customerId));
             }
 
             NewUserModel newUserModel = new NewUserModel()
@@ -34,9 +45,14 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                 CustomerId = customerId
             };
 
-            return View(newUserModel);
+            return PartialView(newUserModel);
         }
 
+        /// <summary>
+        /// Handles the Create user HTTP post.
+        /// </summary>
+        /// <param name="newUserModel">The new user model.</param>
+        /// <returns>A partial view containing a list of users.</returns>
         [HttpPost]
         public async Task<PartialViewResult> Create(NewUserModel newUserModel)
         {
@@ -74,36 +90,55 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
         }
 
+        /// <summary>
+        /// Deletes the specified user.
+        /// </summary>
+        /// <param name="customerId">The customer identifier.</param>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns>A HTTP OK if the delete is successful.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// customerId
+        /// or
+        /// userId
+        /// </exception>
         [HttpDelete]
         public async Task<HttpResponseMessage> Delete(string customerId, string userId)
         {
             if (string.IsNullOrEmpty(customerId))
             {
-                throw new ArgumentNullException("customerId");
+                throw new ArgumentNullException(nameof(customerId));
             }
-            else if (string.IsNullOrEmpty(userId))
+            if (string.IsNullOrEmpty(userId))
             {
-                throw new ArgumentNullException("userId");
+                throw new ArgumentNullException(nameof(userId));
             }
 
             await Context.PartnerOperations.Customers.ById(customerId).Users.ById(userId).DeleteAsync();
 
-            return new HttpResponseMessage(HttpStatusCode.NoContent);
+            return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
+        /// <summary>
+        /// Edits the specified user.
+        /// </summary>
+        /// <param name="customerId">The customer identifier.</param>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns>A partial view containing the EditUserModel model.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// </exception>
         [HttpGet]
-        public async Task<ActionResult> Edit(string customerId, string userId)
+        public async Task<PartialViewResult> Edit(string customerId, string userId)
         {
             CustomerUser customerUser;
             EditUserModel editUserModel;
 
             if (string.IsNullOrEmpty(customerId))
             {
-                throw new ArgumentNullException("customerId");
+                throw new ArgumentNullException(nameof(customerId));
             }
-            else if (string.IsNullOrEmpty(userId))
+            if (string.IsNullOrEmpty(userId))
             {
-                throw new ArgumentNullException("userId");
+                throw new ArgumentNullException(nameof(userId));
             }
 
             try
@@ -117,6 +152,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                     FirstName = customerUser.FirstName,
                     LastName = customerUser.LastName,
                     Licenses = await GetLicenses(customerId, userId),
+                    UsageLocation = AppConfig.CountryCode,
                     UserId = userId,
                     UserPrincipalName = customerUser.UserPrincipalName
                 };
@@ -129,8 +165,13 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
         }
 
+        /// <summary>
+        /// Edits the specified user.
+        /// </summary>
+        /// <param name="editUserModel">The edit user model.</param>
+        /// <returns>A list of users.</returns>
         [HttpPost]
-        public async Task<ActionResult> Edit(EditUserModel editUserModel)
+        public async Task<PartialViewResult> Edit(EditUserModel editUserModel)
         {
             CustomerUser customerUser;
 
@@ -139,22 +180,11 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                 customerUser = await Context.PartnerOperations.Customers.ById(editUserModel.CustomerId)
                     .Users.ById(editUserModel.UserId).GetAsync();
 
-                if (customerUser.DisplayName != editUserModel.DisplayName)
-                {
-                    customerUser.DisplayName = editUserModel.DisplayName;
-                }
-                else if (customerUser.FirstName != editUserModel.FirstName)
-                {
-                    customerUser.FirstName = editUserModel.FirstName;
-                }
-                else if (customerUser.LastName != editUserModel.LastName)
-                {
-                    customerUser.LastName = editUserModel.LastName;
-                }
-                else if (customerUser.UserPrincipalName != editUserModel.UserPrincipalName)
-                {
-                    customerUser.UserPrincipalName = editUserModel.UserPrincipalName;
-                }
+                customerUser.DisplayName = editUserModel.DisplayName;
+                customerUser.FirstName = editUserModel.FirstName;
+                customerUser.LastName = editUserModel.LastName;
+                customerUser.UserPrincipalName = editUserModel.UserPrincipalName;
+                customerUser.UsageLocation = editUserModel.UsageLocation;
 
                 await Context.PartnerOperations.Customers.ById(editUserModel.CustomerId)
                     .Users.ById(editUserModel.UserId).PatchAsync(customerUser);
@@ -175,11 +205,17 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
         }
 
+        /// <summary>
+        /// Lists the users that belong to the specified customer identifier.
+        /// </summary>
+        /// <param name="customerId">The customer identifier.</param>
+        /// <returns>A list of users that belong to the specified customer identifier.</returns>
+        /// <exception cref="System.ArgumentNullException">customerId</exception>
         public async Task<PartialViewResult> List(string customerId)
         {
             if (string.IsNullOrEmpty(customerId))
             {
-                throw new ArgumentNullException("customerId");
+                throw new ArgumentNullException(nameof(customerId));
             }
 
             UsersModel usersModel = new UsersModel()
@@ -213,11 +249,11 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             if (string.IsNullOrEmpty(customerId))
             {
-                throw new ArgumentNullException("customerId");
+                throw new ArgumentNullException(nameof(customerId));
             }
             else if (string.IsNullOrEmpty(userId))
             {
-                throw new ArgumentNullException("userId");
+                throw new ArgumentNullException(nameof(userId));
             }
 
             try
@@ -257,6 +293,11 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         {
             List<UserModel> results;
             SeekBasedResourceCollection<CustomerUser> users;
+
+            if (string.IsNullOrEmpty(customerId))
+            {
+                throw new ArgumentNullException(nameof(customerId));
+            }
 
             try
             {

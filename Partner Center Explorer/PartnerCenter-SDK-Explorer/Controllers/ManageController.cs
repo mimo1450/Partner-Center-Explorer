@@ -12,6 +12,8 @@ using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Subscriptions;
 using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -25,75 +27,6 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
     public class ManageController : Controller
     {
         private SdkContext _context;
-
-        /// <summary>
-        /// Apply an Azure Resource Manager (ARM) template.
-        /// </summary>
-        /// <param name="customerId">The customer identifier.</param>
-        /// <param name="subscriptionId">The subscription identifier.</param>
-        /// <param name="resourceGroupName">Name of the resource group.</param>
-        /// <param name="templateUri">URI from the ARM template.</param>
-        /// <param name="parametersUri">URI for the ARM template parameters.</param>
-        /// <returns></returns>
-        /// <exception cref="System.ArgumentNullException">
-        /// customerId
-        /// or
-        /// subscriptionId
-        /// or
-        /// resourceGroupName
-        /// or
-        /// templateUri
-        /// </exception>
-        [HttpPost]
-        public async Task<ActionResult> ApplyTemplate(string customerId, string subscriptionId, string resourceGroupName, string templateUri, string parametersUri)
-        {
-            AuthenticationResult token;
-
-            if (string.IsNullOrEmpty(customerId))
-            {
-                throw new ArgumentNullException("customerId");
-            }
-            else if (string.IsNullOrEmpty(subscriptionId))
-            {
-                throw new ArgumentNullException("subscriptionId");
-            }
-            else if (string.IsNullOrEmpty(resourceGroupName))
-            {
-                throw new ArgumentNullException("resourceGroupName");
-            }
-            else if (string.IsNullOrEmpty(templateUri))
-            {
-                throw new ArgumentNullException("templateUri");
-            }
-
-            try
-            {
-                token = TokenContext.GetAADToken(
-                    string.Format(
-                        "{0}/{1}",
-                        AppConfig.Authority,
-                        customerId
-                    ),
-                    AppConfig.ManagementUri
-                );
-
-                using (ResourceManager manager = new ResourceManager(token.AccessToken))
-                {
-                    await manager.ApplyTemplateAsync(
-                        subscriptionId,
-                        resourceGroupName,
-                        templateUri,
-                        parametersUri
-                    );
-                }
-
-                return View();
-            }
-            finally
-            {
-                token = null;
-            }
-        }
 
         /// <summary>
         /// Gets a list of deployments for the specified resource group.
@@ -116,15 +49,15 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             if (string.IsNullOrEmpty(customerId))
             {
-                throw new ArgumentNullException("customerId");
+                throw new ArgumentNullException(nameof(customerId));
             }
-            else if (string.IsNullOrEmpty(resourceGroupName))
+            if (string.IsNullOrEmpty(resourceGroupName))
             {
-                throw new ArgumentNullException("resourceGroupName");
+                throw new ArgumentNullException(nameof(resourceGroupName));
             }
-            else if (string.IsNullOrEmpty(subscriptionId))
+            if (string.IsNullOrEmpty(subscriptionId))
             {
-                throw new ArgumentNullException("subscriptionId");
+                throw new ArgumentNullException(nameof(subscriptionId));
             }
 
             try
@@ -157,11 +90,11 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             if (string.IsNullOrEmpty(customerId))
             {
-                throw new ArgumentNullException("customerId");
+                throw new ArgumentNullException(nameof(customerId));
             }
-            else if (string.IsNullOrEmpty(subscriptionId))
+            if (string.IsNullOrEmpty(subscriptionId))
             {
-                throw new ArgumentNullException("subscriptionId");
+                throw new ArgumentNullException(nameof(subscriptionId));
             }
 
             try
@@ -287,11 +220,11 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             if (string.IsNullOrEmpty(customerId))
             {
-                throw new ArgumentNullException("customerId");
+                throw new ArgumentNullException(nameof(customerId));
             }
-            else if (string.IsNullOrEmpty(subscriptionId))
+            if (string.IsNullOrEmpty(subscriptionId))
             {
-                throw new ArgumentNullException("subscriptionId");
+                throw new ArgumentNullException(nameof(subscriptionId));
             }
 
             try
@@ -339,15 +272,15 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             if (string.IsNullOrEmpty(customerId))
             {
-                throw new ArgumentNullException("customerId");
+                throw new ArgumentNullException(nameof(customerId));
             }
-            else if (string.IsNullOrEmpty(resourceGroupName))
+            if (string.IsNullOrEmpty(resourceGroupName))
             {
-                throw new ArgumentNullException("resourceGroupName");
+                throw new ArgumentNullException(nameof(resourceGroupName));
             }
-            else if (string.IsNullOrEmpty(subscriptionId))
+            if (string.IsNullOrEmpty(subscriptionId))
             {
-                throw new ArgumentNullException("subscriptionId");
+                throw new ArgumentNullException(nameof(subscriptionId));
             }
 
             try

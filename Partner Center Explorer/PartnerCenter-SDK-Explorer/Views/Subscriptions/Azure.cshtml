@@ -8,7 +8,7 @@
 
 @section Breadcrumbs{
     <ol class="breadcrumb navbar-breadcrumb">
-        <li>Customers</li>
+        <li><a href="/Customers">Customers</a></li>
         <li><a href="/Customers/@Model.CustomerId/Show">@Model.CompanyName</a></li>
         <li>Subscriptions</li>
         <li class="active">@Model.FriendlyName</li>
@@ -108,8 +108,8 @@
 
 @section Scripts {
     <script type="text/javascript">
-        function OnSuccessCallback(data, status, xhr) {
-            window.location.href = "/Customers/@Model.CustomerId/Show"
+        function OnSuccessCallback() {
+            window.location.href = "/Customers/@Model.CustomerId/Show";
         }
     </script>
 }

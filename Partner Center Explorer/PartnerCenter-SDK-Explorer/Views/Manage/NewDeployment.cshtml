@@ -5,9 +5,10 @@
 }
 
 <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
     <h4 class="modal-title">New Deployment</h4>
 </div>
-@using (Ajax.BeginForm("NewDeployment", "Manage", new AjaxOptions { HttpMethod = "POST", InsertionMode = InsertionMode.Replace, OnSuccess = "OnSuccessCallback", UpdateTargetId = "Deployments" }))
+@using (Ajax.BeginForm("NewDeployment", "Manage", new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccessCallback", UpdateTargetId = "deployments" }))
 {
     <fieldset>
         <div class="row">

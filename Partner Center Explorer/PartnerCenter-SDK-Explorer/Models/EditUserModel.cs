@@ -33,9 +33,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models
         { get; set; }
 
         public string UsageLocation
-        {
-            get { return "US"; }
-        }
+        { get; set; }
 
         public string UserId
         { get; set; }

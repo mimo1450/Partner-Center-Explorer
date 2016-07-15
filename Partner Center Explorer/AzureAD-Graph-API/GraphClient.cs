@@ -12,10 +12,14 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Samples.AzureAD.Graph.API
 {
+    /// <summary>
+    /// Used to perform Azure AD Graph API operations.
+    /// </summary>
+    /// <seealso cref="Microsoft.Samples.AzureAD.Graph.API.IGraphClient" />
     public class GraphClient : IGraphClient
     {
         private Communication _comm;
-        private string _token;
+        private readonly string _token;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphClient"/> class.
@@ -27,16 +31,36 @@ namespace Microsoft.Samples.AzureAD.Graph.API
             _token = token;
         }
 
+        /// <summary>
+        /// Gets a list of domains that belong to the specified customer identifier.
+        /// </summary>
+        /// <param name="customerId">The customer identifier.</param>
+        /// <returns>
+        /// A list of domains that belong to the specified customer identifier.
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// customerId
+        /// </exception>
         public List<Domain> GetDomains(string customerId)
         {
             if (string.IsNullOrEmpty(customerId))
             {
-                throw new ArgumentNullException("customerId");
+                throw new ArgumentNullException(nameof(customerId));
             }
 
             return SynchronousExecute(() => GetDomainsAsync(customerId));
         }
 
+        /// <summary>
+        /// Asynchronously gets a list of domains that belong to the specified customer identifier.
+        /// </summary>
+        /// <param name="customerId">The customer identifier.</param>
+        /// <returns>
+        /// A list of domains that belong to the specified customer identifier.
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// customerId
+        /// </exception>
         public async Task<List<Domain>> GetDomainsAsync(string customerId)
         {
             Result<Domain> domains;
@@ -44,7 +68,7 @@ namespace Microsoft.Samples.AzureAD.Graph.API
 
             if (string.IsNullOrEmpty(customerId))
             {
-                throw new ArgumentNullException("customerId");
+                throw new ArgumentNullException(nameof(customerId));
             }
             try
             {
@@ -67,20 +91,50 @@ namespace Microsoft.Samples.AzureAD.Graph.API
             }
         }
 
+        /// <summary>
+        /// Gets the service configuration records for the specified domain.
+        /// </summary>
+        /// <param name="customerId">The customer identifier.</param>
+        /// <param name="domain">The domain of interest.</param>
+        /// <returns>A list of service configurations records for the specified domain.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// customerId
+        /// or
+        /// domain
+        /// </exception>
+        /// <remarks>
+        /// Service configuration records are DNS records that should be configured for the specified
+        /// domain in order for Office 365 services to function as expected.
+        /// </remarks>
         public List<ServiceConfigurationRecord> GetServiceConfigurationRecords(string customerId, string domain)
         {
             if (string.IsNullOrEmpty(customerId))
             {
-                throw new ArgumentNullException("customerId");
+                throw new ArgumentNullException(nameof(customerId));
             }
-            else if (string.IsNullOrEmpty(domain))
+            if (string.IsNullOrEmpty(domain))
             {
-                throw new ArgumentNullException("domain");
+                throw new ArgumentNullException(nameof(domain));
             }
 
             return SynchronousExecute(() => GetServiceConfigurationRecordsAsync(customerId, domain));
         }
 
+        /// <summary>
+        /// Asynchronously gets the service configuration records for the specified domain.
+        /// </summary>
+        /// <param name="customerId">The customer identifier.</param>
+        /// <param name="domain">The domain of interest.</param>
+        /// <returns>A list of service configurations records for the specified domain.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// customerId
+        /// or
+        /// domain
+        /// </exception>
+        /// <remarks>
+        /// Service configuration records are DNS records that should be configured for the specified
+        /// domain in order for Office 365 services to function as expected.
+        /// </remarks>
         public async Task<List<ServiceConfigurationRecord>> GetServiceConfigurationRecordsAsync(string customerId, string domain)
         {
             Result<ServiceConfigurationRecord> records;
@@ -89,11 +143,11 @@ namespace Microsoft.Samples.AzureAD.Graph.API
 
             if (string.IsNullOrEmpty(customerId))
             {
-                throw new ArgumentNullException("customerId");
+                throw new ArgumentNullException(nameof(customerId));
             }
-            else if (string.IsNullOrEmpty(domain))
+            if (string.IsNullOrEmpty(domain))
             {
-                throw new ArgumentNullException("domain");
+                throw new ArgumentNullException(nameof(domain));
             }
 
             try

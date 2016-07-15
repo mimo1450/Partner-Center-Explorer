@@ -6,8 +6,17 @@ using System.Collections.Generic;
 
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models
 {
+    /// <summary>
+    /// Model for domain configuration records obtain from Azure AD Graph API.
+    /// </summary>
     public class ConfigurationRecordsModel
     {
+        /// <summary>
+        /// Gets or sets the service configuration records.
+        /// </summary>
+        /// <value>
+        /// The service configuration records for a specific domain.
+        /// </value>
         public List<ServiceConfigurationRecord> ServiceConfigurationRecords
         { get; set; }
     }

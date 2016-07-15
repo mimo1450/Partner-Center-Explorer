@@ -19,6 +19,9 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
     {
         private IPowerBIClient _client;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReportsController"/> class.
+        /// </summary>
         public ReportsController()
         { }
 
@@ -27,13 +30,12 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             _client = powerbiClient;
         }
 
-        public ActionResult Index()
-        {
-            return View();
-        }
-
+        /// <summary>
+        /// Handles the request to load available reports.
+        /// </summary>
+        /// <returns>A partial view containing the available reports from Power BI embedded.</returns>
         [ChildActionOnly]
-        public ActionResult Reports()
+        public PartialViewResult Reports()
         {
             ODataResponseListReport response;
             ReportsModel reportsModel;
@@ -70,7 +72,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             if (string.IsNullOrEmpty(reportId))
             {
-                throw new ArgumentNullException("reportId");
+                throw new ArgumentNullException(nameof(reportId));
             }
 
             try
@@ -115,7 +117,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             {
                 credentials = new TokenCredentials(
                     PowerBIConfig.AccessKey,
-                    "Appkey"
+                    "AppKey"
                 );
 
                 _client = new PowerBIClient(credentials)

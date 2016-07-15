@@ -3,8 +3,18 @@
 
 namespace Microsoft.Samples.AzureAD.Graph.API.Models
 {
-    public class DomainDnsCnameRecord : ServiceConfigurationRecord, IServiceConfigurationRecord
+    /// <summary>
+    /// Represents a CNAME DNS service configuration record.
+    /// </summary>
+    /// <seealso cref="Microsoft.Samples.AzureAD.Graph.API.Models.ServiceConfigurationRecord" />
+    public class DomainDnsCnameRecord : ServiceConfigurationRecord
     {
+        /// <summary>
+        /// Gets or sets the name of the canonical.
+        /// </summary>
+        /// <value>
+        /// The canonical name value.
+        /// </value>
         public string CanonicalName
         { get; set; }
     }

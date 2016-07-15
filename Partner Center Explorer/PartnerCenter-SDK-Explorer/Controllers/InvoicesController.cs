@@ -21,15 +21,23 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
     {
         private SdkContext _context;
 
-        public async Task<ActionResult> AzureDetails(string customerName, string invoiceId)
+        /// <summary>
+        /// Handles the partial view request for Azure details.
+        /// </summary>
+        /// <param name="customerName">Name of the customer.</param>
+        /// <param name="invoiceId">The invoice identifier.</param>
+        /// <returns>A partial view containing the InvoiceDetailsModel model.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// </exception>
+        public async Task<PartialViewResult> AzureDetails(string customerName, string invoiceId)
         {
             if (string.IsNullOrEmpty(customerName))
             {
-                throw new ArgumentNullException("cusotmerName");
+                throw new ArgumentNullException(nameof(customerName));
             }
-            else if (string.IsNullOrEmpty(invoiceId))
+            if (string.IsNullOrEmpty(invoiceId))
             {
-                throw new ArgumentNullException("invoiceId");
+                throw new ArgumentNullException(nameof(invoiceId));
             }
 
             InvoiceDetailsModel invoiceDetailsModel = new InvoiceDetailsModel()
@@ -40,6 +48,10 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             return PartialView(invoiceDetailsModel);
         }
 
+        /// <summary>
+        /// Handles the index view request.
+        /// </summary>
+        /// <returns>A view containing the InvoicesModel model.</returns>
         public async Task<ActionResult> Index()
         {
             InvoicesModel invoicesModel = new InvoicesModel()
@@ -68,6 +80,11 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             List<string> customers;
             List<InvoiceLineItem> lineItems;
 
+            if (string.IsNullOrEmpty(invoiceId))
+            {
+                throw new ArgumentNullException(nameof(invoiceId));
+            }
+
             try
             {
                 customers = new List<string>();
@@ -75,21 +92,21 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
                 customers.AddRange(
                     lineItems
-                        .Where(x => x.GetType() == typeof(DailyUsageLineItem))
+                        .Where(x => x is DailyUsageLineItem)
                         .Cast<DailyUsageLineItem>()
                         .Select(x => x.CustomerCompanyName)
                 );
 
                 customers.AddRange(
                     lineItems
-                        .Where(x => x.GetType() == typeof(LicenseBasedLineItem))
+                        .Where(x => x is LicenseBasedLineItem)
                         .Cast<LicenseBasedLineItem>()
                         .Select(x => x.CustomerName)
                 );
 
                 customers.AddRange(
                     lineItems
-                        .Where(x => x.GetType() == typeof(UsageBasedLineItem))
+                        .Where(x => x is UsageBasedLineItem)
                         .Cast<UsageBasedLineItem>()
                         .Select(x => x.CustomerCompanyName)
                 );
@@ -103,6 +120,11 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
         }
 
+        /// <summary>
+        /// Handles the Details view request.
+        /// </summary>
+        /// <param name="invoiceId">The invoice identifier.</param>
+        /// <returns>Return a vew with the InvoiceDetailsModel model.</returns>
         public ActionResult Details(string invoiceId)
         {
             if (string.IsNullOrEmpty(invoiceId))
@@ -138,15 +160,15 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             if (string.IsNullOrEmpty(invoiceId))
             {
-                throw new ArgumentNullException("invoiceId");
+                throw new ArgumentNullException(nameof(invoiceId));
             }
-            else if (string.IsNullOrEmpty(customerName))
+            if (string.IsNullOrEmpty(customerName))
             {
-                throw new ArgumentNullException("customerName");
+                throw new ArgumentNullException(nameof(customerName));
             }
-            else if (string.IsNullOrEmpty(providerType))
+            if (string.IsNullOrEmpty(providerType))
             {
-                throw new ArgumentNullException("providerType");
+                throw new ArgumentNullException(nameof(providerType));
             }
 
             try
@@ -168,15 +190,23 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
         }
 
-        public async Task<ActionResult> OfficeDetails(string customerName, string invoiceId)
+        /// <summary>
+        /// Handles the request for the OfficeDetails partial view. 
+        /// </summary>
+        /// <param name="customerName">Name of the customer.</param>
+        /// <param name="invoiceId">The invoice identifier.</param>
+        /// <returns>A partial view containing the InvoiceDetailsModel model.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// </exception>
+        public async Task<PartialViewResult> OfficeDetails(string customerName, string invoiceId)
         {
             if (string.IsNullOrEmpty(customerName))
             {
-                throw new ArgumentNullException("cusotmerName");
+                throw new ArgumentNullException(nameof(customerName));
             }
-            else if (string.IsNullOrEmpty(invoiceId))
+            if (string.IsNullOrEmpty(invoiceId))
             {
-                throw new ArgumentNullException("invoiceId");
+                throw new ArgumentNullException(nameof(invoiceId));
             }
 
             InvoiceDetailsModel invoiceDetailsModel = new InvoiceDetailsModel()
@@ -257,15 +287,15 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             if (string.IsNullOrEmpty(invoiceId))
             {
-                throw new ArgumentNullException("invoiceId");
+                throw new ArgumentNullException(nameof(invoiceId));
             }
-            else if (string.IsNullOrEmpty(customerName))
+            if (string.IsNullOrEmpty(customerName))
             {
-                throw new ArgumentNullException("customerName");
+                throw new ArgumentNullException(nameof(customerName));
             }
-            else if (string.IsNullOrEmpty(providerType))
+            if (string.IsNullOrEmpty(providerType))
             {
-                throw new ArgumentNullException("providerType");
+                throw new ArgumentNullException(nameof(providerType));
             }
 
             try
@@ -275,7 +305,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                     items = await GetInvoiceLineItemsAsync(invoiceId);
 
                     return items
-                        .Where(x => x.GetType() == typeof(UsageBasedLineItem))
+                        .Where(x => x is UsageBasedLineItem)
                         .Cast<UsageBasedLineItem>()
                         .Where(x => x.CustomerCompanyName.Equals(customerName, StringComparison.OrdinalIgnoreCase))
                         .ToList<InvoiceLineItem>();
@@ -285,7 +315,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                     items = await GetInvoiceLineItemsAsync(invoiceId);
 
                     return items
-                        .Where(x => x.GetType() == typeof(LicenseBasedLineItem))
+                        .Where(x => x is LicenseBasedLineItem)
                         .Cast<LicenseBasedLineItem>()
                         .Where(x => x.CustomerName.Equals(customerName, StringComparison.OrdinalIgnoreCase))
                         .ToList<InvoiceLineItem>();
@@ -308,11 +338,11 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             if (string.IsNullOrEmpty(invoiceId))
             {
-                throw new ArgumentNullException("invoiceId");
+                throw new ArgumentNullException(nameof(invoiceId));
             }
-            else if (string.IsNullOrEmpty(customerName))
+            if (string.IsNullOrEmpty(customerName))
             {
-                throw new ArgumentNullException("customerName");
+                throw new ArgumentNullException(nameof(customerName));
             }
 
             try
@@ -347,11 +377,11 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             if (string.IsNullOrEmpty(invoiceId))
             {
-                throw new ArgumentNullException("invoiceId");
+                throw new ArgumentNullException(nameof(invoiceId));
             }
-            else if (string.IsNullOrEmpty(customerName))
+            if (string.IsNullOrEmpty(customerName))
             {
-                throw new ArgumentNullException("customerName");
+                throw new ArgumentNullException(nameof(customerName));
             }
 
             try

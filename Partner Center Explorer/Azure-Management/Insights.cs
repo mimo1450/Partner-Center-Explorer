@@ -33,11 +33,11 @@ namespace Microsoft.Samples.Azure.Management
         {
             if (string.IsNullOrEmpty(subscriptionId))
             {
-                throw new ArgumentNullException("subscriptionId");
+                throw new ArgumentNullException(nameof(subscriptionId));
             }
             else if (string.IsNullOrEmpty(token))
             {
-                throw new ArgumentNullException("token");
+                throw new ArgumentNullException(nameof(token));
             }
 
             _token = new TokenCloudCredentials(subscriptionId, token);
@@ -65,10 +65,7 @@ namespace Microsoft.Samples.Azure.Management
 
             if (disposing)
             {
-                if (_client != null)
-                {
-                    _client.Dispose();
-                }
+                _client?.Dispose();
             }
 
             _disposed = true;

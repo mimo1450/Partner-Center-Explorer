@@ -16,8 +16,8 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer
     /// </summary>
     public partial class Startup
     {
-        private string ClientId = ConfigurationManager.AppSettings["ApplicationId"];
-        private string Authority = ConfigurationManager.AppSettings["Authority"] + "/common";
+        private readonly string _authority = ConfigurationManager.AppSettings["Authority"] + "/common";
+        private readonly string _clientId = ConfigurationManager.AppSettings["ApplicationId"];
 
         /// <summary>
         /// Configures the authentication for the application.
@@ -27,27 +27,27 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer
         {
             app.SetDefaultSignInAsAuthenticationType(CookieAuthenticationDefaults.AuthenticationType);
 
-            app.UseCookieAuthentication(new CookieAuthenticationOptions { });
+            app.UseCookieAuthentication(new CookieAuthenticationOptions());
 
             app.UseOpenIdConnectAuthentication(
                 new OpenIdConnectAuthenticationOptions
                 {
-                    ClientId = ClientId,
-                    Authority = Authority,
+                    ClientId = _clientId,
+                    Authority = _authority,
                     TokenValidationParameters = new TokenValidationParameters
                     {
                         RoleClaimType = "roles",
                         SaveSigninToken = true,
-                        ValidateIssuer = false,
+                        ValidateIssuer = false
                     },
-                    Notifications = new OpenIdConnectAuthenticationNotifications()
+                    Notifications = new OpenIdConnectAuthenticationNotifications
                     {
-                        SecurityTokenValidated = (context) =>
+                        SecurityTokenValidated = context =>
                         {
                             // If your authentication logic is based on users then add your logic here
                             return Task.FromResult(0);
                         },
-                        AuthenticationFailed = (context) =>
+                        AuthenticationFailed = context =>
                         {
                             // Pass in the context back to the app
                             context.OwinContext.Response.Redirect("/Error/ShowError");

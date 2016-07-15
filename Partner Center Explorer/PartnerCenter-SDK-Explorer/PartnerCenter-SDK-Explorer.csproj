@@ -312,8 +312,8 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\AuditSearchModel.cs" />
     <Compile Include="Models\AuditRecordsModel.cs" />
+    <Compile Include="Models\AuditSearchModel.cs" />
     <Compile Include="Models\CustomerModel.cs" />
     <Compile Include="Models\CustomersModel.cs" />
     <Compile Include="Models\ConfigurationRecordsModel.cs" />
@@ -324,7 +324,10 @@
     <Compile Include="Models\LicenseModel.cs" />
     <Compile Include="Models\NewCustomerModel.cs" />
     <Compile Include="Models\NewDeploymentModel.cs" />
+    <Compile Include="Models\NewSubscriptionModel.cs" />
     <Compile Include="Models\NewUserModel.cs" />
+    <Compile Include="Models\OfferModel.cs" />
+    <Compile Include="Models\OffersModel.cs" />
     <Compile Include="Models\ReportModel.cs" />
     <Compile Include="Models\ReportsModel.cs" />
     <Compile Include="Models\ServiceRequestsModel.cs" />
@@ -400,14 +403,6 @@
     <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
-    <Content Include="fonts\glyphicons-halflings-regular.woff2" />
-    <Content Include="fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="Content\bootstrap.min.css.map" />
-    <Content Include="Content\bootstrap.css.map" />
-    <Content Include="Content\bootstrap-theme.min.css.map" />
-    <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="fonts\FontAwesome.otf" />
     <Content Include="fonts\fontawesome-webfont.woff2" />
     <Content Include="fonts\fontawesome-webfont.woff" />
@@ -424,6 +419,14 @@
     <Content Include="Content\bootstrap-datepicker.standalone.css.map" />
     <Content Include="Content\bootstrap-datepicker.min.css.map" />
     <Content Include="Content\bootstrap-datepicker.css.map" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\bootstrap.min.css.map" />
+    <Content Include="Content\bootstrap.css.map" />
+    <Content Include="Content\bootstrap-theme.min.css.map" />
+    <Content Include="Content\bootstrap-theme.css.map" />
     <None Include="Scripts\jquery-2.2.3.intellisense.js" />
     <Content Include="Scripts\ai.0.22.9-build00167.js" />
     <Content Include="Scripts\ai.0.22.9-build00167.min.js" />
@@ -572,6 +575,11 @@
     <Content Include="Views\Subscriptions\Azure.cshtml" />
     <Content Include="Views\Subscriptions\Office.cshtml" />
     <Content Include="Scripts\powerbi.js.map" />
+    <Content Include="Views\Subscriptions\Create.cshtml" />
+    <Content Include="Views\Subscriptions\List.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\SubscriptionModel.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\OfferModel.cshtml" />
+    <Content Include="Views\Subscriptions\Offers.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

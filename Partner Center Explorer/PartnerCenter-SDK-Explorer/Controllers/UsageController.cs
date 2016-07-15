@@ -38,11 +38,11 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             if (string.IsNullOrEmpty(customerId))
             {
-                throw new ArgumentNullException("customerId");
+                throw new ArgumentNullException(nameof(customerId));
             }
-            else if (string.IsNullOrEmpty(subscriptionId))
+            if (string.IsNullOrEmpty(subscriptionId))
             {
-                throw new ArgumentNullException("subscriptionId");
+                throw new ArgumentNullException(nameof(subscriptionId));
             }
 
             try
@@ -54,8 +54,8 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                 {
                     CompanyName = customer.CompanyProfile.CompanyName,
                     CustomerId = customerId,
-                    // DailyUsage = await Context.PartnerOperations.Customers.ById(customerId)
-                    //    .Subscriptions.ById(subscriptionId).UsageRecords.Daily.GetAsync(),
+                    DailyUsage = await Context.PartnerOperations.Customers.ById(customerId)
+                        .Subscriptions.ById(subscriptionId).UsageRecords.Daily.GetAsync(),
                     MonthlyUsage = await Context.PartnerOperations.Customers.ById(customerId)
                         .Subscriptions.ById(subscriptionId).UsageRecords.Resources.GetAsync(),
                     SubscriptionId = subscriptionId,

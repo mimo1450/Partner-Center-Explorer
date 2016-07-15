@@ -3,8 +3,18 @@
 
 namespace Microsoft.Samples.AzureAD.Graph.API.Models
 {
-    public class DomainDnsTxtRecord : ServiceConfigurationRecord, IServiceConfigurationRecord
+    /// <summary>
+    /// Represents a TXT DNS service configuration record.
+    /// </summary>
+    /// <seealso cref="Microsoft.Samples.AzureAD.Graph.API.Models.ServiceConfigurationRecord" />
+    public class DomainDnsTxtRecord : ServiceConfigurationRecord
     {
+        /// <summary>
+        /// Gets or sets the text.
+        /// </summary>
+        /// <value>
+        /// The text value for the record.
+        /// </value>
         public string Text
         { get; set; }
     }

@@ -10,7 +10,7 @@
         <li>Customers</li>
         <li><a href="/Customers/@Model.CustomerId/Show">@Model.CompanyName</a></li>
         <li>Subscriptions</li>
-        <li><a href="/Customers/@Model.CustomerId/Subscriptions/@Model.SubscriptionId">@Model.FriendlyName</a></li>
+        <li><a href="/Customers/@Model.CustomerId/Subscriptions/@Model.SubscriptionId/Show">@Model.FriendlyName</a></li>
         <li class="active">Manage</li>
     </ol>
 }
@@ -31,7 +31,7 @@
         <hr />
         <div class="row">
             <div class="col-md-4 col-sm-8">
-                <a class="lnkNewDeployment" href="/Customers/@Model.CustomerId/Subscriptions/@Model.SubscriptionId/Manage/NewDeployment" id="NewDeployment">New Deployment</a>
+                <a class="lnkNewDeployment" href="#" id="NewDeployment">New Deployment</a>
             </div>
         </div>
         <div id="deployments" style="display: none;"></div>
@@ -46,56 +46,54 @@
             $.ajax({
                 cache: true,
                 type: 'GET',
-                url: '@Url.Action("/ResourceGroups")',
+                url: '@Url.Action("ResourceGroups", "Manage")',
                 success: function (data) {
                     ddlResourceGroups.html('');
                     $.each(data, function (index, item) {
                         ddlResourceGroups.append($('<option></option>').val(item.Name).html(item.Name));
-                    })
+                    });
 
                     var group = ddlResourceGroups.find(":selected").text();
 
-                    $.get('/Customers/@Model.CustomerId/Subscriptions/@Model.SubscriptionId/Manage/Deployments?resourceGroupName=' + group, function (data) {
+                    $("#NewDeployment")
+                    .attr('href',
+                        '/Customers/@Model.CustomerId/Manage/@Model.SubscriptionId/NewDeployment?resourceGroupName=' +
+                        encodeURIComponent(group));
+
+                    $.get('/Customers/@Model.CustomerId/Manage/@Model.SubscriptionId/Deployments?resourceGroupName=' + group, function (data) {
                         $('#deployments').html(data);
                         $('#deployments').fadeIn('fast');
                     });
                 }
             });
-
-            $('#btnApply').click(function () {
-                $.post(
-                    '@Url.Action("ApplyTemplate", "Subscriptions")', {
-                        customerId: '@Model.CustomerId',
-                        subscriptionId: '@Model.SubscriptionId',
-                        resourceGroupName: $('#ddlResourceGroups').find(":selected").text(),
-                        templateUri: $('#txtTemplateUri').val(),
-                        parametersUri: $('#txtParametersUri').val()
-                    }
-                );
-            });
-
-            $('#ddlResourceGroups').change(function () {
-                var group = $(this).val();
-
-                $.get('/Customers/@Model.CustomerId/Subscription/@Model.SubscriptionId/Manage/Deployments?resourceGroupName=' + group, function (data) {
-                    $('#deployments').html(data);
-                    $('#deployments').fadeIn('fast');
-                });
-            });
-
-            $(".lnkNewDeployment").click(function (e) {
-                e.preventDefault();
-                $(this).attr('data-target', '#modal-container');
-                $(this).attr('data-toggle', 'modal');
-            });
-
-            $(document).on('hidden.bs.modal', function (e) {
-                $(e.target).removeData('bs.modal');
-            });
-
-            function OnSuccessCallback(data, status, xhr) {
-                $('#modal-container').modal('hide');
-            }
         });
+
+        $('#ddlResourceGroups').change(function () {
+            var group = $(this).val();
+
+            $("#NewDeployment")
+                .attr('href',
+                    '/Customers/@Model.CustomerId/Manage/@Model.SubscriptionId/NewDeployment?resourceGroupName=' +
+                    encodeURIComponent(group));
+
+            $.get('/Customers/@Model.CustomerId/Manage/@Model.SubscriptionId/Deployments?resourceGroupName=' + group, function (data) {
+                $('#deployments').html(data);
+                $('#deployments').fadeIn('fast');
+            });
+        });
+
+        $(".lnkNewDeployment").click(function (e) {
+            e.preventDefault();
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+        });
+
+        $(document).on('hidden.bs.modal', function (e) {
+            $(e.target).removeData('bs.modal');
+        });
+
+        function OnSuccessCallback() {
+            $('#modal-container').modal('hide');
+        }
     </script>
 }

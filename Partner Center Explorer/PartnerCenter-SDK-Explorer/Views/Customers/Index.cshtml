@@ -13,24 +13,6 @@
     </ol>
 }
 
-@section Scripts {
-    <script type="text/javascript">
-        function OnSuccessCallback(data) {
-            $('#' + data).remove();
-        }
-
-        $(".lnkNewCustomer").click(function (e) {
-            e.preventDefault();
-            $(this).attr('data-target', '#modal-container');
-            $(this).attr('data-toggle', 'modal');
-        });
-
-        $(document).on('hidden.bs.modal', function (e) {
-            $(e.target).removeData('bs.modal');
-        });
-    </script>
-}
-
 <div class="side-body padding-top">
     <div id="dialog-newCustomer" style="display: none"></div>
 
@@ -53,7 +35,7 @@
             </tr>
         </thead>
         @foreach (Customer customer in Model.Customers.Items)
-            {
+        {
             <tr id="@customer.Id">
                 <td>
                     @Html.ActionLink(customer.CompanyProfile.CompanyName, string.Format("{0}/Show", customer.Id), "Customers")
@@ -67,7 +49,7 @@
                 @if (AppConfig.IsSandboxEnvironment)
                 {
                     <td>
-                        @Ajax.RouteLink("Delete", new { action = "Delete", customerId = customer.Id },
+                        @Ajax.RouteLink("Delete", new { action = "Delete", controller = "Customers", customerId = customer.Id },
                             new AjaxOptions()
                             {
                                 HttpMethod = "Delete",
@@ -80,3 +62,21 @@
         }
     </table>
 </div>
+
+@section Scripts {
+    <script type="text/javascript">
+        function OnSuccessCallback(data) {
+            $('#' + data).remove();
+        }
+
+        $(".lnkNewCustomer").click(function (e) {
+            e.preventDefault();
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+        });
+
+        $(document).on('hidden.bs.modal', function (e) {
+            $(e.target).removeData('bs.modal').find(".modal-content").empty();
+        });
+    </script>
+}

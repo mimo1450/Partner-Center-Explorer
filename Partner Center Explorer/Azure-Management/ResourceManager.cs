@@ -19,7 +19,7 @@ namespace Microsoft.Samples.Azure.Management
     public class ResourceManager : IDisposable
     {
         private ResourceManagementClient _client;
-        private string _token;
+        private readonly string _token;
         private bool _disposed;
 
         /// <summary>
@@ -53,10 +53,7 @@ namespace Microsoft.Samples.Azure.Management
 
             if (disposing)
             {
-                if (_client != null)
-                {
-                    _client.Dispose();
-                }
+                _client?.Dispose();
             }
 
             _disposed = true;
@@ -85,26 +82,28 @@ namespace Microsoft.Samples.Azure.Management
 
             if (string.IsNullOrEmpty(subscriptionId))
             {
-                throw new ArgumentNullException("subscriptionId");
+                throw new ArgumentNullException(nameof(subscriptionId));
             }
-            else if (string.IsNullOrEmpty(resourceGroupName))
+            if (string.IsNullOrEmpty(resourceGroupName))
             {
-                throw new ArgumentNullException("resourceGroupName");
+                throw new ArgumentNullException(nameof(resourceGroupName));
             }
-            else if (string.IsNullOrEmpty(templateUri))
+            if (string.IsNullOrEmpty(templateUri))
             {
-                throw new ArgumentNullException("templateUri");
+                throw new ArgumentNullException(nameof(templateUri));
             }
 
             try
             {
                 Client.SubscriptionId = subscriptionId;
 
-                deployment = new Deployment();
-                deployment.Properties = new DeploymentProperties()
+                deployment = new Deployment()
                 {
-                    Mode = DeploymentMode.Incremental,
-                    TemplateLink = new TemplateLink(templateUri)
+                    Properties = new DeploymentProperties()
+                    {
+                        Mode = DeploymentMode.Incremental,
+                        TemplateLink = new TemplateLink(templateUri)
+                    }
                 };
 
                 if (!string.IsNullOrEmpty(parametersUri))
@@ -128,7 +127,7 @@ namespace Microsoft.Samples.Azure.Management
         /// <summary>
         /// Gets a list of deployments for the specified subscription and resource group.
         /// </summary>
-        /// <param name="subscrptionId">The subscrption identifier.</param>
+        /// <param name="subscriptionId">The subscrption identifier.</param>
         /// <param name="resourceGroupName">Name of the resource group.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException">
@@ -136,22 +135,22 @@ namespace Microsoft.Samples.Azure.Management
         /// or
         /// resourceGroupName
         /// </exception>
-        public async Task<List<DeploymentExtended>> GetDeploymentsAsync(string subscrptionId, string resourceGroupName)
+        public async Task<List<DeploymentExtended>> GetDeploymentsAsync(string subscriptionId, string resourceGroupName)
         {
             IPage<DeploymentExtended> deployements;
 
-            if (string.IsNullOrEmpty(subscrptionId))
+            if (string.IsNullOrEmpty(subscriptionId))
             {
-                throw new ArgumentNullException("subscritpionId");
+                throw new ArgumentNullException(nameof(subscriptionId));
             }
-            else if (string.IsNullOrEmpty(resourceGroupName))
+            if (string.IsNullOrEmpty(resourceGroupName))
             {
-                throw new ArgumentNullException("resourceGroupName");
+                throw new ArgumentNullException(nameof(resourceGroupName));
             }
 
             try
             {
-                Client.SubscriptionId = subscrptionId;
+                Client.SubscriptionId = subscriptionId;
                 deployements = await Client.Deployments.ListAsync(resourceGroupName);
 
                 return deployements.ToList();
@@ -174,7 +173,7 @@ namespace Microsoft.Samples.Azure.Management
         {
             if (string.IsNullOrEmpty(subscriptionId))
             {
-                throw new ArgumentNullException("subscriptinId");
+                throw new ArgumentNullException(nameof(subscriptionId));
             }
 
             IPage<ResourceGroup> resourceGroups;

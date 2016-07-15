@@ -1,7 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
+﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Store.PartnerCenter.Samples.Common;
 using StackExchange.Redis;
 using System;
@@ -17,14 +14,12 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Cache
     /// <seealso cref="Microsoft.IdentityModel.Clients.ActiveDirectory.TokenCache" />
     public class DistributedTokenCache : TokenCache
     {
-        private IDatabase _cache;
-        private DpapiDataProtector _protector;
-        private string _resource;
+        private static readonly Lazy<ConnectionMultiplexer> _connection =
+            new Lazy<ConnectionMultiplexer>(() => { return ConnectionMultiplexer.Connect(AppConfig.RedisConnection); });
 
-        private static Lazy<ConnectionMultiplexer> _connection = new Lazy<ConnectionMultiplexer>(() =>
-        {
-            return ConnectionMultiplexer.Connect(AppConfig.RedisConnection);
-        });
+        private readonly IDatabase _cache;
+        private readonly DpapiDataProtector _protector;
+        private readonly string _resource;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DistributedTokenCache"/> class.
@@ -38,6 +33,25 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Cache
 
             AfterAccess = AfterAccessNotification;
             BeforeAccess = BeforeAccessNotification;
+        }
+
+        private static ConnectionMultiplexer Connection
+        {
+            get { return _connection.Value; }
+        }
+
+        private string Key
+        {
+            get
+            {
+                return string.Format(
+                    "Resource:{0}::UserId:{1}",
+                    _resource,
+                    ClaimsPrincipal.Current.Identities.First()
+                        .FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")
+                        .Value
+                    );
+            }
         }
 
         /// <summary>
@@ -105,26 +119,6 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Cache
         {
             base.DeleteItem(item);
             _cache.KeyDelete(Key);
-        }
-
-        private static ConnectionMultiplexer Connection
-        {
-            get
-            {
-                return _connection.Value;
-            }
-        }
-
-        private string Key
-        {
-            get
-            {
-                return string.Format(
-                    "Resource:{0}::UserId:{1}",
-                    _resource,
-                    ClaimsPrincipal.Current.Identities.First().FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value
-                );
-            }
         }
     }
 }
