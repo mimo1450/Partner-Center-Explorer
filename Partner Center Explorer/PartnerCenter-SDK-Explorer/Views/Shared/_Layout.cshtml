@@ -40,7 +40,6 @@
                     <div class="side-menu-container">
                         <ul class="nav navbar-nav">
                             <li class="@(controller == "Home" ? "active" : "")">
-                                >
                                 <a href="/">
                                     <span class="icon fa fa-home"></span><span class="title">Home</span>
                                 </a>
@@ -50,7 +49,15 @@
                                     <span class="icon fa fa-unlock-alt"></span><span class="title">Audit Log</span>
                                 </a>
                             </li>
-                            @if (controller == "Customers" || controller == "Subscriptions" || controller == "Usage")
+                            @if (!string.IsNullOrEmpty(AppConfig.AutomationAccount))
+                            {
+                                <li class="@(controller == "Automation" ? "action" : "")">
+                                    <a href="/Automation">
+                                        <span class="icon fa fa-cogs"></span><span class="title">Automation</span>
+                                    </a>
+                                </li>
+                            }
+                            @if (controller == "Customers" || controller == "Manage" || controller == "Subscriptions" || controller == "Usage")
                             {
                                 className = "active";
                             }
@@ -64,9 +71,7 @@
                                     <span class="icon fa fa-dollar"></span><span class="title">Invoices</span>
                                 </a>
                             </li>
-                            @if (!string.IsNullOrEmpty(PowerBIConfig.AccessKey) &&
-                             !string.IsNullOrEmpty(PowerBIConfig.WorkspaceCollectionName) &&
-                             !string.IsNullOrEmpty(PowerBIConfig.WorkspaceId))
+                            @if (!string.IsNullOrEmpty(PowerBIConfig.AccessKey))
                             {
                                 @Html.Action("Reports", "Reports")
                             }

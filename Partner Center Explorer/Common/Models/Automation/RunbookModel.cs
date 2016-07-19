@@ -110,6 +110,18 @@ namespace Microsoft.Store.PartnerCenter.Samples.Common.Models.Automation
         { get; set; }
 
         /// <summary>
+        /// Gets or sets the name of the resource group.
+        /// </summary>
+        /// <value>
+        /// The name of the resource group.
+        /// </value>
+        /// <remarks>
+        /// This property is used by the view for routing purposes.
+        /// </remarks>
+        public string ResourceGroupName
+        { get; set; }
+
+        /// <summary>
         /// Gets or sets the type of the runbook.
         /// </summary>
         /// <value>

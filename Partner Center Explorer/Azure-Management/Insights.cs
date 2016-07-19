@@ -13,10 +13,14 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Samples.Azure.Management
 {
+    /// <summary>
+    /// Facilitates interactions with the Azure Insights in order to expose Azure health information.
+    /// </summary>
+    /// <seealso cref="System.IDisposable" />
     public class Insights : IDisposable
     {
         private InsightsClient _client;
-        private TokenCloudCredentials _token;
+        private readonly TokenCloudCredentials _token;
         private bool _disposed;
 
         /// <summary>
@@ -35,7 +39,7 @@ namespace Microsoft.Samples.Azure.Management
             {
                 throw new ArgumentNullException(nameof(subscriptionId));
             }
-            else if (string.IsNullOrEmpty(token))
+            if (string.IsNullOrEmpty(token))
             {
                 throw new ArgumentNullException(nameof(token));
             }
@@ -71,6 +75,10 @@ namespace Microsoft.Samples.Azure.Management
             _disposed = true;
         }
 
+        /// <summary>
+        /// Asynchronously gets a list of Azure health events.
+        /// </summary>
+        /// <returns></returns>
         public async Task<List<IHealthEvent>> GetHealthEventsAsync()
         {
             DateTime end;
@@ -120,17 +128,6 @@ namespace Microsoft.Samples.Azure.Management
             }
         }
 
-        private InsightsClient Client
-        {
-            get
-            {
-                if (_client == null)
-                {
-                    _client = new InsightsClient(_token);
-                }
-
-                return _client;
-            }
-        }
+        private InsightsClient Client => _client ?? (_client = new InsightsClient(_token));
     }
 }

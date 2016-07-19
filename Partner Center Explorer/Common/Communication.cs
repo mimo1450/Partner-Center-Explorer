@@ -38,15 +38,15 @@ namespace Microsoft.Store.PartnerCenter.Samples.Common
 
             if (string.IsNullOrEmpty(requestUri))
             {
-                throw new ArgumentNullException("requestUri");
+                throw new ArgumentNullException(nameof(requestUri));
             }
-            else if (mediaType == null)
+            if (mediaType == null)
             {
-                throw new ArgumentNullException("mediaType");
+                throw new ArgumentNullException(nameof(mediaType));
             }
-            else if (string.IsNullOrEmpty(token))
+            if (string.IsNullOrEmpty(token))
             {
-                throw new ArgumentNullException("token");
+                throw new ArgumentNullException(nameof(token));
             }
 
             try
@@ -97,15 +97,15 @@ namespace Microsoft.Store.PartnerCenter.Samples.Common
 
             if (string.IsNullOrEmpty(requestUri))
             {
-                throw new ArgumentNullException("requestUri");
+                throw new ArgumentNullException(nameof(requestUri));
             }
-            else if (mediaType == null)
+            if (mediaType == null)
             {
-                throw new ArgumentNullException("mediaType");
+                throw new ArgumentNullException(nameof(mediaType));
             }
-            else if (string.IsNullOrEmpty(token))
+            if (string.IsNullOrEmpty(token))
             {
-                throw new ArgumentNullException("token");
+                throw new ArgumentNullException(nameof(token));
             }
 
             try
@@ -151,13 +151,13 @@ namespace Microsoft.Store.PartnerCenter.Samples.Common
         {
             HttpResponseMessage response;
 
-            if (string.IsNullOrEmpty("requestUri"))
+            if (string.IsNullOrEmpty(requestUri))
             {
-                throw new ArgumentNullException("requestUri");
+                throw new ArgumentNullException(nameof(requestUri));
             }
-            else if (content == null)
+            if (content == null)
             {
-                throw new ArgumentNullException("content");
+                throw new ArgumentNullException(nameof(content));
             }
 
             try
@@ -207,19 +207,19 @@ namespace Microsoft.Store.PartnerCenter.Samples.Common
 
             if (string.IsNullOrEmpty(requestUri))
             {
-                throw new ArgumentNullException("requestUri");
+                throw new ArgumentNullException(nameof(requestUri));
             }
-            else if (mediaType == null)
+            if (mediaType == null)
             {
-                throw new ArgumentNullException("mediaType");
+                throw new ArgumentNullException(nameof(mediaType));
             }
-            else if (content == null)
+            if (content == null)
             {
-                throw new ArgumentNullException("content");
+                throw new ArgumentNullException(nameof(content));
             }
-            else if (string.IsNullOrEmpty(token))
+            if (string.IsNullOrEmpty(token))
             {
-                throw new ArgumentNullException("token");
+                throw new ArgumentNullException(nameof(token));
             }
 
             try
@@ -247,25 +247,44 @@ namespace Microsoft.Store.PartnerCenter.Samples.Common
             }
         }
 
+        /// <summary>
+        /// Asynchronously posts the content as JSON.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="requestUri">The request URI.</param>
+        /// <param name="mediaType">Type of the media.</param>
+        /// <param name="content">The content.</param>
+        /// <param name="token">The token.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// requestUri
+        /// or
+        /// mediaType
+        /// or
+        /// content
+        /// or
+        /// token
+        /// </exception>
+        /// <exception cref="CommunicationException"></exception>
         public async Task<T> PostAsJsonAsync<T>(string requestUri, MediaTypeWithQualityHeaderValue mediaType, T content, string token)
         {
             HttpResponseMessage response;
 
             if (string.IsNullOrEmpty(requestUri))
             {
-                throw new ArgumentNullException("requestUri");
+                throw new ArgumentNullException(nameof(requestUri));
             }
-            else if (mediaType == null)
+            if (mediaType == null)
             {
-                throw new ArgumentNullException("mediaType");
+                throw new ArgumentNullException(nameof(mediaType));
             }
-            else if (content == null)
+            if (content == null)
             {
-                throw new ArgumentNullException("content");
+                throw new ArgumentNullException(nameof(content));
             }
-            else if (string.IsNullOrEmpty(token))
+            if (string.IsNullOrEmpty(token))
             {
-                throw new ArgumentNullException("token");
+                throw new ArgumentNullException(nameof(token));
             }
 
             try

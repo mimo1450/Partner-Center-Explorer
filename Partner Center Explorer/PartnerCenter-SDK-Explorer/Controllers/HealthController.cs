@@ -8,6 +8,7 @@ using Microsoft.Store.PartnerCenter.Models.Customers;
 using Microsoft.Store.PartnerCenter.Models.Invoices;
 using Microsoft.Store.PartnerCenter.Models.Subscriptions;
 using Microsoft.Store.PartnerCenter.Samples.Common;
+using Microsoft.Store.PartnerCenter.Samples.Common.Context;
 using Microsoft.Store.PartnerCenter.Samples.Common.Models;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models;
@@ -46,11 +47,11 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             if (string.IsNullOrEmpty(customerId))
             {
-                throw new ArgumentNullException("customerId");
+                throw new ArgumentNullException(nameof(customerId));
             }
             else if (string.IsNullOrEmpty(subscriptionId))
             {
-                throw new ArgumentNullException("subscriptionId");
+                throw new ArgumentNullException(nameof(subscriptionId));
             }
 
             try
@@ -58,15 +59,14 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                 customer = Context.PartnerOperations.Customers.ById(customerId).Get();
                 subscription = Context.PartnerOperations.Customers.ById(customerId).Subscriptions.ById(subscriptionId).Get();
 
-                healthModel = new SubscriptionHealthModel()
+                healthModel = new SubscriptionHealthModel
                 {
                     CompanyName = customer.CompanyProfile.CompanyName,
                     CustomerId = customerId,
                     FriendlyName = subscription.FriendlyName,
-                    SubscriptionId = subscriptionId
+                    SubscriptionId = subscriptionId,
+                    ViewModel = (subscription.BillingType == BillingType.License) ? "Office" : "Azure"
                 };
-
-                healthModel.ViewModel = (subscription.BillingType == BillingType.License) ? "Office" : "Azure";
 
                 if (subscription.BillingType == BillingType.Usage)
                 {
@@ -86,31 +86,25 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
         }
 
-        private SdkContext Context
-        {
-            get
-            {
-                if (_context == null)
-                {
-                    _context = new SdkContext();
-                }
-
-                return _context;
-            }
-        }
+        private SdkContext Context => _context ?? (_context = new SdkContext());
 
         private async Task<List<IHealthEvent>> GetAzureSubscriptionHealthAsync(string customerId, string subscriptionId)
         {
             AuthenticationResult token;
 
+            if (string.IsNullOrEmpty(customerId))
+            {
+                throw new ArgumentNullException(nameof(customerId));
+            }
+            if (string.IsNullOrEmpty(subscriptionId))
+            {
+                throw new ArgumentNullException(nameof(subscriptionId));
+            }
+
             try
             {
                 token = TokenContext.GetAADToken(
-                    string.Format(
-                        "{0}/{1}",
-                        AppConfig.Authority,
-                        customerId
-                    ),
+                    $"{AppConfig.Authority}/{customerId}",
                     AppConfig.ManagementUri
                 );
 
@@ -131,6 +125,11 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         private async Task<List<IHealthEvent>> GetOfficeSubscriptionHealthAsync(string customerId)
         {
             ServiceCommunications comm;
+
+            if (string.IsNullOrEmpty(customerId))
+            {
+                throw new ArgumentNullException(nameof(customerId));
+            }
 
             try
             {

@@ -6,7 +6,7 @@ using Microsoft.PowerBI.Api.V1.Models;
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models
 {
     /// <summary>
-    /// View model used when displaying a Power BI report.
+    /// Model for a Power BI report.
     /// </summary>
     public class ReportModel
     {
@@ -20,7 +20,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models
         { get; set; }
 
         /// <summary>
-        /// Gets or sets an instance of <see cref="IReport"/>.
+        /// Gets or sets an instance of <see cref="Report"/>.
         /// </summary>
         /// <value>
         /// The Power BI report to be displayed.

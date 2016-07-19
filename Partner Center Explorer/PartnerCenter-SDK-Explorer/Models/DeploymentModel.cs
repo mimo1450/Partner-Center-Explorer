@@ -6,7 +6,7 @@ using System;
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models
 {
     /// <summary>
-    /// View model Azure deployments.
+    /// Model for new deployments in Azure using Azure Resource Manager (ARM) templates.
     /// </summary>
     public class DeploymentModel
     {

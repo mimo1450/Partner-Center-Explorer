@@ -1,34 +1,29 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System;
-using System.ComponentModel.DataAnnotations;
-
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models
 {
     /// <summary>
-    /// Model that represents audit record log search.
+    /// Model used when invoking Azure Automation runbooks.
     /// </summary>
-    public class AuditSearchModel
+    public class InvokeRunbookModel
     {
         /// <summary>
-        /// Gets or sets the end date.
+        /// Gets or sets the name of the resource group.
         /// </summary>
         /// <value>
-        /// The end date for the audit records search.
+        /// The name of the resource group.
         /// </value>
-        [DataType(DataType.DateTime)]
-        public DateTime EndDate
+        public string ResourceGroupName
         { get; set; }
 
         /// <summary>
-        /// Gets or sets the start date.
+        /// Gets or sets the name of the runbook.
         /// </summary>
         /// <value>
-        /// The start date for the audit records search.
+        /// The name of the runbook to be invoked.
         /// </value>
-        [DataType(DataType.DateTime)]
-        public DateTime StartDate
+        public string RunbookName
         { get; set; }
     }
 }

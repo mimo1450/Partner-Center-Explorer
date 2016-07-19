@@ -4,11 +4,8 @@
 using Newtonsoft.Json;
 using System;
 
-namespace Microsoft.Samples.Office365.Management.API.Models
+namespace Microsoft.Store.PartnerCenter.Samples.Common.Models
 {
-    /// <summary>
-    /// Represents an authornization token.
-    /// </summary>
     public class AuthorizationToken
     {
         private long _expiresIn;
@@ -20,8 +17,7 @@ namespace Microsoft.Samples.Office365.Management.API.Models
         /// The access token.
         /// </value>
         [JsonProperty("access_token")]
-        public string AccessToken
-        { get; private set; }
+        public string AccessToken { get; private set; }
 
         /// <summary>
         /// Determines whether or the access is near expiration.
@@ -33,18 +29,12 @@ namespace Microsoft.Samples.Office365.Management.API.Models
         }
 
         /// <summary>
-        /// Gets the point in time in which the Access Token returned in the AccessToken property ceases to be valid.
+        /// Gets the point in time in which the access token returned in the AccessToken property ceases to be valid.
         /// </summary>
         /// <value>
-        /// The point in time when the Access Token ceases to be valid.
+        /// The point in time when the access token ceases to be valid.
         /// </value>
-        public DateTime ExpiresOn
-        {
-            get
-            {
-                return DateTime.UtcNow.AddSeconds(_expiresIn);
-            }
-        }
+        public DateTime ExpiresOn => DateTime.UtcNow.AddSeconds(_expiresIn);
 
         [JsonProperty("expires_in")]
         private long ExpiresIn

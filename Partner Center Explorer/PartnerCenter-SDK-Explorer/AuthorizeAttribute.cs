@@ -32,8 +32,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer
                             controller = "Error",
                             action = "ShowError",
                             errorMessage = "You do not have sufficient priviliges to view this page."
-                        })
-                    );
+                        }));
             }
             else
             {

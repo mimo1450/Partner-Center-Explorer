@@ -4,8 +4,8 @@
     <td>
         @Html.ActionLink(
             Model.FriendlyName,
-            string.Format("Subscriptions/{0}/Show", Model.Id),
-            string.Format("Customers/{0}", Model.CustomerId))
+            $"Subscriptions/{Model.Id}/Show",
+            $"Customers/{Model.CustomerId}")
     </td>
 
     <td>
@@ -17,22 +17,22 @@
     <td>
         @Html.ActionLink(
             "Health",
-            string.Format("Health/{0}/", Model.Id),
-            string.Format("Customers/{0}", Model.CustomerId))
+            $"Health/{Model.Id}/",
+            $"Customers/{Model.CustomerId}")
     </td>
     <td>
         @Html.ActionLink(
             "Manage",
-            string.Format("Manage/{0}/", Model.Id),
-            string.Format("Customers/{0}", Model.CustomerId))
+            $"Manage/{Model.Id}/",
+            $"Customers/{Model.CustomerId}")
     </td>
     @if (Model.BillingType == Microsoft.Store.PartnerCenter.Models.Invoices.BillingType.Usage)
     {
         <td>
             @Html.ActionLink(
                 "Usage",
-                string.Format("Usage/{0}/", Model.Id),
-                string.Format("Customers/{0}", Model.CustomerId))
+                $"Usage/{Model.Id}/",
+                $"Customers/{Model.CustomerId}")
         </td>
     }
     else

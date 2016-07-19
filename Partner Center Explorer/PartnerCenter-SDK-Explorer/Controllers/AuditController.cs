@@ -43,17 +43,6 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             return View();
         }
 
-        private SdkContext Context
-        {
-            get
-            {
-                if (_context == null)
-                {
-                    _context = new SdkContext();
-                }
-
-                return _context;
-            }
-        }
+        private SdkContext Context => _context ?? (_context = new SdkContext());
     }
 }

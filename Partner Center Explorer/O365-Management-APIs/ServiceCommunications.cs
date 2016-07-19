@@ -3,36 +3,38 @@
 
 using Microsoft.Samples.Office365.Management.API.Models;
 using Microsoft.Store.PartnerCenter.Samples.Common;
+using Microsoft.Store.PartnerCenter.Samples.Common.Context;
 using Microsoft.Store.PartnerCenter.Samples.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace Microsoft.Samples.Office365.Management.API
 {
+    /// <summary>
+    /// Facilities interactions with the Office 365 Service Communications API.
+    /// </summary>
     public class ServiceCommunications
     {
-        private AuthorizationToken _token;
-        private Communication _comm;
-        private string _userAssertionToken;
+        private readonly Communication _comm;
+        private readonly string _token;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ServiceCommunications" /> class.
         /// </summary>
-        /// <param name="userAssertionToken">The user assertion token.</param>
+        /// <param name="token">The user assertion token.</param>
         /// <exception cref="ArgumentNullException">userAssertionToken</exception>
-        public ServiceCommunications(string userAssertionToken)
+        public ServiceCommunications(string token)
         {
-            if (string.IsNullOrEmpty(userAssertionToken))
+            if (string.IsNullOrEmpty(token))
             {
-                throw new ArgumentNullException("userAssertionToken");
+                throw new ArgumentNullException(nameof(token));
             }
 
             _comm = new Communication();
-            _userAssertionToken = userAssertionToken;
+            _token = token;
         }
 
         /// <summary>
@@ -45,7 +47,7 @@ namespace Microsoft.Samples.Office365.Management.API
         {
             if (string.IsNullOrEmpty(tenantId))
             {
-                throw new ArgumentNullException("tenantId");
+                throw new ArgumentNullException(nameof(tenantId));
             }
 
             return SynchronousExecute(() => GetCurrentStatusAsync(tenantId));
@@ -60,25 +62,23 @@ namespace Microsoft.Samples.Office365.Management.API
         public async Task<List<IHealthEvent>> GetCurrentStatusAsync(string tenantId)
         {
             Result<OfficeHealthEvent> records;
+            string authority;
             string requestUri;
 
             if (string.IsNullOrEmpty(tenantId))
             {
-                throw new ArgumentNullException("tenantId");
+                throw new ArgumentNullException(nameof(tenantId));
             }
 
             try
             {
-                requestUri = string.Format(
-                    "{0}/api/v1.0/{1}/ServiceComms/CurrentStatus",
-                    OfficeConfig.ApiUri,
-                    tenantId
-                );
+                authority = $"{AppConfig.Authority}/{tenantId}/oauth2/token";
+                requestUri = $"{OfficeConfig.ApiUri}/api/v1.0/{tenantId}/ServiceComms/CurrentStatus";
 
                 records = await _comm.GetAsync<Result<OfficeHealthEvent>>(
                     requestUri,
                     new MediaTypeWithQualityHeaderValue("application/json"),
-                    GetToken(tenantId).AccessToken
+                    TokenContext.GetAADToken(authority, OfficeConfig.ApiUri, _token).AccessToken
                 );
 
                 return records.Value.ToList<IHealthEvent>();
@@ -104,11 +104,11 @@ namespace Microsoft.Samples.Office365.Management.API
         {
             if (string.IsNullOrEmpty(tenantId))
             {
-                throw new ArgumentNullException("tenantId");
+                throw new ArgumentNullException(nameof(tenantId));
             }
             else if (string.IsNullOrEmpty(messageId))
             {
-                throw new ArgumentNullException("messageId");
+                throw new ArgumentNullException(nameof(messageId));
             }
 
             return SynchronousExecute(() => GetMessageAsync(tenantId, messageId));
@@ -128,30 +128,28 @@ namespace Microsoft.Samples.Office365.Management.API
         public async Task<Message> GetMessageAsync(string tenantId, string messageId)
         {
             Result<Message> results;
+            string authority;
             string requestUri;
 
             if (string.IsNullOrEmpty(tenantId))
             {
-                throw new ArgumentNullException("tenantId");
+                throw new ArgumentNullException(nameof(tenantId));
             }
             else if (string.IsNullOrEmpty(messageId))
             {
-                throw new ArgumentNullException("messageId");
+                throw new ArgumentNullException(nameof(messageId));
             }
 
             try
             {
-                requestUri = string.Format(
-                    "{0}/api/v1.0/{1}/ServiceComms/Messages?$filter=Id eq '{2}'",
-                    OfficeConfig.ApiUri,
-                    tenantId,
-                    messageId
-                );
+                authority = $"{AppConfig.Authority}/{tenantId}/oauth2/token";
+                requestUri =
+                    $"{OfficeConfig.ApiUri}/api/v1.0/{tenantId}/ServiceComms/Messages?$filter=Id eq '{messageId}'";
 
                 results = await _comm.GetAsync<Result<Message>>(
                     requestUri,
                     new MediaTypeWithQualityHeaderValue("application/json"),
-                    GetToken(tenantId).AccessToken
+                    TokenContext.GetAADToken(authority, OfficeConfig.ApiUri, _token).AccessToken
                 );
 
                 return results.Value.SingleOrDefault();
@@ -172,7 +170,7 @@ namespace Microsoft.Samples.Office365.Management.API
         {
             if (string.IsNullOrEmpty(tenantId))
             {
-                throw new ArgumentNullException("tenantId");
+                throw new ArgumentNullException(nameof(tenantId));
             }
 
             return SynchronousExecute(() => GetMessagesAsync(tenantId));
@@ -187,25 +185,23 @@ namespace Microsoft.Samples.Office365.Management.API
         public async Task<List<Message>> GetMessagesAsync(string tenantId)
         {
             Result<Message> messages;
+            string authority;
             string requestUri;
 
             if (string.IsNullOrEmpty(tenantId))
             {
-                throw new ArgumentNullException("tenantId");
+                throw new ArgumentNullException(nameof(tenantId));
             }
 
             try
             {
-                requestUri = string.Format(
-                    "{0}/api/v1.0/{1}/ServiceComms/Messages",
-                    OfficeConfig.ApiUri,
-                    tenantId
-                );
+                authority = $"{AppConfig.Authority}/{tenantId}/oauth2/token";
+                requestUri = $"{OfficeConfig.ApiUri}/api/v1.0/{tenantId}/ServiceComms/Messages";
 
                 messages = await _comm.GetAsync<Result<Message>>(
                     requestUri,
                     new MediaTypeWithQualityHeaderValue("application/json"),
-                    GetToken(tenantId).AccessToken
+                    TokenContext.GetAADToken(authority, OfficeConfig.ApiUri, _token).AccessToken
                 );
 
                 return messages.Value;
@@ -226,7 +222,7 @@ namespace Microsoft.Samples.Office365.Management.API
         {
             if (string.IsNullOrEmpty(tenantId))
             {
-                throw new ArgumentNullException("tenantId");
+                throw new ArgumentNullException(nameof(tenantId));
             }
 
             return SynchronousExecute(() => GetServicesAsync(tenantId));
@@ -241,6 +237,7 @@ namespace Microsoft.Samples.Office365.Management.API
         public async Task<List<Service>> GetServicesAsync(string tenantId)
         {
             Result<Service> services;
+            string authority;
             string requestUri;
 
             if (string.IsNullOrEmpty(tenantId))
@@ -250,16 +247,13 @@ namespace Microsoft.Samples.Office365.Management.API
 
             try
             {
-                requestUri = string.Format(
-                    "{0}/api/v1.0/{1}/ServiceComms/Services",
-                    OfficeConfig.ApiUri,
-                    tenantId
-                );
+                authority = $"{AppConfig.Authority}/{tenantId}/oauth2/token";
+                requestUri = $"{OfficeConfig.ApiUri}/api/v1.0/{tenantId}/ServiceComms/Services";
 
                 services = await _comm.GetAsync<Result<Service>>(
                     requestUri,
                     new MediaTypeWithQualityHeaderValue("application/json"),
-                    GetToken(tenantId).AccessToken
+                    TokenContext.GetAADToken(authority, OfficeConfig.ApiUri, _token).AccessToken
                 );
 
                 return services.Value;
@@ -271,79 +265,12 @@ namespace Microsoft.Samples.Office365.Management.API
         }
 
         /// <summary>
-        /// Gets a token.
-        /// </summary>
-        /// <param name="tenantId">The tenant identifier.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">tenantId</exception>
-        private AuthorizationToken GetToken(string tenantId)
-        {
-            if (string.IsNullOrEmpty(tenantId))
-            {
-                throw new ArgumentNullException("tenantId");
-            }
-
-            if (_token == null)
-            {
-                _token = SynchronousExecute(() => GetTokenAsync(tenantId));
-            }
-
-            return _token;
-        }
-
-        /// <summary>
-        /// Gets a token asynchronously.
-        /// </summary>
-        /// <param name="tenantId">The tenant identifier.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">tenantId</exception>
-        private async Task<AuthorizationToken> GetTokenAsync(string tenantId)
-        {
-            HttpContent content;
-            List<KeyValuePair<string, string>> values;
-            string requestUri;
-
-            if (string.IsNullOrEmpty(tenantId))
-            {
-                throw new ArgumentNullException("tenantId");
-            }
-
-            try
-            {
-                values = new List<KeyValuePair<string, string>>();
-
-                values.Add(new KeyValuePair<string, string>("assertion", _userAssertionToken));
-                values.Add(new KeyValuePair<string, string>("client_id", AppConfig.ApplicationId));
-                values.Add(new KeyValuePair<string, string>("client_secret", AppConfig.ApplicationSecret));
-                values.Add(new KeyValuePair<string, string>("grant_type", "urn:ietf:params:oauth:grant-type:jwt-bearer"));
-                values.Add(new KeyValuePair<string, string>("requested_token_use", "on_behalf_of"));
-                values.Add(new KeyValuePair<string, string>("resource", OfficeConfig.ApiUri));
-                values.Add(new KeyValuePair<string, string>("scope", "openid"));
-
-                content = new FormUrlEncodedContent(values);
-
-                requestUri = string.Format(
-                    "{0}/{1}/oauth2/token",
-                    AppConfig.Authority,
-                    tenantId
-                );
-
-                return await _comm.PostAsync<AuthorizationToken>(requestUri, content);
-            }
-            finally
-            {
-                content = null;
-                values = null;
-            }
-        }
-
-        /// <summary>
         /// Synchronously executes an asynchronous function.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="operation">The operation.</param>
         /// <returns></returns>
-        private T SynchronousExecute<T>(Func<Task<T>> operation)
+        private static T SynchronousExecute<T>(Func<Task<T>> operation)
         {
             try
             {

@@ -6,7 +6,7 @@ using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Subscriptions;
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models
 {
     /// <summary>
-    /// View model for managing subscriptions.
+    /// Model for managing subscriptions.
     /// </summary>
     public class SubscriptionManageModel
     {
@@ -61,7 +61,9 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models
         /// <value>
         /// The type of the subscription.
         /// </value>
-        /// <remarks>The value will either be Azure or Office.</remarks>
+        /// <remarks>
+        /// Azure or Office are the only valid values for this property.
+        /// </remarks>
         public string ViewName
         { get; set; }
     }

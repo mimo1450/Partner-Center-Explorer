@@ -17,14 +17,9 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer
         /// <param name="filters">The global filter collection.</param>
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
-            if (string.IsNullOrEmpty(AppConfig.InstrumentationKey))
-            {
-                filters.Add(new HandleErrorAttribute());
-            }
-            else
-            {
-                filters.Add(new AIHandleErrorAttribute());
-            }
+            filters.Add(string.IsNullOrEmpty(AppConfig.InstrumentationKey)
+                ? new HandleErrorAttribute()
+                : new AiHandleErrorAttribute());
         }
     }
 }

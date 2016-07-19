@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models
 {
     /// <summary>
-    /// Model for offers avaible for the specific country from Partner Center. 
+    /// Model for offers avaible for the specific country from Partner Center.
     /// </summary>
     public class OfferModel
     {

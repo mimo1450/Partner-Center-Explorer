@@ -1,12 +1,13 @@
-﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using Microsoft.Store.PartnerCenter.Samples.Common;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using StackExchange.Redis;
 using System;
 using System.Linq;
 using System.Security.Claims;
-using System.Security.Cryptography;
 
-namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Cache
+namespace Microsoft.Store.PartnerCenter.Samples.Common.Cache
 {
     /// <summary>
     /// Token cache for Azure AD tokens obtained using ADAL.
@@ -18,7 +19,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Cache
             new Lazy<ConnectionMultiplexer>(() => { return ConnectionMultiplexer.Connect(AppConfig.RedisConnection); });
 
         private readonly IDatabase _cache;
-        private readonly DpapiDataProtector _protector;
+        private readonly MachineKeyDataProtector _protector;
         private readonly string _resource;
 
         /// <summary>
@@ -28,31 +29,17 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Cache
         public DistributedTokenCache(string resource)
         {
             _cache = Connection.GetDatabase();
-            _protector = new DpapiDataProtector(typeof(DistributedTokenCache).FullName, "TokenCache");
+            _protector = new MachineKeyDataProtector(new[] { typeof(DistributedTokenCache).FullName });
             _resource = resource;
 
             AfterAccess = AfterAccessNotification;
             BeforeAccess = BeforeAccessNotification;
         }
 
-        private static ConnectionMultiplexer Connection
-        {
-            get { return _connection.Value; }
-        }
+        private static ConnectionMultiplexer Connection => _connection.Value;
 
-        private string Key
-        {
-            get
-            {
-                return string.Format(
-                    "Resource:{0}::UserId:{1}",
-                    _resource,
-                    ClaimsPrincipal.Current.Identities.First()
-                        .FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")
-                        .Value
-                    );
-            }
-        }
+        private string Key =>
+            $"Resource:{_resource}::UserId:{ClaimsPrincipal.Current.Identities.First().FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value}";
 
         /// <summary>
         /// Notification method called after any library method accesses the cache.
@@ -60,19 +47,21 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Cache
         /// <param name="args">Contains parameters used by the ADAL call accessing the cache.</param>
         public void AfterAccessNotification(TokenCacheNotificationArgs args)
         {
-            if (HasStateChanged)
+            if (!HasStateChanged)
             {
-                if (Count > 0)
-                {
-                    _cache.StringSet(Key, Convert.ToBase64String(_protector.Protect(Serialize())));
-                }
-                else
-                {
-                    _cache.KeyDelete(Key);
-                }
-
-                HasStateChanged = false;
+                return;
             }
+
+            if (Count > 0)
+            {
+                _cache.StringSet(Key, Convert.ToBase64String(_protector.Protect(Serialize())));
+            }
+            else
+            {
+                _cache.KeyDelete(Key);
+            }
+
+            HasStateChanged = false;
         }
 
         /// <summary>
@@ -85,14 +74,16 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Cache
 
             try
             {
-                if (_cache.KeyExists(Key))
+                if (!_cache.KeyExists(Key))
                 {
-                    data = Convert.FromBase64String(_cache.StringGet(Key));
+                    return;
+                }
 
-                    if (data != null)
-                    {
-                        Deserialize(_protector.Unprotect(data));
-                    }
+                data = Convert.FromBase64String(_cache.StringGet(Key));
+
+                if (data != null)
+                {
+                    Deserialize(_protector.Unprotect(data));
                 }
             }
             finally

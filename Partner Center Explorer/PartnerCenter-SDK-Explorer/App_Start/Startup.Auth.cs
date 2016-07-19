@@ -42,11 +42,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer
                     },
                     Notifications = new OpenIdConnectAuthenticationNotifications
                     {
-                        SecurityTokenValidated = context =>
-                        {
-                            // If your authentication logic is based on users then add your logic here
-                            return Task.FromResult(0);
-                        },
+                        SecurityTokenValidated = context => Task.FromResult(0),
                         AuthenticationFailed = context =>
                         {
                             // Pass in the context back to the app

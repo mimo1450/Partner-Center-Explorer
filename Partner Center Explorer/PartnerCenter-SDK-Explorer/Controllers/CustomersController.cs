@@ -87,7 +87,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                             AddressLine1 = newCustomerModel.AddressLine1,
                             AddressLine2 = newCustomerModel.AddressLine2,
                             City = newCustomerModel.City,
-                            Country = "US",
+                            Country = AppConfig.CountryCode,
                             FirstName = newCustomerModel.FirstName,
                             LastName = newCustomerModel.LastName,
                             PhoneNumber = newCustomerModel.PhoneNumber,
@@ -102,7 +102,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                     CompanyProfile = new CustomerCompanyProfile()
                     {
                         CompanyName = newCustomerModel.Name,
-                        Domain = string.Format("{0}.onmicrosoft.com", newCustomerModel.PrimaryDomain)
+                        Domain = $"{newCustomerModel.PrimaryDomain}.onmicrosoft.com"
                     }
                 };
 
@@ -110,7 +110,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
                 createdCustomerModel = new CreatedCustomerModel()
                 {
-                    Domain = string.Format("{0}.onmicrosoft.com", newCustomerModel.PrimaryDomain),
+                    Domain = $"{newCustomerModel.PrimaryDomain}.onmicrosoft.com",
                     Password = entity.UserCredentials.Password,
                     Username = entity.UserCredentials.UserName
                 };
@@ -176,17 +176,6 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
         }
 
-        private SdkContext Context
-        {
-            get
-            {
-                if (_context == null)
-                {
-                    _context = new SdkContext();
-                }
-
-                return _context;
-            }
-        }
+        private SdkContext Context => _context ?? (_context = new SdkContext());
     }
 }

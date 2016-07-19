@@ -38,13 +38,13 @@
         {
             <tr id="@customer.Id">
                 <td>
-                    @Html.ActionLink(customer.CompanyProfile.CompanyName, string.Format("{0}/Show", customer.Id), "Customers")
+                    @Html.ActionLink(customer.CompanyProfile.CompanyName, $"{customer.Id}/Show", "Customers")
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => customer.CompanyProfile.Domain)
+                    @Html.DisplayFor(item => customer.CompanyProfile.Domain)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => customer.RelationshipToPartner)
+                    @Html.DisplayFor(item => customer.RelationshipToPartner)
                 </td>
                 @if (AppConfig.IsSandboxEnvironment)
                 {
@@ -53,8 +53,8 @@
                             new AjaxOptions()
                             {
                                 HttpMethod = "Delete",
-                                Confirm = string.Format("Are you sure you want to delete {0}?", customer.CompanyProfile.CompanyName),
-                                OnComplete = string.Format("OnSuccessCallback('{0}')", customer.Id)
+                                Confirm = $"Are you sure you want to delete {customer.CompanyProfile.CompanyName}?",
+                                OnComplete = $"OnSuccessCallback('{customer.Id}')"
                             })
                     </td>
                 }

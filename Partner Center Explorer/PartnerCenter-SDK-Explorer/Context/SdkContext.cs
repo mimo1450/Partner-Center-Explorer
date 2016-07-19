@@ -4,6 +4,7 @@
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Store.PartnerCenter.Extensions;
 using Microsoft.Store.PartnerCenter.Samples.Common;
+using Microsoft.Store.PartnerCenter.Samples.Common.Context;
 using System.Threading.Tasks;
 
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context
@@ -45,32 +46,34 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context
         {
             get
             {
-                if (_partnerOperations == null)
+                if (_partnerOperations != null)
                 {
-                    AuthenticationResult authResult = TokenContext.GetAADToken(
-                        string.Format("{0}/{1}/oauth2", AppConfig.Authority, AppConfig.AccountId),
-                        AppConfig.PartnerCenterApiUri
+                    return _partnerOperations;
+                }
+
+                AuthenticationResult authResult = TokenContext.GetAADToken(
+                    $"{AppConfig.Authority}/{AppConfig.AccountId}/oauth2",
+                    AppConfig.PartnerCenterApiUri
                     );
 
-                    // Authenticate by user context with the partner service
-                    IPartnerCredentials userCredentials = PartnerCredentials.Instance.GenerateByUserCredentials(
-                        AppConfig.ApplicationId,
-                        new AuthenticationToken(
-                            authResult.AccessToken,
-                            authResult.ExpiresOn),
-                        delegate
-                        {
-                            // Token has expired re-authentication to Azure Active Directory is required.
-                            AuthenticationResult aadToken = TokenContext.GetAADToken(
-                                string.Format("{0}/{1}/oauth2", AppConfig.Authority, AppConfig.AccountId),
-                                AppConfig.PartnerCenterApiUri
+                // Authenticate by user context with the partner service
+                IPartnerCredentials userCredentials = PartnerCredentials.Instance.GenerateByUserCredentials(
+                    AppConfig.ApplicationId,
+                    new AuthenticationToken(
+                        authResult.AccessToken,
+                        authResult.ExpiresOn),
+                    delegate
+                    {
+                        // Token has expired re-authentication to Azure Active Directory is required.
+                        AuthenticationResult aadToken = TokenContext.GetAADToken(
+                            $"{AppConfig.Authority}/{AppConfig.AccountId}/oauth2",
+                            AppConfig.PartnerCenterApiUri
                             );
 
-                            return Task.FromResult(new AuthenticationToken(aadToken.AccessToken, aadToken.ExpiresOn));
-                        });
+                        return Task.FromResult(new AuthenticationToken(aadToken.AccessToken, aadToken.ExpiresOn));
+                    });
 
-                    _partnerOperations = PartnerService.Instance.CreatePartnerOperations(userCredentials);
-                }
+                _partnerOperations = PartnerService.Instance.CreatePartnerOperations(userCredentials);
 
                 return _partnerOperations;
             }

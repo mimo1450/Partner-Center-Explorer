@@ -97,11 +97,11 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
 
             // The Partner Center API can be used to obtain the offer. This application obtains a resource collection
-            // of available offers prior to this function being invoked. Since the available offers are obtained prior 
-            // to the execution of this function we are able to cache that resource collection and use that resource 
-            // collection instead of the following request. 
+            // of available offers prior to this function being invoked. Since the available offers are obtained prior
+            // to the execution of this function we are able to cache that resource collection and use that resource
+            // collection instead of the following request.
 
-            //Offer offer = await Context.PartnerOperations.Offers.ByCountry(AppConfig.CountryCode)
+            // Offer offer = await Context.PartnerOperations.Offers.ByCountry(AppConfig.CountryCode)
             //    .ById(offerId).GetAsync();
 
             ResourceCollection<Offer> offers;
@@ -205,7 +205,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         /// subscriptionId
         /// </exception>
         /// <remarks>
-        /// If the subscription's billing type is usage then the Office view is returned. 
+        /// If the subscription's billing type is usage then the Office view is returned.
         /// Otherwise, the Azure view is returned.
         /// </remarks>
         public async Task<ActionResult> Show(string customerId, string subscriptionId)
@@ -315,7 +315,6 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                 }
 
                 return models;
-
             }
             finally
             {

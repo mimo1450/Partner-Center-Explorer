@@ -24,11 +24,11 @@
     </td>
     <td>
         @Ajax.RouteLink("Delete", new { action = "Delete", controller = "Users", customerId = Model.CustomerId, userId = Model.Id },
-                    new AjaxOptions()
-                    {
-                        HttpMethod = "Delete",
-                        Confirm = string.Format("Are you sure you want to delete the user {0}?", Model.DisplayName),
-                        OnSuccess = string.Format("OnUserDeleteCallback('{0}')", Model.Id),
-                    })
+            new AjaxOptions()
+            {
+                HttpMethod = "Delete",
+                Confirm = $"Are you sure you want to delete the user {Model.DisplayName}?",
+                OnSuccess = $"OnUserDeleteCallback('{Model.Id}')",
+            })
     </td>
 </tr>

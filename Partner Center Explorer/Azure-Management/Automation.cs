@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Samples.Azure.Management
 {
+    /// <summary>
+    /// Facilitates interactions with the Azure Management API to expose Azure Automation operations.
+    /// </summary>
     public class Automation
     {
         private AutomationManagementClient _client;
@@ -38,14 +41,17 @@ namespace Microsoft.Samples.Azure.Management
         }
 
         /// <summary>
-        /// Gets a collection of runbooks.
+        /// Asynchrounously gets a collection of runbooks.
         /// </summary>
         /// <param name="resourceGroupName">Name of the resource group.</param>
         /// <param name="automationAccount">The automation account.</param>
-        /// <returns>A collection of runbooks.</returns>
+        /// <returns>The response model for the list runbook operation.</returns>
         /// <exception cref="System.ArgumentNullException">
+        /// resourceGroupName
+        /// or
+        /// automationAccount
         /// </exception>
-        public async Task<IList<RunbookModel>> GetRunbooks(string resourceGroupName, string automationAccount)
+        public async Task<IList<RunbookModel>> GetRunbooksAsync(string resourceGroupName, string automationAccount)
         {
             RunbookListResponse response;
 
@@ -61,7 +67,7 @@ namespace Microsoft.Samples.Azure.Management
             try
             {
                 response = await Client.Runbooks.ListAsync(resourceGroupName, automationAccount);
-                return GetRunbookModelsCollection(response.Runbooks);
+                return GetRunbookModelsCollection(response.Runbooks, resourceGroupName);
             }
             finally
             {
@@ -69,20 +75,63 @@ namespace Microsoft.Samples.Azure.Management
             }
         }
 
-        private AutomationManagementClient Client
+        /// <summary>
+        /// Invokes the specified runbook.
+        /// </summary>
+        /// <param name="resourceGroupName">Name of the resource group.</param>
+        /// <param name="automationAccount">The automation account.</param>
+        /// <param name="runbookName">Name of the runbook.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// automationAccount
+        /// or
+        /// resourceGroupName
+        /// or
+        /// runbookName
+        /// </exception>
+        public async Task InvokeRunbookAsync(string resourceGroupName, string automationAccount, string runbookName)
         {
-            get
-            {
-                if (_client == null)
-                {
-                    _client = new AutomationManagementClient(_token);
-                }
+            JobCreateParameters jcp;
+            JobCreateResponse response;
+            RunbookAssociationProperty rap;
 
-                return _client;
+            if (string.IsNullOrEmpty(automationAccount))
+            {
+                throw new ArgumentNullException(nameof(automationAccount));
+            }
+            if (string.IsNullOrEmpty(runbookName))
+            {
+                throw new ArgumentNullException(nameof(runbookName));
+            }
+            if (string.IsNullOrEmpty(resourceGroupName))
+            {
+                throw new ArgumentNullException(nameof(resourceGroupName));
+            }
+
+            try
+            {
+                rap = new RunbookAssociationProperty()
+                {
+                    Name = runbookName
+                };
+
+                jcp = new JobCreateParameters(new JobCreateProperties(rap)
+                {
+                    Parameters = null
+                });
+
+                response = await Client.Jobs.CreateAsync(resourceGroupName, automationAccount, jcp).ConfigureAwait(false);
+            }
+            finally
+            {
+                rap = null;
+                jcp = null;
             }
         }
 
-        private List<RunbookModel> GetRunbookModelsCollection(IList<Runbook> runbooks)
+        private AutomationManagementClient Client => _client ?? (_client = new AutomationManagementClient(_token));
+
+        private List<RunbookModel> GetRunbookModelsCollection(IList<Runbook> runbooks, string resourceGroupName)
         {
             List<RunbookModel> models = new List<RunbookModel>();
 
@@ -101,6 +150,7 @@ namespace Microsoft.Samples.Azure.Management
                     LogVerbose = rb.Properties.LogVerbose,
                     Name = rb.Name,
                     ProvisioningState = rb.Properties.ProvisioningState.ToString(),
+                    ResourceGroupName = resourceGroupName,
                     RunbookType = rb.Properties.RunbookType,
                     State = rb.Properties.State
                 });

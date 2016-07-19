@@ -13,7 +13,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.Common
     /// <seealso cref="Exception" />
     /// <seealso cref="ISerializable" />
     [Serializable]
-    public class CommunicationException : Exception, ISerializable
+    public class CommunicationException : Exception
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CommunicationException"/> class.

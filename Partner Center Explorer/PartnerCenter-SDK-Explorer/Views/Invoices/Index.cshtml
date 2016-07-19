@@ -37,9 +37,8 @@
                 <td>
                     @Html.ActionLink(
                         "Details",
-                        string.Format("/{0}/Details", invoice.Id),
-                        "Invoices"
-                    )
+                        $"/{invoice.Id}/Details",
+                        "Invoices")
                 </td>
             </tr>
         }

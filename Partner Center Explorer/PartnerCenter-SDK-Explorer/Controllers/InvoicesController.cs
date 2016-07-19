@@ -94,22 +94,19 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                     lineItems
                         .Where(x => x is DailyUsageLineItem)
                         .Cast<DailyUsageLineItem>()
-                        .Select(x => x.CustomerCompanyName)
-                );
+                        .Select(x => x.CustomerCompanyName));
 
                 customers.AddRange(
                     lineItems
                         .Where(x => x is LicenseBasedLineItem)
                         .Cast<LicenseBasedLineItem>()
-                        .Select(x => x.CustomerName)
-                );
+                        .Select(x => x.CustomerName));
 
                 customers.AddRange(
                     lineItems
                         .Where(x => x is UsageBasedLineItem)
                         .Cast<UsageBasedLineItem>()
-                        .Select(x => x.CustomerCompanyName)
-                );
+                        .Select(x => x.CustomerCompanyName));
 
                 return Json(customers.Distinct(), JsonRequestBehavior.AllowGet);
             }
@@ -182,7 +179,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                     data = await GetLicensedRecordsAsync(invoiceId, customerName);
                 }
 
-                return File(data.ToArray(), "text/csv", string.Format("Invoice-{0}-{1}-{2}.csv", invoiceId, customerName, providerType));
+                return File(data.ToArray(), "text/csv", $"Invoice-{invoiceId}-{customerName}-{providerType}.csv");
             }
             finally
             {
@@ -191,7 +188,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         }
 
         /// <summary>
-        /// Handles the request for the OfficeDetails partial view. 
+        /// Handles the request for the OfficeDetails partial view.
         /// </summary>
         /// <param name="customerName">Name of the customer.</param>
         /// <param name="invoiceId">The invoice identifier.</param>
@@ -217,18 +214,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             return PartialView(invoiceDetailsModel);
         }
 
-        private SdkContext Context
-        {
-            get
-            {
-                if (_context == null)
-                {
-                    _context = new SdkContext();
-                }
-
-                return _context;
-            }
-        }
+        private SdkContext Context => _context ?? (_context = new SdkContext());
 
         /// <summary>
         /// Gets a collection of resources representing line items in the specified invoice.
@@ -255,7 +241,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             try
             {
-                cacheName = string.Format("{0}_LineItems", invoiceId);
+                cacheName = $"{invoiceId}_LineItems";
 
                 lineItems = MemoryCache.Default[cacheName] as List<InvoiceLineItem>;
 

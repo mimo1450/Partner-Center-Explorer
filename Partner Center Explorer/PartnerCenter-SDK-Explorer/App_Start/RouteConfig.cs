@@ -22,87 +22,73 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer
             routes.MapRoute(
                 name: "AuditAction",
                 url: "Audit/{action}",
-                defaults: new { controller = "Audit" }
-            );
+                defaults: new { controller = "Audit" });
 
             routes.MapRoute(
                  name: "CustomerAction",
                  url: "Customers/{action}",
-                 defaults: new { controller = "Customers" }
-             );
+                 defaults: new { controller = "Customers" });
 
             routes.MapRoute(
                 name: "CustomersActions",
                 url: "Customers/{customerId}/{action}",
-                defaults: new { controller = "Customers" }
-            );
+                defaults: new { controller = "Customers" });
 
             routes.MapRoute(
                 name: "Domains",
                 url: "Customers/{customerId}/Domains/{domain}/{action}",
-                defaults: new { controller = "Domains" }
-            );
+                defaults: new { controller = "Domains" });
 
             routes.MapRoute(
                 name: "Invoices",
                 url: "Invoices/{invoiceId}/{action}",
-                defaults: new { controller = "Invoices", action = "Details" }
-            );
+                defaults: new { controller = "Invoices", action = "Details" });
 
             routes.MapRoute(
                 name: "InvoiceDetails",
                 url: "Invoices/{invoiceId}/{customerName}/{action}",
-                defaults: new { controller = "Invoices" }
-            );
+                defaults: new { controller = "Invoices" });
 
             routes.MapRoute(
                 name: "Subscriptions",
                 url: "Customers/{customerId}/Subscriptions/{action}",
-                defaults: new { controller = "Subscriptions" }
-            );
+                defaults: new { controller = "Subscriptions" });
 
             routes.MapRoute(
                 name: "Subscription",
                 url: "Customers/{customerId}/Subscriptions/{subscriptionId}/{action}",
-                defaults: new { controller = "Subscriptions", action = "Index" }
-            );
+                defaults: new { controller = "Subscriptions", action = "Index" });
 
             routes.MapRoute(
                 name: "SubscriptionHealth",
                 url: "Customers/{customerId}/Health/{subscriptionId}/",
-                defaults: new { controller = "Health", action = "Index" }
-            );
+                defaults: new { controller = "Health", action = "Index" });
 
 
             routes.MapRoute(
                 name: "SubscriptionManageResource",
                 url: "Customers/{customerId}/Manage/{subscriptionId}/{action}",
-                defaults: new { controller = "Manage", action = "Index" }
-            );
+                defaults: new { controller = "Manage", action = "Index" });
 
             routes.MapRoute(
                 name: "Usage",
                 url: "Customers/{customerId}/Usage/{subscriptionId}/",
-                defaults: new { controller = "Usage", action = "ViewUsage" }
-            );
+                defaults: new { controller = "Usage", action = "ViewUsage" });
 
             routes.MapRoute(
                 name: "UserActions",
                 url: "Customers/{customerId}/Users/{action}",
-                defaults: new { controller = "Users" }
-            );
+                defaults: new { controller = "Users" });
 
             routes.MapRoute(
                 name: "Users",
                 url: "Customers/{customerId}/users/{userId}/{action}",
-                defaults: new { controller = "Users" }
-            );
+                defaults: new { controller = "Users" });
 
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
-            );
+                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional });
         }
     }
 }

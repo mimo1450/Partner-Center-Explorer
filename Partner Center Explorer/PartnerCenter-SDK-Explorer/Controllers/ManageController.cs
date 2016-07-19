@@ -7,13 +7,12 @@ using Microsoft.Samples.Azure.Management;
 using Microsoft.Store.PartnerCenter.Models.Customers;
 using Microsoft.Store.PartnerCenter.Models.Invoices;
 using Microsoft.Store.PartnerCenter.Samples.Common;
+using Microsoft.Store.PartnerCenter.Samples.Common.Context;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Subscriptions;
 using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -173,11 +172,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             try
             {
                 token = TokenContext.GetAADToken(
-                   string.Format(
-                       "{0}/{1}",
-                       AppConfig.Authority,
-                       model.CustomerId
-                   ),
+                    $"{AppConfig.Authority}/{model.CustomerId}",
                    AppConfig.ManagementUri
                 );
 
@@ -230,11 +225,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             try
             {
                 token = TokenContext.GetAADToken(
-                   string.Format(
-                       "{0}/{1}",
-                       AppConfig.Authority,
-                       customerId
-                   ),
+                    $"{AppConfig.Authority}/{customerId}",
                    AppConfig.ManagementUri
                );
 
@@ -251,18 +242,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
         }
 
-        private SdkContext Context
-        {
-            get
-            {
-                if (_context == null)
-                {
-                    _context = new SdkContext();
-                }
-
-                return _context;
-            }
-        }
+        private SdkContext Context => _context ?? (_context = new SdkContext());
 
         private async Task<List<DeploymentModel>> GetDeploymentsAsync(string customerId, string resourceGroupName, string subscriptionId)
         {
@@ -286,11 +266,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             try
             {
                 token = TokenContext.GetAADToken(
-                   string.Format(
-                       "{0}/{1}",
-                       AppConfig.Authority,
-                       customerId
-                   ),
+                    $"{AppConfig.Authority}/{customerId}",
                    AppConfig.ManagementUri
                );
 

@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Samples.AzureAD.Graph.API;
 using Microsoft.Samples.AzureAD.Graph.API.Models;
 using Microsoft.Store.PartnerCenter.Samples.Common;
+using Microsoft.Store.PartnerCenter.Samples.Common.Context;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models;
 using System;
@@ -43,21 +44,17 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             if (string.IsNullOrEmpty(customerId))
             {
-                throw new ArgumentNullException("customerId");
+                throw new ArgumentNullException(nameof(customerId));
             }
             else if (string.IsNullOrEmpty(domain))
             {
-                throw new ArgumentNullException("domain");
+                throw new ArgumentNullException(nameof(domain));
             }
 
             try
             {
                 token = TokenContext.GetAADToken(
-                    string.Format(
-                        "{0}/{1}",
-                        AppConfig.Authority,
-                        customerId
-                    ),
+                    $"{AppConfig.Authority}/{customerId}",
                     AppConfig.GraphUri
                 );
 
@@ -113,17 +110,13 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             if (string.IsNullOrEmpty(customerId))
             {
-                throw new ArgumentNullException("customerId");
+                throw new ArgumentNullException(nameof(customerId));
             }
 
             try
             {
                 token = TokenContext.GetAADToken(
-                    string.Format(
-                        "{0}/{1}",
-                        AppConfig.Authority,
-                        customerId
-                    ),
+                    $"{AppConfig.Authority}/{customerId}",
                     AppConfig.GraphUri
                 );
 
@@ -140,17 +133,6 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
         }
 
-        private SdkContext Context
-        {
-            get
-            {
-                if (_context == null)
-                {
-                    _context = new SdkContext();
-                }
-
-                return _context;
-            }
-        }
+        private SdkContext Context => _context ?? (_context = new SdkContext());
     }
 }

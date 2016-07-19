@@ -9,7 +9,7 @@ using System;
 namespace Microsoft.Samples.AzureAD.Graph.API.Converters
 {
     /// <summary>
-    /// <see cref="JsonConverter"/> for service configuration records returned from Azure AD Graph API. 
+    /// <see cref="JsonConverter"/> for service configuration records returned from Azure AD Graph API.
     /// </summary>
     /// <seealso cref="Newtonsoft.Json.JsonConverter" />
     public class ServiceConfigurationRecordConverter : JsonConverter

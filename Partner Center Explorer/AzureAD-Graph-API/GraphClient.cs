@@ -70,18 +70,15 @@ namespace Microsoft.Samples.AzureAD.Graph.API
             {
                 throw new ArgumentNullException(nameof(customerId));
             }
+
             try
             {
-                requestUri = string.Format("{0}/{1}/domains?api-version=beta",
-                    AppConfig.GraphUri,
-                    customerId
-                );
+                requestUri = $"{AppConfig.GraphUri}/{customerId}/domains?api-version=beta";
 
                 domains = await _comm.GetAsync<Result<Domain>>(
                     requestUri,
                     new MediaTypeWithQualityHeaderValue("application/json"),
-                    _token
-                );
+                    _token);
 
                 return domains.Value;
             }
@@ -152,11 +149,8 @@ namespace Microsoft.Samples.AzureAD.Graph.API
 
             try
             {
-                requestUri = string.Format("{0}/{1}/domains('{2}')/serviceConfigurationRecords?api-version=beta",
-                  AppConfig.GraphUri,
-                  customerId,
-                  domain
-              );
+                requestUri =
+                    $"{AppConfig.GraphUri}/{customerId}/domains('{domain}')/serviceConfigurationRecords?api-version=beta";
 
                 data = await _comm.GetStringAsync<string>(
                     requestUri,

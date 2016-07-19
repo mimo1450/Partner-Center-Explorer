@@ -4,7 +4,7 @@
 namespace Microsoft.Samples.AzureAD.Graph.API.Models
 {
     /// <summary>
-    /// Interface used by <see cref="ServiceConfigurationRecord"/>s. 
+    /// Interface used by <see cref="ServiceConfigurationRecord"/>s.
     /// </summary>
     public interface IServiceConfigurationRecord
     {

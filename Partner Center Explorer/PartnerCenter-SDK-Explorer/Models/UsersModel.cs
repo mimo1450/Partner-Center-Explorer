@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models
 {
+    /// <summary>
+    /// Model for listing users.
+    /// </summary>
     public class UsersModel
     {
         /// <summary>

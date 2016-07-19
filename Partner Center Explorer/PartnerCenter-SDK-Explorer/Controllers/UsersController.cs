@@ -4,6 +4,7 @@
 using Microsoft.Store.PartnerCenter.Models;
 using Microsoft.Store.PartnerCenter.Models.Licenses;
 using Microsoft.Store.PartnerCenter.Models.Users;
+using Microsoft.Store.PartnerCenter.Samples.Common;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models;
 using System;
@@ -13,7 +14,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using Microsoft.Store.PartnerCenter.Samples.Common;
 
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 {

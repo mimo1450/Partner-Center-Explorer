@@ -190,17 +190,6 @@ namespace Microsoft.Samples.Azure.Management
             }
         }
 
-        private ResourceManagementClient Client
-        {
-            get
-            {
-                if (_client == null)
-                {
-                    _client = new ResourceManagementClient(new TokenCredentials(_token));
-                }
-
-                return _client;
-            }
-        }
+        private ResourceManagementClient Client => _client ?? (_client = new ResourceManagementClient(new TokenCredentials(_token)));
     }
 }
