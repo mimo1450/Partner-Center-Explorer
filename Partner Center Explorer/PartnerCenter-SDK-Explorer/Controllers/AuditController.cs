@@ -5,6 +5,7 @@ using Microsoft.Store.PartnerCenter.Models.Query;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models;
 using System;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
@@ -16,19 +17,19 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
     [AuthorizationFilter(ClaimType = ClaimTypes.Role, ClaimValue = "PartnerAdmin")]
     public class AuditController : Controller
     {
-        private SdkContext _context;
-
         /// <summary>
         /// Get the audit records for the specified date range using the Partner Center API.
         /// </summary>
         /// <param name="endDate">The end date of the audit record logs.</param>
         /// <param name="startDate">The start date of the audit record logs.</param>
-        /// <returns></returns>
-        public ActionResult GetRecords(DateTime endDate, DateTime startDate)
+        /// <returns>A partial view containing the requested audit record logs.</returns>
+        public async Task<PartialViewResult> GetRecords(DateTime endDate, DateTime startDate)
         {
+            IAggregatePartner operations = await new SdkContext().GetPartnerOperationsAysnc();
+
             AuditRecordsModel auditRecordsModel = new AuditRecordsModel()
             {
-                Records = Context.PartnerOperations.AuditRecords.Query(startDate, endDate, QueryFactory.Instance.BuildSimpleQuery())
+                Records = operations.AuditRecords.Query(startDate, endDate, QueryFactory.Instance.BuildSimpleQuery())
             };
 
             return PartialView("Records", auditRecordsModel);
@@ -42,7 +43,5 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         {
             return View();
         }
-
-        private SdkContext Context => _context ?? (_context = new SdkContext());
     }
 }

@@ -140,7 +140,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models
         /// The quantity of units for the subscriptions.
         /// </value>
         /// <remarks>
-        /// This value is typically used for Office subscriptions. 
+        /// This value is typically used for Office subscriptions.
         /// </remarks>
         public int Quantity
         { get; set; }

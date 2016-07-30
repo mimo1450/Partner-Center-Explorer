@@ -19,8 +19,6 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
     [AuthorizationFilter(ClaimType = ClaimTypes.Role, ClaimValue = "PartnerAdmin")]
     public class InvoicesController : Controller
     {
-        private SdkContext _context;
-
         /// <summary>
         /// Handles the partial view request for Azure details.
         /// </summary>
@@ -54,9 +52,11 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         /// <returns>A view containing the InvoicesModel model.</returns>
         public async Task<ActionResult> Index()
         {
+            IAggregatePartner operations = await new SdkContext().GetPartnerOperationsAysnc();
+
             InvoicesModel invoicesModel = new InvoicesModel()
             {
-                Invoices = await Context.PartnerOperations.Invoices.GetAsync()
+                Invoices = await operations.Invoices.GetAsync()
             };
 
             return View(invoicesModel);
@@ -214,8 +214,6 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             return PartialView(invoiceDetailsModel);
         }
 
-        private SdkContext Context => _context ?? (_context = new SdkContext());
-
         /// <summary>
         /// Gets a collection of resources representing line items in the specified invoice.
         /// </summary>
@@ -229,6 +227,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         /// </remarks>
         private async Task<List<InvoiceLineItem>> GetInvoiceLineItemsAsync(string invoiceId)
         {
+            IAggregatePartner operations;
             Invoice invoice;
             List<InvoiceLineItem> lineItems;
             ResourceCollection<InvoiceLineItem> data;
@@ -242,22 +241,24 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             try
             {
                 cacheName = $"{invoiceId}_LineItems";
-
                 lineItems = MemoryCache.Default[cacheName] as List<InvoiceLineItem>;
+                operations = await new SdkContext().GetPartnerOperationsAysnc();
 
-                if (lineItems == null)
+                if (lineItems != null)
                 {
-                    invoice = await Context.PartnerOperations.Invoices.ById(invoiceId).GetAsync();
-                    lineItems = new List<InvoiceLineItem>();
-
-                    foreach (InvoiceDetail detail in invoice.InvoiceDetails)
-                    {
-                        data = await Context.PartnerOperations.Invoices.ById(invoiceId).By(detail.BillingProvider, detail.InvoiceLineItemType).GetAsync();
-                        lineItems.AddRange(data.Items);
-                    }
-
-                    MemoryCache.Default[cacheName] = lineItems;
+                    return lineItems;
                 }
+
+                invoice = await operations.Invoices.ById(invoiceId).GetAsync();
+                lineItems = new List<InvoiceLineItem>();
+
+                foreach (InvoiceDetail detail in invoice.InvoiceDetails)
+                {
+                    data = await operations.Invoices.ById(invoiceId).By(detail.BillingProvider, detail.InvoiceLineItemType).GetAsync();
+                    lineItems.AddRange(data.Items);
+                }
+
+                MemoryCache.Default[cacheName] = lineItems;
 
                 return lineItems;
             }

@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -86,13 +87,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppConfig.cs" />
+    <Compile Include="Cache\CacheManager.cs" />
+    <Compile Include="Cache\InMemoryCacheManger.cs" />
+    <Compile Include="Cache\RedisCacheManager.cs" />
     <Compile Include="Cache\DistributedTokenCache.cs" />
+    <Compile Include="Cache\ICacheManager.cs" />
     <Compile Include="Cache\MachineKeyDataProtector.cs" />
     <Compile Include="Communication.cs" />
     <Compile Include="CommunicationException.cs" />
-    <Compile Include="Context\TokenContext.cs" />
+    <Compile Include="TokenContext.cs" />
     <Compile Include="Models\AuthorizationToken.cs" />
-    <Compile Include="Models\Automation\RunbookModel.cs" />
+    <Compile Include="Models\RunbookModel.cs" />
     <Compile Include="Models\AzureHealthEvent.cs" />
     <Compile Include="Models\HealthEventType.cs" />
     <Compile Include="Models\IHeathEvent.cs" />

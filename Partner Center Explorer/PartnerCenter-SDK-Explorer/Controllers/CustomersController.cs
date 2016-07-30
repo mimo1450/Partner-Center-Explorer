@@ -7,6 +7,8 @@ using Microsoft.Store.PartnerCenter.Samples.Common;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -21,8 +23,6 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
     [AuthorizationFilter(ClaimType = ClaimTypes.Role, ClaimValue = "PartnerAdmin")]
     public class CustomersController : Controller
     {
-        private SdkContext _context;
-
         /// <summary>
         /// Deletes the specified customer.
         /// </summary>
@@ -32,6 +32,8 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         [HttpDelete]
         public async Task<HttpResponseMessage> Delete(string customerId)
         {
+            IAggregatePartner operations = await new SdkContext().GetPartnerOperationsAysnc();
+
             if (string.IsNullOrEmpty(customerId))
             {
                 throw new ArgumentNullException(nameof(customerId));
@@ -41,7 +43,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             // If this request is attempted in a non-sandbox environment it will fail.
             if (AppConfig.IsSandboxEnvironment)
             {
-                await Context.PartnerOperations.Customers.ById(customerId).DeleteAsync();
+                await operations.Customers.ById(customerId).DeleteAsync();
             }
 
             return new HttpResponseMessage(HttpStatusCode.NoContent);
@@ -50,14 +52,19 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         /// <summary>
         /// Handles the request to load the new customer partial view.
         /// </summary>
-        /// <returns>Returns a partial view for creating new customers.</returns>
+        /// <returns>A partial view for creating new customers.</returns>
         [HttpGet]
-        public PartialViewResult Create()
+        public async Task<PartialViewResult> Create()
         {
+            IAggregatePartner operations = await new SdkContext().GetPartnerOperationsAysnc();
+
+            PartnerCenter.Models.CountryValidationRules.CountryValidationRules rules
+                = await operations.CountryValidationRules.ByCountry(AppConfig.CountryCode).GetAsync();
+
             // TODO - Do not get the supported states list each time. This data should be cached so the forms will load more rapidly.
             NewCustomerModel newCustomerModel = new NewCustomerModel()
             {
-                SupportedStates = Context.PartnerOperations.CountryValidationRules.ByCountry(AppConfig.CountryCode).Get().SupportedStatesList
+                SupportedStates = rules.SupportedStatesList
             };
 
             return PartialView(newCustomerModel);
@@ -67,15 +74,17 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         /// Create the customer represented by the instance of <see cref="NewCustomerModel"/>.
         /// </summary>
         /// <param name="newCustomerModel">The new customer model.</param>
-        /// <returns>Returns a partial view containing result of the customer creation.</returns>
+        /// <returns>A partial view containing result of the customer creation.</returns>
         [HttpPost]
-        public async Task<ActionResult> Create(NewCustomerModel newCustomerModel)
+        public async Task<PartialViewResult> Create(NewCustomerModel newCustomerModel)
         {
             Customer entity;
             CreatedCustomerModel createdCustomerModel;
+            IAggregatePartner operations;
 
             try
             {
+                operations = await new SdkContext().GetPartnerOperationsAysnc();
                 entity = new Customer()
                 {
                     BillingProfile = new CustomerBillingProfile()
@@ -106,7 +115,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                     }
                 };
 
-                entity = await Context.PartnerOperations.Customers.CreateAsync(entity);
+                entity = await operations.Customers.CreateAsync(entity);
 
                 createdCustomerModel = new CreatedCustomerModel()
                 {
@@ -123,31 +132,33 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
         }
 
-        /// <summary>
-        /// Handles the index page load event.
-        /// </summary>
-        /// <returns>Returns a list of customers the belong to the specified partner.</returns>
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> List()
         {
             CustomersModel customersModel = new CustomersModel()
             {
-                Customers = await Context.PartnerOperations.Customers.GetAsync(),
+                Customers = await GetCustomerModelsAsync(),
                 IsSandboxEnvironment = AppConfig.IsSandboxEnvironment
             };
 
-            return View(customersModel);
+            return PartialView(customersModel);
+        }
+
+        public ActionResult Index()
+        {
+            return View();
         }
 
         /// <summary>
         /// Handles the request to view the customer associated with the specified customer identifier.
         /// </summary>
         /// <param name="customerId">The customer identifier.</param>
-        /// <returns>Returns view to display the customer details.</returns>
+        /// <returns>A view to display the customer details.</returns>
         /// <exception cref="System.ArgumentNullException">customerId</exception>
         public async Task<ActionResult> Show(string customerId)
         {
             Customer customer;
             CustomerModel customerModel;
+            IAggregatePartner operations;
 
             if (string.IsNullOrEmpty(customerId))
             {
@@ -156,7 +167,8 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             try
             {
-                customer = await Context.PartnerOperations.Customers.ById(customerId).GetAsync();
+                operations = await new SdkContext().GetPartnerOperationsAysnc();
+                customer = await operations.Customers.ById(customerId).GetAsync();
 
                 customerModel = new CustomerModel()
                 {
@@ -173,9 +185,56 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             {
                 customer = null;
                 customerModel = null;
+                operations = null;
             }
         }
 
-        private SdkContext Context => _context ?? (_context = new SdkContext());
+        private async Task<List<CustomerModel>> GetCustomerModelsAsync()
+        {
+            IAggregatePartner operations;
+            ResourceCollection<Customer> customers;
+
+            try
+            {
+                operations = await new SdkContext().GetPartnerOperationsAysnc();
+                customers = await operations.Customers.GetAsync();
+
+                return customers.Items.Select(item => new CustomerModel()
+                {
+                    BillingProfile = new CustomerBillingProfile()
+                    {
+                        CompanyName = item.CompanyProfile.CompanyName,
+                        DefaultAddress = new Address()
+                        {
+                            // AddressLine1 = item.BillingProfile.DefaultAddress.AddressLine1,
+                            // AddressLine2 = item.BillingProfile.DefaultAddress.AddressLine2,
+                            // City = item.BillingProfile.DefaultAddress.City,
+                            //Country = item.BillingProfile.DefaultAddress.Country,
+                            //FirstName = item.BillingProfile.FirstName,
+                            //LastName = item.BillingProfile.LastName,
+                            // PhoneNumber = item.BillingProfile.DefaultAddress.PhoneNumber,
+                            // PostalCode = item.BillingProfile.DefaultAddress.PostalCode,
+                            // Region = item.BillingProfile.DefaultAddress.Region,
+                            // State = item.BillingProfile.DefaultAddress.State
+                        }
+                    },
+                    CompanyName = item.CompanyProfile.CompanyName,
+                    CustomerId = item.Id,
+                    CompanyProfile = new CustomerCompanyProfile()
+                    {
+                        CompanyName = item.CompanyProfile.CompanyName,
+                        Domain = item.CompanyProfile.Domain,
+                        TenantId = item.CompanyProfile.TenantId
+                    },
+                    DomainName = item.CompanyProfile.Domain,
+                    RelationshipToPartner = item.RelationshipToPartner.ToString()
+                }).ToList();
+            }
+            finally
+            {
+                customers = null;
+                operations = null;
+            }
+        }
     }
 }

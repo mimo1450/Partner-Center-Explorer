@@ -113,18 +113,20 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         {
             TokenCredentials credentials;
 
-            if (_client == null)
+            if (_client != null)
             {
-                credentials = new TokenCredentials(
-                    PowerBIConfig.AccessKey,
-                    "AppKey"
+                return _client;
+            }
+
+            credentials = new TokenCredentials(
+                PowerBIConfig.AccessKey,
+                "AppKey"
                 );
 
-                _client = new PowerBIClient(credentials)
-                {
-                    BaseUri = PowerBIConfig.BaseUri
-                };
-            }
+            _client = new PowerBIClient(credentials)
+            {
+                BaseUri = PowerBIConfig.BaseUri
+            };
 
             return _client;
         }

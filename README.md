@@ -165,7 +165,7 @@ When ready, start an Azure AD PowerShell session, and run the cmdlets below. You
 ```powershell
 Connect-MsolService
 $g = Get-MsolGroup | ? {$_.DisplayName -eq 'AdminAgents'} 
-$s = Get-MsolServicePrincipal | ? {$_.DisplayName -eq 'INSERT-APP-NAME'}
+$s = Get-MsolServicePrincipal | ? {$_.AppPrincipalId -eq 'INSERT-CLIENT-ID-HERE'}
 Add-MsolGroupMember -GroupObjectId $g.ObjectId -GroupMemberType ServicePrincipal -GroupMemberObjectId $s.ObjectId
 ```
 

@@ -18,8 +18,6 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
     [AuthorizationFilter(ClaimType = ClaimTypes.Role, ClaimValue = "PartnerAdmin")]
     public class UsageController : Controller
     {
-        private SdkContext _context;
-
         /// <summary>
         /// Views the usage.
         /// </summary>
@@ -34,6 +32,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         public async Task<ActionResult> ViewUsage(string customerId, string subscriptionId)
         {
             Customer customer;
+            IAggregatePartner operations;
             Subscription subscription;
 
             if (string.IsNullOrEmpty(customerId))
@@ -47,16 +46,17 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             try
             {
-                customer = await Context.PartnerOperations.Customers.ById(customerId).GetAsync();
-                subscription = await Context.PartnerOperations.Customers.ById(customerId).Subscriptions.ById(subscriptionId).GetAsync();
+                operations = await new SdkContext().GetPartnerOperationsAysnc();
+                customer = await operations.Customers.ById(customerId).GetAsync();
+                subscription = await operations.Customers.ById(customerId).Subscriptions.ById(subscriptionId).GetAsync();
 
                 UsageModel usageModel = new UsageModel()
                 {
                     CompanyName = customer.CompanyProfile.CompanyName,
                     CustomerId = customerId,
-                    DailyUsage = await Context.PartnerOperations.Customers.ById(customerId)
+                    DailyUsage = await operations.Customers.ById(customerId)
                         .Subscriptions.ById(subscriptionId).UsageRecords.Daily.GetAsync(),
-                    MonthlyUsage = await Context.PartnerOperations.Customers.ById(customerId)
+                    MonthlyUsage = await operations.Customers.ById(customerId)
                         .Subscriptions.ById(subscriptionId).UsageRecords.Resources.GetAsync(),
                     SubscriptionId = subscriptionId,
                     SubscriptionFriendlyName = subscription.FriendlyName
@@ -68,19 +68,6 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             {
                 customer = null;
                 subscription = null;
-            }
-        }
-
-        private SdkContext Context
-        {
-            get
-            {
-                if (_context == null)
-                {
-                    _context = new SdkContext();
-                }
-
-                return _context;
             }
         }
     }

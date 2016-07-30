@@ -12,15 +12,6 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
     public class ErrorController : Controller
     {
         /// <summary>
-        /// Handles the request for the index view.
-        /// </summary>
-        /// <returns>Returns an empty view.</returns>
-        public ActionResult Index()
-        {
-            return View();
-        }
-
-        /// <summary>
         /// Handles the request to show the error.
         /// </summary>
         /// <param name="errorMessage">The error message to be displayed.</param>

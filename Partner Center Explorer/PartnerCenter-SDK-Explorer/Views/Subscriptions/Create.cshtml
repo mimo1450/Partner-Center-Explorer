@@ -68,14 +68,14 @@
         if ($("#quantity").is(':visible')) {
             quantity = $("#licenseQuantity").val();
             info = 'License quantity ' + quantity;
-        } 
+        }
 
         $("#Offers tbody")
             .append(
-                '<tr><td>' + offerName + '<input type="hidden" name="LineItems[' + index + '].OfferId" value="' + offerId + '"/>' +
-                '<input type="hidden" name="LineItems[' + index + '].LineItemNumber" value="' + index + '"/>' +
-                '<input type="hidden" name="LineItems[' + index + '].FriendlyName" value="' + offerName + '"/></td>' +
-                '<td><input type="hidden" name="LineItems[' + index + '].Quantity" value="' + quantity + '"/>' + info + '</td></tr>'
+                '<tr><td>' + offerName + '<input type="hidden" name="LineItems[' + index + '].OfferId" value="' + offerId + '" />' +
+                '<input type="hidden" name="LineItems[' + index + '].LineItemNumber" value="' + index + '" />' +
+                '<input type="hidden" name="LineItems[' + index + '].FriendlyName" value="' + offerName + '" /></td>' +
+                '<td><input type="hidden" name="LineItems[' + index + '].Quantity" value="' + quantity + '" />' + info + '</td></tr>'
             );
 
         index++;

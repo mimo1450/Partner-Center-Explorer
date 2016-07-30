@@ -6,7 +6,7 @@ using System;
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models
 {
     /// <summary>
-    /// Model that represent a user. 
+    /// Model that represent a user.
     /// </summary>
     public class UserModel
     {
@@ -62,7 +62,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models
         /// The last directory synchronization time.
         /// </value>
         /// <remarks>
-        /// This value will only be populated if the domain the user is associated with 
+        /// This value will only be populated if the domain the user is associated with
         /// is configured directory synchronization. Otherwise, this value will be null.
         /// </remarks>
         public DateTime? LastDirectorySyncTime
@@ -75,7 +75,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models
         /// The usage location assigned to the user.
         /// </value>
         /// <remarks>
-        /// This sample project will configure this value to match the country code specified 
+        /// This sample project will configure this value to match the country code specified
         /// in the web.confing. The ability to have users in multiple regions is not supported.
         /// </remarks>
         public string UsageLocation

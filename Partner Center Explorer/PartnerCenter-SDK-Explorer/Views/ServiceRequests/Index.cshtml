@@ -1,5 +1,4 @@
 ﻿@model Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models.ServiceRequestsModel
-@using Microsoft.Store.PartnerCenter.Models.ServiceRequests
 
 @{
     ViewBag.Title = "Service Requests";
@@ -13,39 +12,15 @@
 }
 
 <div class="side-body padding-top">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Identifier</th>
-                <th>Created Date</th>
-                <th>Title</th>
-                <th>Status</th>
-                <th>Organization</th>
-                <th>Product Name</th>
-            </tr>
-        </thead>
-        @foreach (ServiceRequest request in Model.ServiceRequests.Items)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(item => request.Id)
-                </td>
-                <td>
-                    @Html.DisplayFor(item => request.CreatedDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(item => request.Title)
-                </td>
-                <td>
-                    @Html.DisplayFor(item => request.Status)
-                </td>
-                <td>
-                    @Html.DisplayFor(item => request.Organization)
-                </td>
-                <td>
-                    @Html.DisplayFor(item => request.ProductName)
-                </td>
-            </tr>
-        }
-    </table>
+    <div id="requests"></div>
 </div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $.get('/ServiceRequests/List',
+            function (data) {
+                $('#requests').html(data);
+                $('#requests').fadeIn('fast');
+            });
+    </script>
+}

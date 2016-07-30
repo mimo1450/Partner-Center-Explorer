@@ -68,7 +68,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.Common
         /// </summary>
         /// <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
         /// <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
-        public CommunicationException(SerializationInfo info, StreamingContext context)
+        protected CommunicationException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         { }
 
@@ -92,6 +92,11 @@ namespace Microsoft.Store.PartnerCenter.Samples.Common
         /// </PermissionSet>
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
+            if (info == null)
+            {
+                throw new ArgumentNullException(nameof(info));
+            }
+
             info.AddValue("HttpStatusCode", (int)HttpStatusCode);
 
             base.GetObjectData(info, context);

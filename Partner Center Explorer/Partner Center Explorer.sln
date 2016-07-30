@@ -51,8 +51,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azure-Management", "Azure-M
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "reports", "reports", "{8FED6799-3936-4062-87CE-A3A3794FAE5A}"
 	ProjectSection(SolutionItems) = preProject
-		..\reports\AzureInvoiceDetails.pbix = ..\reports\AzureInvoiceDetails.pbix
-		..\reports\AzureUsage.pbix = ..\reports\AzureUsage.pbix
+		..\reports\Partner Center.pbix = ..\reports\Partner Center.pbix
 	EndProjectSection
 EndProject
 Global

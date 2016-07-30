@@ -1,7 +1,7 @@
-﻿@using Microsoft.Store.PartnerCenter.Samples.Common;
+﻿@using Microsoft.Store.PartnerCenter.Samples.Common
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,16 +9,12 @@
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
-<body class="flat-blue">
-    @Html.PowerBIAccessToken()
+<body>
     <div class="app-container">
         <div class="row content-container">
             <nav class="navbar navbar-default navbar-fixed-top navbar-top">
                 <div class="container-fluid">
                     <div class="navbar-header">
-                        <button type="button" class="navbar-expand-toggle">
-                            <i class="fa fa-bars icon"></i>
-                        </button>
                         @RenderSection("Breadcrumbs", false)
                         <button type="button" class="navbar-right-expand-toggle pull-right visible-xs">
                             <i class="fa fa-th icon"></i>
@@ -39,19 +35,24 @@
                 <nav class="navbar navbar-default" role="navigation">
                     <div class="side-menu-container">
                         <ul class="nav navbar-nav">
-                            <li class="@(controller == "Home" ? "active" : "")">
+                            <li>
+                                <a href="#">
+                                    <span class="icon fa fa-bars navbar-expand-toggle"></span>
+                                </a>
+                            </li>
+                            <li class="@(controller == "Home" ? "active" : "" )">
                                 <a href="/">
                                     <span class="icon fa fa-home"></span><span class="title">Home</span>
                                 </a>
                             </li>
-                            <li class="@(controller == "Audit" ? "action" : "")">
+                            <li class="@(controller == "Audit" ? "active" : "" )">
                                 <a href="/Audit/Search">
                                     <span class="icon fa fa-unlock-alt"></span><span class="title">Audit Log</span>
                                 </a>
                             </li>
                             @if (!string.IsNullOrEmpty(AppConfig.AutomationAccount))
                             {
-                                <li class="@(controller == "Automation" ? "action" : "")">
+                                <li class="@(controller == "Automation" ? "active" : "" )">
                                     <a href="/Automation">
                                         <span class="icon fa fa-cogs"></span><span class="title">Automation</span>
                                     </a>
@@ -66,7 +67,7 @@
                                     <span class="icon fa fa-child"></span><span class="title">Customers</span>
                                 </a>
                             </li>
-                            <li class="@(controller == "Invoices" ? "active" : "")">
+                            <li class="@(controller == "Invoices" ? "active" : "" )">
                                 <a href="/Invoices">
                                     <span class="icon fa fa-dollar"></span><span class="title">Invoices</span>
                                 </a>
@@ -75,7 +76,7 @@
                             {
                                 @Html.Action("Reports", "Reports")
                             }
-                            <li class="@(controller == "ServiceRequests" ? "active" : "")">
+                            <li class="@(controller == "ServiceRequests" ? "active" : "" )">
                                 <a href="/ServiceRequests">
                                     <span class="icon fa fa-heart-o"></span><span class="title">Service Requests</span>
                                 </a>
@@ -102,6 +103,11 @@
     @RenderSection("scripts", required: false)
     <script type="text/javascript" src="~/Scripts/application.js"></script>
     <script type="text/javascript" src="~/Scripts/powerbi.min.js"></script>
+    <script type="text/javascript">
+        window.addEventListener('DOMContentLoaded', function () {
+            powerbi.init();
+        });
+    </script>
     @if (!string.IsNullOrEmpty(AppConfig.InstrumentationKey))
     {
         <script type="text/javascript">

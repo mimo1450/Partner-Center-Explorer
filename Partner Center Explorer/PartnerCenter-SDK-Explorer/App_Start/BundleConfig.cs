@@ -34,16 +34,12 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer
 
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
                 "~/Scripts/bootstrap.min.js",
-                "~/Scripts/bootstrap-datepicker.js",
                 "~/Scripts/respond.min.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
-                "~/Content/bootstrap.css",
-                "~/Content/bootstrap-datepicker.css",
-                "~/Content/bootstrap-switch/bootstrap3/bootstrap-switch.min.css",
+                "~/Content/bootstrap.min.css",
                 "~/Content/font-awesome.min.css",
-                "~/Content/themes/flat-blue.css",
-                "~/Content/site.css"));
+                "~/Content/style.css"));
         }
     }
 }

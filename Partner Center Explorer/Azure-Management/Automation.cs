@@ -4,7 +4,7 @@
 using Microsoft.Azure;
 using Microsoft.Azure.Management.Automation;
 using Microsoft.Azure.Management.Automation.Models;
-using Microsoft.Store.PartnerCenter.Samples.Common.Models.Automation;
+using Microsoft.Store.PartnerCenter.Samples.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -51,7 +51,7 @@ namespace Microsoft.Samples.Azure.Management
         /// or
         /// automationAccount
         /// </exception>
-        public async Task<IList<RunbookModel>> GetRunbooksAsync(string resourceGroupName, string automationAccount)
+        public async Task<List<RunbookModel>> GetRunbooksAsync(string resourceGroupName, string automationAccount)
         {
             RunbookListResponse response;
 
@@ -92,7 +92,6 @@ namespace Microsoft.Samples.Azure.Management
         public async Task InvokeRunbookAsync(string resourceGroupName, string automationAccount, string runbookName)
         {
             JobCreateParameters jcp;
-            JobCreateResponse response;
             RunbookAssociationProperty rap;
 
             if (string.IsNullOrEmpty(automationAccount))
@@ -120,7 +119,7 @@ namespace Microsoft.Samples.Azure.Management
                     Parameters = null
                 });
 
-                response = await Client.Jobs.CreateAsync(resourceGroupName, automationAccount, jcp).ConfigureAwait(false);
+                await Client.Jobs.CreateAsync(resourceGroupName, automationAccount, jcp).ConfigureAwait(false);
             }
             finally
             {

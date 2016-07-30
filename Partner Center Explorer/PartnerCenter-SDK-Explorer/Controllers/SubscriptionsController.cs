@@ -28,8 +28,6 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
     [AuthorizationFilter(ClaimType = ClaimTypes.Role, ClaimValue = "PartnerAdmin")]
     public class SubscriptionsController : Controller
     {
-        private SdkContext _context;
-
         /// <summary>
         /// Handles the HTTP GET request for the Create partial view.
         /// </summary>
@@ -59,18 +57,20 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         [HttpPost]
         public async Task<PartialViewResult> Create(NewSubscriptionModel model)
         {
+            IAggregatePartner operations;
             Order newOrder;
             SubscriptionsModel subscriptionsModel;
 
             try
             {
+                operations = await new SdkContext().GetPartnerOperationsAysnc();
                 newOrder = new Order()
                 {
                     LineItems = model.LineItems,
                     ReferenceCustomerId = model.CustomerId
                 };
 
-                newOrder = await Context.PartnerOperations.Customers.ById(model.CustomerId).Orders.CreateAsync(newOrder);
+                newOrder = await operations.Customers.ById(model.CustomerId).Orders.CreateAsync(newOrder);
                 subscriptionsModel = await GetSubscriptionsAsync(model.CustomerId);
 
                 return PartialView("List", subscriptionsModel);
@@ -128,18 +128,20 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         [HttpPost]
         public async Task<HttpResponseMessage> Edit(SubscriptionModel model)
         {
+            IAggregatePartner operations;
             Subscription subscription;
 
             try
             {
-                subscription = await Context.PartnerOperations.Customers
+                operations = await new SdkContext().GetPartnerOperationsAysnc();
+                subscription = await operations.Customers
                     .ById(model.CustomerId).Subscriptions.ById(model.Id).GetAsync();
 
                 subscription.FriendlyName = model.FriendlyName;
                 subscription.Status = model.Status;
                 subscription.Quantity = model.Quantity;
 
-                await Context.PartnerOperations.Customers.ById(model.CustomerId)
+                await operations.Customers.ById(model.CustomerId)
                     .Subscriptions.ById(model.Id).PatchAsync(subscription);
 
                 return new HttpResponseMessage(HttpStatusCode.OK);
@@ -211,6 +213,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         public async Task<ActionResult> Show(string customerId, string subscriptionId)
         {
             Customer customer;
+            IAggregatePartner operations;
             Subscription subscription;
             SubscriptionModel model;
 
@@ -225,8 +228,9 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             try
             {
-                customer = await Context.PartnerOperations.Customers.ById(customerId).GetAsync();
-                subscription = await Context.PartnerOperations.Customers.ById(customerId).Subscriptions.ById(subscriptionId).GetAsync();
+                operations = await new SdkContext().GetPartnerOperationsAysnc();
+                customer = await operations.Customers.ById(customerId).GetAsync();
+                subscription = await operations.Customers.ById(customerId).Subscriptions.ById(subscriptionId).GetAsync();
 
                 model = new SubscriptionModel()
                 {
@@ -259,47 +263,33 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
         }
 
-        private SdkContext Context
-        {
-            get
-            {
-                if (_context == null)
-                {
-                    _context = new SdkContext();
-                }
-
-                return _context;
-            }
-        }
-
         private async Task<ResourceCollection<Offer>> GetAvailableOffersAsync()
         {
+            IAggregatePartner operations = await new SdkContext().GetPartnerOperationsAysnc();
             ResourceCollection<Offer> offers = MemoryCache.Default["AvailableOffers"] as ResourceCollection<Offer>;
 
-            if (offers == null)
+            if (offers != null)
             {
-                offers = await Context.PartnerOperations.Offers.ByCountry(AppConfig.CountryCode).GetAsync();
-                MemoryCache.Default["AvailableOffers"] = offers;
+                return offers;
             }
+
+            offers = await operations.Offers.ByCountry(AppConfig.CountryCode).GetAsync();
+            MemoryCache.Default["AvailableOffers"] = offers;
 
             return offers;
         }
 
         private async Task<List<OfferModel>> GetOfferModelsAsync()
         {
-            List<OfferModel> models;
             ResourceCollection<Offer> availableOffers;
 
             try
             {
                 availableOffers = await GetAvailableOffersAsync();
-                models = new List<OfferModel>();
 
-                foreach (Offer offer in availableOffers.Items)
-                {
-                    if (offer.IsAvailableForPurchase)
-                    {
-                        models.Add(new OfferModel()
+                return (from offer in availableOffers.Items
+                        where offer.IsAvailableForPurchase
+                        select new OfferModel()
                         {
                             Billing = offer.Billing,
                             Description = offer.Description,
@@ -310,11 +300,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                             MinimumQuantity = offer.MinimumQuantity,
                             Name = offer.Name,
                             PrerequisiteOffers = offer.PrerequisiteOffers
-                        });
-                    }
-                }
-
-                return models;
+                        }).ToList();
             }
             finally
             {
@@ -324,6 +310,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
         private async Task<SubscriptionsModel> GetSubscriptionsAsync(string customerId)
         {
+            IAggregatePartner operations;
             ResourceCollection<Subscription> subscriptions;
             SubscriptionsModel subscriptionsModel;
 
@@ -334,7 +321,8 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             try
             {
-                subscriptions = await Context.PartnerOperations.Customers.ById(customerId).Subscriptions.GetAsync();
+                operations = await new SdkContext().GetPartnerOperationsAysnc();
+                subscriptions = await operations.Customers.ById(customerId).Subscriptions.GetAsync();
                 subscriptionsModel = new SubscriptionsModel()
                 {
                     Subscriptions = new List<SubscriptionModel>()

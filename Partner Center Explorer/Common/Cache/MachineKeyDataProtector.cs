@@ -26,21 +26,21 @@ namespace Microsoft.Store.PartnerCenter.Samples.Common.Cache
         /// <summary>
         /// Protects the specified data.
         /// </summary>
-        /// <param name="data">The data to be protected.</param>
+        /// <param name="userData">The data to be protected.</param>
         /// <returns></returns>
-        public byte[] Protect(byte[] data)
+        public byte[] Protect(byte[] userData)
         {
-            return MachineKey.Protect(data, _purposes);
+            return MachineKey.Protect(userData, _purposes);
         }
 
         /// <summary>
         /// Unprotects the specified data.
         /// </summary>
-        /// <param name="data">The data to be unprotected.</param>
+        /// <param name="protectedData">The data to be unprotected.</param>
         /// <returns></returns>
-        public byte[] Unprotect(byte[] data)
+        public byte[] Unprotect(byte[] protectedData)
         {
-            return MachineKey.Unprotect(data, _purposes);
+            return MachineKey.Unprotect(protectedData, _purposes);
         }
     }
 }

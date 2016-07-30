@@ -1,8 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.Store.PartnerCenter.Models;
-using Microsoft.Store.PartnerCenter.Models.Customers;
+using System.Collections.Generic;
 
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models
 {
@@ -12,12 +11,12 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models
     public class CustomersModel
     {
         /// <summary>
-        /// Gets or sets the customers.
+        /// Gets or sets a collection of customer that belong to the configured partner.
         /// </summary>
         /// <value>
         /// The customers that belong to the configured reseller.
         /// </value>
-        public ResourceCollection<Customer> Customers
+        public List<CustomerModel> Customers
         { get; set; }
 
         /// <summary>

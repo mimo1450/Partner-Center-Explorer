@@ -55,5 +55,14 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models
         /// <remarks>This is the onmicrosoft.com domain assigned to the customer.</remarks>
         public string DomainName
         { get; set; }
+
+        /// <summary>
+        /// Gets or sets the relationship to partner.
+        /// </summary>
+        /// <value>
+        /// The relationship to partner value.
+        /// </value>
+        public string RelationshipToPartner
+        { get; set; }
     }
 }

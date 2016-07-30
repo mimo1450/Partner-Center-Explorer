@@ -11,12 +11,6 @@ namespace Microsoft.Store.PartnerCenter.Samples.Common
     public class Communication
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Communication"/> class.
-        /// </summary>
-        public Communication()
-        { }
-
-        /// <summary>
         /// Sends a GET request to the specified Uri as an asynchronous operation.
         /// </summary>
         /// <typeparam name="T">The return type.</typeparam>
@@ -231,14 +225,13 @@ namespace Microsoft.Store.PartnerCenter.Samples.Common
 
                     response = await client.PostAsync(requestUri, content);
 
-                    if (!response.IsSuccessStatusCode)
+                    if (response.IsSuccessStatusCode)
                     {
-                        string result = await response.Content.ReadAsStringAsync();
-
-                        throw new CommunicationException(result, response.StatusCode);
+                        return await response.Content.ReadAsAsync<T>();
                     }
 
-                    return await response.Content.ReadAsAsync<T>();
+                    string result = await response.Content.ReadAsStringAsync();
+                    throw new CommunicationException(result, response.StatusCode);
                 }
             }
             finally
@@ -296,14 +289,13 @@ namespace Microsoft.Store.PartnerCenter.Samples.Common
 
                     response = await client.PostAsJsonAsync(requestUri, content);
 
-                    if (!response.IsSuccessStatusCode)
+                    if (response.IsSuccessStatusCode)
                     {
-                        string result = await response.Content.ReadAsStringAsync();
-
-                        throw new CommunicationException(result, response.StatusCode);
+                        return await response.Content.ReadAsAsync<T>();
                     }
 
-                    return await response.Content.ReadAsAsync<T>();
+                    string result = await response.Content.ReadAsStringAsync();
+                    throw new CommunicationException(result, response.StatusCode);
                 }
             }
             finally

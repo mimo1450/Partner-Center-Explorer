@@ -1,8 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.Store.PartnerCenter.Models;
-using Microsoft.Store.PartnerCenter.Models.ServiceRequests;
+using System.Collections.Generic;
 
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models
 {
@@ -17,7 +16,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models
         /// <value>
         /// The service requests found in Partner Center.
         /// </value>
-        public ResourceCollection<ServiceRequest> ServiceRequests
+        public List<ServiceRequestModel> ServiceRequests
         { get; set; }
     }
 }

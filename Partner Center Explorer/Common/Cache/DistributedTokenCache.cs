@@ -16,7 +16,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.Common.Cache
     public class DistributedTokenCache : TokenCache
     {
         private static readonly Lazy<ConnectionMultiplexer> _connection =
-            new Lazy<ConnectionMultiplexer>(() => { return ConnectionMultiplexer.Connect(AppConfig.RedisConnection); });
+            new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(AppConfig.RedisConnection));
 
         private readonly IDatabase _cache;
         private readonly MachineKeyDataProtector _protector;
@@ -81,10 +81,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.Common.Cache
 
                 data = Convert.FromBase64String(_cache.StringGet(Key));
 
-                if (data != null)
-                {
-                    Deserialize(_protector.Unprotect(data));
-                }
+                Deserialize(_protector.Unprotect(data));
             }
             finally
             {

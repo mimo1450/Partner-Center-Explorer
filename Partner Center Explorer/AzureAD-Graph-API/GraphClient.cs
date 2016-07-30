@@ -18,7 +18,7 @@ namespace Microsoft.Samples.AzureAD.Graph.API
     /// <seealso cref="Microsoft.Samples.AzureAD.Graph.API.IGraphClient" />
     public class GraphClient : IGraphClient
     {
-        private Communication _comm;
+        private readonly Communication _comm;
         private readonly string _token;
 
         /// <summary>
@@ -177,7 +177,7 @@ namespace Microsoft.Samples.AzureAD.Graph.API
         /// <typeparam name="T"></typeparam>
         /// <param name="operation">The operation.</param>
         /// <returns></returns>
-        private T SynchronousExecute<T>(Func<Task<T>> operation)
+        private static T SynchronousExecute<T>(Func<Task<T>> operation)
         {
             try
             {

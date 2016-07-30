@@ -8,7 +8,6 @@ using Microsoft.Store.PartnerCenter.Models.Customers;
 using Microsoft.Store.PartnerCenter.Models.Invoices;
 using Microsoft.Store.PartnerCenter.Models.Subscriptions;
 using Microsoft.Store.PartnerCenter.Samples.Common;
-using Microsoft.Store.PartnerCenter.Samples.Common.Context;
 using Microsoft.Store.PartnerCenter.Samples.Common.Models;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models;
@@ -26,8 +25,6 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
     [AuthorizationFilter(ClaimType = ClaimTypes.Role, ClaimValue = "PartnerAdmin")]
     public class HealthController : Controller
     {
-        private SdkContext _context;
-
         /// <summary>
         /// Handles the index view request.
         /// </summary>
@@ -42,6 +39,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         public async Task<ActionResult> Index(string customerId, string subscriptionId)
         {
             Customer customer;
+            IAggregatePartner operations;
             SubscriptionHealthModel healthModel;
             Subscription subscription;
 
@@ -49,15 +47,16 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             {
                 throw new ArgumentNullException(nameof(customerId));
             }
-            else if (string.IsNullOrEmpty(subscriptionId))
+            if (string.IsNullOrEmpty(subscriptionId))
             {
                 throw new ArgumentNullException(nameof(subscriptionId));
             }
 
             try
             {
-                customer = Context.PartnerOperations.Customers.ById(customerId).Get();
-                subscription = Context.PartnerOperations.Customers.ById(customerId).Subscriptions.ById(subscriptionId).Get();
+                operations = await new SdkContext().GetPartnerOperationsAysnc();
+                customer = await operations.Customers.ById(customerId).GetAsync();
+                subscription = await operations.Customers.ById(customerId).Subscriptions.ById(subscriptionId).GetAsync();
 
                 healthModel = new SubscriptionHealthModel
                 {
@@ -86,8 +85,6 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
         }
 
-        private SdkContext Context => _context ?? (_context = new SdkContext());
-
         private async Task<List<IHealthEvent>> GetAzureSubscriptionHealthAsync(string customerId, string subscriptionId)
         {
             AuthenticationResult token;
@@ -103,7 +100,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             try
             {
-                token = TokenContext.GetAADToken(
+                token = await TokenContext.GetAADTokenAsync(
                     $"{AppConfig.Authority}/{customerId}",
                     AppConfig.ManagementUri
                 );

@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
+using System.Collections.Generic;
 
 namespace Microsoft.Store.PartnerCenter.Samples.Common.Models
 {
@@ -34,7 +35,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.Common.Models
         /// <value>
         /// An array of incident identifiers associated with the <see cref="OfficeHealthEvent"/>.
         /// </value>
-        public string[] IncidentIds
+        public List<string> IncidentIds
         { get; set; }
 
         /// <summary>

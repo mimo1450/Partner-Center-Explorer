@@ -3,7 +3,6 @@
 
 using Microsoft.Samples.Office365.Management.API.Models;
 using Microsoft.Store.PartnerCenter.Samples.Common;
-using Microsoft.Store.PartnerCenter.Samples.Common.Context;
 using Microsoft.Store.PartnerCenter.Samples.Common.Models;
 using System;
 using System.Collections.Generic;
@@ -61,6 +60,7 @@ namespace Microsoft.Samples.Office365.Management.API
         /// <exception cref="ArgumentNullException">tenantId</exception>
         public async Task<List<IHealthEvent>> GetCurrentStatusAsync(string tenantId)
         {
+            AuthorizationToken token;
             Result<OfficeHealthEvent> records;
             string authority;
             string requestUri;
@@ -75,17 +75,19 @@ namespace Microsoft.Samples.Office365.Management.API
                 authority = $"{AppConfig.Authority}/{tenantId}/oauth2/token";
                 requestUri = $"{OfficeConfig.ApiUri}/api/v1.0/{tenantId}/ServiceComms/CurrentStatus";
 
+                token = await TokenContext.GetAADTokenAsync(authority, OfficeConfig.ApiUri, _token);
+
                 records = await _comm.GetAsync<Result<OfficeHealthEvent>>(
                     requestUri,
                     new MediaTypeWithQualityHeaderValue("application/json"),
-                    TokenContext.GetAADToken(authority, OfficeConfig.ApiUri, _token).AccessToken
-                );
+                    token.AccessToken);
 
                 return records.Value.ToList<IHealthEvent>();
             }
             finally
             {
                 records = null;
+                token = null;
             }
         }
 
@@ -127,6 +129,7 @@ namespace Microsoft.Samples.Office365.Management.API
         /// </exception>
         public async Task<Message> GetMessageAsync(string tenantId, string messageId)
         {
+            AuthorizationToken token;
             Result<Message> results;
             string authority;
             string requestUri;
@@ -135,7 +138,7 @@ namespace Microsoft.Samples.Office365.Management.API
             {
                 throw new ArgumentNullException(nameof(tenantId));
             }
-            else if (string.IsNullOrEmpty(messageId))
+            if (string.IsNullOrEmpty(messageId))
             {
                 throw new ArgumentNullException(nameof(messageId));
             }
@@ -146,10 +149,12 @@ namespace Microsoft.Samples.Office365.Management.API
                 requestUri =
                     $"{OfficeConfig.ApiUri}/api/v1.0/{tenantId}/ServiceComms/Messages?$filter=Id eq '{messageId}'";
 
+                token = await TokenContext.GetAADTokenAsync(authority, OfficeConfig.ApiUri, _token);
+
                 results = await _comm.GetAsync<Result<Message>>(
                     requestUri,
                     new MediaTypeWithQualityHeaderValue("application/json"),
-                    TokenContext.GetAADToken(authority, OfficeConfig.ApiUri, _token).AccessToken
+                    token.AccessToken
                 );
 
                 return results.Value.SingleOrDefault();
@@ -157,6 +162,7 @@ namespace Microsoft.Samples.Office365.Management.API
             finally
             {
                 results = null;
+                token = null;
             }
         }
 
@@ -184,6 +190,7 @@ namespace Microsoft.Samples.Office365.Management.API
         /// <exception cref="ArgumentNullException">tenantId</exception>
         public async Task<List<Message>> GetMessagesAsync(string tenantId)
         {
+            AuthorizationToken token;
             Result<Message> messages;
             string authority;
             string requestUri;
@@ -198,10 +205,12 @@ namespace Microsoft.Samples.Office365.Management.API
                 authority = $"{AppConfig.Authority}/{tenantId}/oauth2/token";
                 requestUri = $"{OfficeConfig.ApiUri}/api/v1.0/{tenantId}/ServiceComms/Messages";
 
+                token = await TokenContext.GetAADTokenAsync(authority, OfficeConfig.ApiUri, _token);
+
                 messages = await _comm.GetAsync<Result<Message>>(
                     requestUri,
                     new MediaTypeWithQualityHeaderValue("application/json"),
-                    TokenContext.GetAADToken(authority, OfficeConfig.ApiUri, _token).AccessToken
+                    token.AccessToken
                 );
 
                 return messages.Value;
@@ -209,6 +218,7 @@ namespace Microsoft.Samples.Office365.Management.API
             finally
             {
                 messages = null;
+                token = null;
             }
         }
 
@@ -236,6 +246,7 @@ namespace Microsoft.Samples.Office365.Management.API
         /// <exception cref="ArgumentNullException">tenantId</exception>
         public async Task<List<Service>> GetServicesAsync(string tenantId)
         {
+            AuthorizationToken token;
             Result<Service> services;
             string authority;
             string requestUri;
@@ -250,10 +261,12 @@ namespace Microsoft.Samples.Office365.Management.API
                 authority = $"{AppConfig.Authority}/{tenantId}/oauth2/token";
                 requestUri = $"{OfficeConfig.ApiUri}/api/v1.0/{tenantId}/ServiceComms/Services";
 
+                token = await TokenContext.GetAADTokenAsync(authority, OfficeConfig.ApiUri, _token);
+
                 services = await _comm.GetAsync<Result<Service>>(
                     requestUri,
                     new MediaTypeWithQualityHeaderValue("application/json"),
-                    TokenContext.GetAADToken(authority, OfficeConfig.ApiUri, _token).AccessToken
+                    token.AccessToken
                 );
 
                 return services.Value;
@@ -261,6 +274,7 @@ namespace Microsoft.Samples.Office365.Management.API
             finally
             {
                 services = null;
+                token = null;
             }
         }
 

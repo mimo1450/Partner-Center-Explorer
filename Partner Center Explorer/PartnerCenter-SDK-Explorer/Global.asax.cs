@@ -30,6 +30,11 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer
             {
                 TelemetryConfiguration.Active.InstrumentationKey = AppConfig.InstrumentationKey;
             }
+
+            // Removing all the view engines
+            ViewEngines.Engines.Clear();
+            //Add Razor Engine (which we are using)
+            ViewEngines.Engines.Add(new RazorViewEngine());
         }
     }
 }

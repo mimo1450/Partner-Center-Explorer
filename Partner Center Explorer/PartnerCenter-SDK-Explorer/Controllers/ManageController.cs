@@ -7,12 +7,12 @@ using Microsoft.Samples.Azure.Management;
 using Microsoft.Store.PartnerCenter.Models.Customers;
 using Microsoft.Store.PartnerCenter.Models.Invoices;
 using Microsoft.Store.PartnerCenter.Samples.Common;
-using Microsoft.Store.PartnerCenter.Samples.Common.Context;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Subscriptions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -25,8 +25,6 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
     [AuthorizationFilter(ClaimType = ClaimTypes.Role, ClaimValue = "PartnerAdmin")]
     public class ManageController : Controller
     {
-        private SdkContext _context;
-
         /// <summary>
         /// Gets a list of deployments for the specified resource group.
         /// </summary>
@@ -84,6 +82,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         public async Task<ActionResult> Index(string customerId, string subscriptionId)
         {
             Customer customer;
+            IAggregatePartner operations;
             SubscriptionManageModel manageModel;
             PartnerCenter.Models.Subscriptions.Subscription subscription;
 
@@ -98,18 +97,18 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             try
             {
-                customer = await Context.PartnerOperations.Customers.ById(customerId).GetAsync();
-                subscription = await Context.PartnerOperations.Customers.ById(customerId).Subscriptions.ById(subscriptionId).GetAsync();
+                operations = await new SdkContext().GetPartnerOperationsAysnc();
+                customer = await operations.Customers.ById(customerId).GetAsync();
+                subscription = await operations.Customers.ById(customerId).Subscriptions.ById(subscriptionId).GetAsync();
 
-                manageModel = new SubscriptionManageModel()
+                manageModel = new SubscriptionManageModel
                 {
                     CompanyName = customer.CompanyProfile.CompanyName,
                     CustomerId = customer.Id,
                     FriendlyName = subscription.FriendlyName,
-                    SubscriptionId = subscriptionId
+                    SubscriptionId = subscriptionId,
+                    ViewName = (subscription.BillingType == BillingType.License) ? "Office" : "Azure"
                 };
-
-                manageModel.ViewName = (subscription.BillingType == BillingType.License) ? "Office" : "Azure";
 
                 if (manageModel.ViewName.Equals("Azure", StringComparison.CurrentCultureIgnoreCase))
                 {
@@ -171,7 +170,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             try
             {
-                token = TokenContext.GetAADToken(
+                token = await TokenContext.GetAADTokenAsync(
                     $"{AppConfig.Authority}/{model.CustomerId}",
                    AppConfig.ManagementUri
                 );
@@ -224,7 +223,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             try
             {
-                token = TokenContext.GetAADToken(
+                token = await TokenContext.GetAADTokenAsync(
                     $"{AppConfig.Authority}/{customerId}",
                    AppConfig.ManagementUri
                );
@@ -242,13 +241,10 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
         }
 
-        private SdkContext Context => _context ?? (_context = new SdkContext());
-
         private async Task<List<DeploymentModel>> GetDeploymentsAsync(string customerId, string resourceGroupName, string subscriptionId)
         {
             AuthenticationResult token;
             List<DeploymentExtended> deployments;
-            List<DeploymentModel> model;
 
             if (string.IsNullOrEmpty(customerId))
             {
@@ -265,7 +261,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             try
             {
-                token = TokenContext.GetAADToken(
+                token = await TokenContext.GetAADTokenAsync(
                     $"{AppConfig.Authority}/{customerId}",
                    AppConfig.ManagementUri
                );
@@ -273,20 +269,14 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                 using (ResourceManager manager = new ResourceManager(token.AccessToken))
                 {
                     deployments = await manager.GetDeploymentsAsync(subscriptionId, resourceGroupName);
-                    model = new List<DeploymentModel>();
 
-                    foreach (DeploymentExtended d in deployments)
+                    return deployments.Select(d => new DeploymentModel()
                     {
-                        model.Add(new DeploymentModel()
-                        {
-                            Id = d.Id,
-                            Name = d.Name,
-                            ProvisioningState = d.Properties.ProvisioningState,
-                            Timestamp = d.Properties.Timestamp.Value
-                        });
-                    }
-
-                    return model;
+                        Id = d.Id,
+                        Name = d.Name,
+                        ProvisioningState = d.Properties.ProvisioningState,
+                        Timestamp = d.Properties.Timestamp.Value
+                    }).ToList();
                 }
             }
             finally

@@ -24,8 +24,6 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
     [AuthorizationFilter(ClaimType = ClaimTypes.Role, ClaimValue = "PartnerAdmin")]
     public class UsersController : Controller
     {
-        private SdkContext _context;
-
         /// <summary>
         /// Handles the Create view request.
         /// </summary>
@@ -57,6 +55,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         public async Task<PartialViewResult> Create(NewUserModel newUserModel)
         {
             CustomerUser customerUser;
+            IAggregatePartner operations;
 
             try
             {
@@ -74,7 +73,8 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                     UserPrincipalName = newUserModel.UserPrincipalName
                 };
 
-                await Context.PartnerOperations.Customers.ById(newUserModel.CustomerId).Users.CreateAsync(customerUser);
+                operations = await new SdkContext().GetPartnerOperationsAysnc();
+                await operations.Customers.ById(newUserModel.CustomerId).Users.CreateAsync(customerUser);
 
                 UsersModel usersModel = new UsersModel()
                 {
@@ -113,7 +113,8 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                 throw new ArgumentNullException(nameof(userId));
             }
 
-            await Context.PartnerOperations.Customers.ById(customerId).Users.ById(userId).DeleteAsync();
+            IAggregatePartner operations = await new SdkContext().GetPartnerOperationsAysnc();
+            await operations.Customers.ById(customerId).Users.ById(userId).DeleteAsync();
 
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
@@ -131,6 +132,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         {
             CustomerUser customerUser;
             EditUserModel editUserModel;
+            IAggregatePartner operations;
 
             if (string.IsNullOrEmpty(customerId))
             {
@@ -143,7 +145,8 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             try
             {
-                customerUser = await Context.PartnerOperations.Customers.ById(customerId).Users.ById(userId).GetAsync();
+                operations = await new SdkContext().GetPartnerOperationsAysnc();
+                customerUser = await operations.Customers.ById(customerId).Users.ById(userId).GetAsync();
 
                 editUserModel = new EditUserModel()
                 {
@@ -174,10 +177,12 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         public async Task<PartialViewResult> Edit(EditUserModel editUserModel)
         {
             CustomerUser customerUser;
-
+            IAggregatePartner operations;
             try
             {
-                customerUser = await Context.PartnerOperations.Customers.ById(editUserModel.CustomerId)
+                operations = await new SdkContext().GetPartnerOperationsAysnc();
+
+                customerUser = await operations.Customers.ById(editUserModel.CustomerId)
                     .Users.ById(editUserModel.UserId).GetAsync();
 
                 customerUser.DisplayName = editUserModel.DisplayName;
@@ -186,7 +191,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                 customerUser.UserPrincipalName = editUserModel.UserPrincipalName;
                 customerUser.UsageLocation = editUserModel.UsageLocation;
 
-                await Context.PartnerOperations.Customers.ById(editUserModel.CustomerId)
+                await operations.Customers.ById(editUserModel.CustomerId)
                     .Users.ById(editUserModel.UserId).PatchAsync(customerUser);
 
                 await ProcessLicenseModifications(editUserModel);
@@ -227,21 +232,9 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             return PartialView(usersModel);
         }
 
-        private SdkContext Context
-        {
-            get
-            {
-                if (_context == null)
-                {
-                    _context = new SdkContext();
-                }
-
-                return _context;
-            }
-        }
-
         private async Task<List<LicenseModel>> GetLicenses(string customerId, string userId)
         {
+            IAggregatePartner operations;
             LicenseModel licenseModel;
             List<LicenseModel> values;
             ResourceCollection<License> licenses;
@@ -251,7 +244,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             {
                 throw new ArgumentNullException(nameof(customerId));
             }
-            else if (string.IsNullOrEmpty(userId))
+            if (string.IsNullOrEmpty(userId))
             {
                 throw new ArgumentNullException(nameof(userId));
             }
@@ -259,8 +252,9 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             try
             {
                 values = new List<LicenseModel>();
-                licenses = await Context.PartnerOperations.Customers.ById(customerId).Users.ById(userId).Licenses.GetAsync();
-                subscribedSkus = await Context.PartnerOperations.Customers.ById(customerId).SubscribedSkus.GetAsync();
+                operations = await new SdkContext().GetPartnerOperationsAysnc();
+                licenses = await operations.Customers.ById(customerId).Users.ById(userId).Licenses.GetAsync();
+                subscribedSkus = await operations.Customers.ById(customerId).SubscribedSkus.GetAsync();
 
                 foreach (SubscribedSku sku in subscribedSkus.Items)
                 {
@@ -291,7 +285,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
         private async Task<List<UserModel>> GetUsersAsync(string customerId)
         {
-            List<UserModel> results;
+            IAggregatePartner operations;
             SeekBasedResourceCollection<CustomerUser> users;
 
             if (string.IsNullOrEmpty(customerId))
@@ -301,34 +295,30 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             try
             {
-                results = new List<UserModel>();
-                users = await Context.PartnerOperations.Customers.ById(customerId).Users.GetAsync();
+                operations = await new SdkContext().GetPartnerOperationsAysnc();
+                users = await operations.Customers.ById(customerId).Users.GetAsync();
 
-                foreach (CustomerUser u in users.Items)
+                return users.Items.Select(u => new UserModel()
                 {
-                    results.Add(new UserModel()
-                    {
-                        CustomerId = customerId,
-                        DisplayName = u.DisplayName,
-                        FirstName = u.FirstName,
-                        Id = u.Id,
-                        LastDirectorySyncTime = u.LastDirectorySyncTime,
-                        LastName = u.LastName,
-                        UsageLocation = u.UsageLocation,
-                        UserPrincipalName = u.UserPrincipalName
-                    });
-                }
-
-                return results;
+                    CustomerId = customerId,
+                    DisplayName = u.DisplayName,
+                    FirstName = u.FirstName,
+                    Id = u.Id,
+                    LastDirectorySyncTime = u.LastDirectorySyncTime,
+                    LastName = u.LastName,
+                    UsageLocation = u.UsageLocation,
+                    UserPrincipalName = u.UserPrincipalName
+                }).ToList();
             }
             finally
             {
-                results = null;
+                users = null;
             }
         }
 
         private async Task ProcessLicenseModifications(EditUserModel model)
         {
+            IAggregatePartner operations;
             LicenseUpdate licenseUpdate;
             LicenseModel license;
             List<LicenseModel> current;
@@ -337,6 +327,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             try
             {
+                operations = await new SdkContext().GetPartnerOperationsAysnc();
                 assignments = new List<LicenseAssignment>();
                 current = await GetLicenses(model.CustomerId, model.UserId);
                 licenseUpdate = new LicenseUpdate();
@@ -346,16 +337,18 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                 {
                     license = model.Licenses.SingleOrDefault(x => x.Id.Equals(item.Id, StringComparison.CurrentCultureIgnoreCase));
 
-                    if (license != null)
+                    if (license == null)
                     {
-                        if (!item.IsAssigned && license.IsAssigned)
-                        {
-                            assignments.Add(new LicenseAssignment() { ExcludedPlans = null, SkuId = license.Id });
-                        }
-                        else if (item.IsAssigned && !license.IsAssigned)
-                        {
-                            removals.Add(license.Id);
-                        }
+                        continue;
+                    }
+
+                    if (!item.IsAssigned && license.IsAssigned)
+                    {
+                        assignments.Add(new LicenseAssignment() { ExcludedPlans = null, SkuId = license.Id });
+                    }
+                    else if (item.IsAssigned && !license.IsAssigned)
+                    {
+                        removals.Add(license.Id);
                     }
                 }
 
@@ -371,7 +364,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
                 if (assignments.Count > 0 || removals.Count > 0)
                 {
-                    await Context.PartnerOperations.Customers.ById(model.CustomerId)
+                    await operations.Customers.ById(model.CustomerId)
                         .Users.ById(model.UserId).LicenseUpdates.CreateAsync(licenseUpdate);
                 }
             }

@@ -1,6 +1,4 @@
 ﻿@model Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models.CustomersModel
-@using Microsoft.Store.PartnerCenter.Samples.Common;
-@using Microsoft.Store.PartnerCenter.Models.Customers;
 
 @{
     ViewBag.Title = "Customers";
@@ -25,42 +23,7 @@
             <a class="lnkNewCustomer" href="/Customers/Create" id="NewCustomer">New Customer</a>
         </div>
     </div>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Domain</th>
-                <th>Relationship</th>
-                <th></th>
-            </tr>
-        </thead>
-        @foreach (Customer customer in Model.Customers.Items)
-        {
-            <tr id="@customer.Id">
-                <td>
-                    @Html.ActionLink(customer.CompanyProfile.CompanyName, $"{customer.Id}/Show", "Customers")
-                </td>
-                <td>
-                    @Html.DisplayFor(item => customer.CompanyProfile.Domain)
-                </td>
-                <td>
-                    @Html.DisplayFor(item => customer.RelationshipToPartner)
-                </td>
-                @if (AppConfig.IsSandboxEnvironment)
-                {
-                    <td>
-                        @Ajax.RouteLink("Delete", new { action = "Delete", controller = "Customers", customerId = customer.Id },
-                            new AjaxOptions()
-                            {
-                                HttpMethod = "Delete",
-                                Confirm = $"Are you sure you want to delete {customer.CompanyProfile.CompanyName}?",
-                                OnComplete = $"OnSuccessCallback('{customer.Id}')"
-                            })
-                    </td>
-                }
-            </tr>
-        }
-    </table>
+    <div id="customers"></div>
 </div>
 
 @section Scripts {
@@ -69,14 +32,22 @@
             $('#' + data).remove();
         }
 
-        $(".lnkNewCustomer").click(function (e) {
-            e.preventDefault();
-            $(this).attr('data-target', '#modal-container');
-            $(this).attr('data-toggle', 'modal');
+        $.get('/Customers/List', function (data) {
+            $('#customers').html(data);
+            $('#customers').fadeIn('fast');
         });
 
-        $(document).on('hidden.bs.modal', function (e) {
-            $(e.target).removeData('bs.modal').find(".modal-content").empty();
-        });
+        $(".lnkNewCustomer")
+            .click(function (e) {
+                e.preventDefault();
+                $(this).attr('data-target', '#modal-container');
+                $(this).attr('data-toggle', 'modal');
+            });
+
+        $(document)
+            .on('hidden.bs.modal',
+                function (e) {
+                    $(e.target).removeData('bs.modal').find(".modal-content").empty();
+                });
     </script>
 }

@@ -3,13 +3,11 @@
 
 using Microsoft.Samples.Azure.Management;
 using Microsoft.Store.PartnerCenter.Samples.Common;
-using Microsoft.Store.PartnerCenter.Samples.Common.Context;
 using Microsoft.Store.PartnerCenter.Samples.Common.Models;
-using Microsoft.Store.PartnerCenter.Samples.Common.Models.Automation;
+using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models;
 
 namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 {
@@ -47,7 +45,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         }
 
         /// <summary>
-        /// Invokes the specified runbook. 
+        /// Invokes the specified runbook.
         /// </summary>
         /// <param name="model">An aptly populated instance of <see cref="InvokeRunbookModel"/>.</param>
         /// <returns>A partial view containing a list of runbooks.</returns>
@@ -56,7 +54,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         {
             AuthorizationToken token;
             Automation automation;
-            IList<RunbookModel> runbooks;
+            List<RunbookModel> runbooks;
 
             try
             {
@@ -64,7 +62,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                     AppConfig.ManagementUri, AppConfig.AutomationUsername, AppConfig.AutomationPassword);
                 automation = new Automation(AppConfig.AutomationSubscriptionId, token.AccessToken);
                 await automation.InvokeRunbookAsync(model.ResourceGroupName, AppConfig.AutomationAccount, model.RunbookName);
-                runbooks = await GetRunbooks(token.AccessToken);
+                runbooks = await GetRunbooksAsync(token.AccessToken);
 
                 return PartialView("List", runbooks);
             }
@@ -81,15 +79,15 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         /// <returns>A partial view result containing a list of runbooks.</returns>
         public async Task<PartialViewResult> List()
         {
-            IList<RunbookModel> runbooks = await GetRunbooks();
+            List<RunbookModel> runbooks = await GetRunbooksAsync();
             return PartialView(runbooks);
         }
 
-        private static async Task<IList<RunbookModel>> GetRunbooks()
+        private static async Task<List<RunbookModel>> GetRunbooksAsync()
         {
             AuthorizationToken token;
             Automation automation;
-            IList<RunbookModel> runbooks;
+            List<RunbookModel> runbooks;
 
             try
             {
@@ -107,10 +105,10 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             }
         }
 
-        private static async Task<IList<RunbookModel>> GetRunbooks(string token)
+        private static async Task<List<RunbookModel>> GetRunbooksAsync(string token)
         {
             Automation automation;
-            IList<RunbookModel> runbooks;
+            List<RunbookModel> runbooks;
 
             try
             {

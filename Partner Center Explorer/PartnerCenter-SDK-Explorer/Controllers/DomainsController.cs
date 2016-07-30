@@ -5,7 +5,6 @@ using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Samples.AzureAD.Graph.API;
 using Microsoft.Samples.AzureAD.Graph.API.Models;
 using Microsoft.Store.PartnerCenter.Samples.Common;
-using Microsoft.Store.PartnerCenter.Samples.Common.Context;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Context;
 using Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Models;
 using System;
@@ -22,14 +21,12 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
     [AuthorizationFilter(ClaimType = ClaimTypes.Role, ClaimValue = "PartnerAdmin")]
     public class DomainsController : Controller
     {
-        private SdkContext _context;
-
         /// <summary>
         /// Handles the request to view Office 365 service configuration records.
         /// </summary>
         /// <param name="customerId">The customer identifier.</param>
         /// <param name="domain">The domain that service configuration records should be returned.</param>
-        /// <returns></returns>
+        /// <returns>A partial view containing the configuration records for the specified domain.</returns>
         /// <exception cref="System.ArgumentNullException">
         /// customerId
         /// or
@@ -46,14 +43,14 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
             {
                 throw new ArgumentNullException(nameof(customerId));
             }
-            else if (string.IsNullOrEmpty(domain))
+            if (string.IsNullOrEmpty(domain))
             {
                 throw new ArgumentNullException(nameof(domain));
             }
 
             try
             {
-                token = TokenContext.GetAADToken(
+                token = await TokenContext.GetAADTokenAsync(
                     $"{AppConfig.Authority}/{customerId}",
                     AppConfig.GraphUri
                 );
@@ -85,12 +82,14 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
         /// </remarks>
         public async Task<JsonResult> IsDomainAvailable(string primaryDomain)
         {
+            IAggregatePartner operations = await new SdkContext().GetPartnerOperationsAysnc();
+
             if (string.IsNullOrEmpty(primaryDomain))
             {
                 return Json(false, JsonRequestBehavior.AllowGet);
             }
 
-            bool exists = await Context.PartnerOperations.Domains.ByDomain(primaryDomain + ".onmicrosoft.com").ExistsAsync();
+            bool exists = await operations.Domains.ByDomain(primaryDomain + ".onmicrosoft.com").ExistsAsync();
 
             return Json(!exists, JsonRequestBehavior.AllowGet);
         }
@@ -115,7 +114,7 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
 
             try
             {
-                token = TokenContext.GetAADToken(
+                token = await TokenContext.GetAADTokenAsync(
                     $"{AppConfig.Authority}/{customerId}",
                     AppConfig.GraphUri
                 );
@@ -132,7 +131,5 @@ namespace Microsoft.Store.PartnerCenter.Samples.SDK.Explorer.Controllers
                 token = null;
             }
         }
-
-        private SdkContext Context => _context ?? (_context = new SdkContext());
     }
 }
