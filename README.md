@@ -3,19 +3,22 @@ Partner Center Explorer is a sample project that was developed to demonstrate wh
 but rather as a teaching aide to help you understand how to work with the various APIs/SDKs and technologies. This sample will show you how to utilize with the Azure AD Graph API, Office 365 Service 
 Communications API, Partner Center API, Power BI, Power BI Embedded, and Redis Cache to create an application that can be used to support your customers.  
 
+[![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://azuredeploy.net/)
+[![Visualize](http://armviz.io/visualizebutton.png)](http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2FPartner-Center-Explorer%2Fdev%2Fazuredeploy.json)
+
 ### Prerequisites 
 The following are _optional_ prerequisites for this sample project 
 
-	| Prerequisites         | Purpose                                                                                                                             |
-	|-----------------------|-------------------------------------------------------------------------------------------------------------------------------------|
-	|  Azure Subscription   | A subscription is only required if you want to host the sample in Azure and utilize the Power BI Embedded and Redis Cache features. |
+| Prerequisite          | Purpose                                                                                                                             |
+|-----------------------|-------------------------------------------------------------------------------------------------------------------------------------|
+|  Azure Subscription   | A subscription is only required if you want to host the sample in Azure and utilize the Power BI Embedded and Redis Cache features. |
 
 The following are _required_ prerequisites for this sample project
 
-	| Prerequisites                           | Purpose                                                                                                           |
-	|-----------------------------------------|-------------------------------------------------------------------------------------------------------------------|
-	|  Azure AD global admin privileges       | Required to create the required Azure AD application utilized to obtain access tokens.                            |
-	|  Partner Center admin agent privileges  | Required to perform various Partner Center operations through the Partner Center API.                             |
+| Prerequisite                            | Purpose                                                                                                           |
+|-----------------------------------------|-------------------------------------------------------------------------------------------------------------------|
+|  Azure AD global admin privileges       | Required to create the required Azure AD application utilized to obtain access tokens.                            |
+|  Partner Center admin agent privileges  | Required to perform various Partner Center operations through the Partner Center API.                             |
 
 ### Terminology
 The following terms are essential to understand when working with this sample 

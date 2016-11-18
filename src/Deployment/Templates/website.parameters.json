@@ -1,0 +1,33 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "hostingPlanName": {
+      "value": "Testing123"
+    },
+    "AccountId": {
+      "value": "1"
+    },
+    "ExplorerApplicationId": {
+      "value": "1"
+    },
+    "ExplorerApplicationSecret": {
+      "value": "1"
+    },
+    "PartnerCenterApplicationId": {
+      "value": "1"
+    },
+    "ExplorerPackageFolder": {
+      "value": "Explorer"
+    },
+    "ExplorerPackageFileName": {
+      "value": "package.zip"
+    },
+    "PartnerCenterApplicationSecret": {
+      "value": "1"
+    },
+    "webSiteName": {
+      "value": "PCETesting123"
+    }
+  }
+}
